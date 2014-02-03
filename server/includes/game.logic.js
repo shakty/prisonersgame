@@ -117,12 +117,12 @@ module.exports = function(node, channel, gameRoom) {
             var currentStage, db;
             currentStage = node.game.getCurrentGameStage();
             db = node.game.memory.stage[currentStage];
-            
+            debugger;
             // Saving results to FS.
             node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
-                               '.csv', db);
+                               '.csv', null, db);
             node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
-                               '.nddb', db);        
+                               '.nddb', null, db);        
 
             console.log('Round data saved ', currentStage);            
         });
