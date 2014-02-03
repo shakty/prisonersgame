@@ -41,6 +41,10 @@ module.exports = function(node, channel, room) {
     // stages for this waiting rooms.
     var stager = new node.Stager();
 
+
+    // Load shared settings.
+    var settings = require(__dirname + '/includes/game.shared.js');
+
     // Loading the logic rules that will be used in each sub-gaming room.
     var logicPath = __dirname + '/includes/game.logic';
 
@@ -126,9 +130,9 @@ module.exports = function(node, channel, room) {
     // Creating an init function.
     // Event listeners registered here are valid for all the stages of the game.
     stager.setOnInit(function() {
-        var counter = 0;
-        var POOL_SIZE = 2;
-        var GROUP_SIZE = 2;
+        var counter = 0;        
+        var POOL_SIZE = settings.POOL_SIZE;
+        var GROUP_SIZE = settings.GROUP_SIZE;
 
         // references...
         this.room = room;
@@ -139,6 +143,7 @@ module.exports = function(node, channel, room) {
         function connectingPlayer(p) {
             var gameRoom, wRoom, tmpPlayerList;
             var nPlayers, i, len;
+
             console.log('-----------Player connected ' + p.id);
             
 //            node.remoteAlert('Your code has been marked as in use. Do not ' +
@@ -275,7 +280,7 @@ module.exports = function(node, channel, room) {
         nodename: 'wroom',
 	game_metadata: {
 	    name: 'wroom',
-	    version: '0.1.0'
+	    version: '0.2.0'
 	},
 	game_settings: {
 	    publishLevel: 0
@@ -283,7 +288,7 @@ module.exports = function(node, channel, room) {
 	plot: stager.getState(),
         // If debug is true, the ErrorManager will throw errors 
         // also for the sub-rooms.
-	debug: true, 
+	debug: settings.DEBUG, 
 	verbosity: 0,
         publishLevel: 2
     };

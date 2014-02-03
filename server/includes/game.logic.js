@@ -37,18 +37,19 @@ var stager = new Stager();
 
 var settings = require('./game.shared');
 var REPEAT = settings.REPEAT;
+// Number of required players.
+var MIN_PLAYERS = settings.MIN_PLAYERS;
+var COINS = settings.COINS;
+var EXCHANGE_RATE = settings.EXCHANGE_RATE;
 
 // Variable registered outside of the export function are shared among all
 // instances of game logics.
 var counter = 0;
-var MIN_PLAYERS = 2;
 var PLAYING_STAGE = 2;
 
 var DUMP_DIR = path.resolve(__dirname, '..', 'data') + '/';
 var DUMP_DIR_JSON = DUMP_DIR + 'json/';
 var DUMP_DIR_CSV = DUMP_DIR + 'csv/';
-
-console.log(DUMP_DIR_CSV);
 
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
@@ -76,29 +77,42 @@ module.exports = function(node, channel, gameRoom) {
 
     function doMatch() {
         var g, bidder, respondent, data_b, data_r;
-
+        var i;
+        // Method shuffle accepts one parameter to update the db, as well as
+        // returning a shuffled copy.
         g = node.game.pl.shuffle();
-        bidder = g.first();
-        respondent = g.last();
+        
+        for (i = 0 ; i < node.game.pl.size() ; i = i + 2) {
+            bidder = g.db[i];
+            respondent = g.db[i+1];
 
-        data_b = {
-            role: 'bidder',
-            other: respondent.id
-        };
-        data_r = {
-            role: 'respondent',
-            other: bidder.id
-        };
-        // Send a message to each player with their role
-        // and the id of the other player.
-        node.say('BIDDER', bidder.id, data_b);
-        node.say('RESPONDENT', respondent.id, data_r);
+            data_b = {
+                role: 'bidder',
+                other: respondent.id
+            };
+            data_r = {
+                role: 'respondent',
+                other: bidder.id
+            };
+            
+            console.log('Group ' + i + ': ', bidder.id, respondent.id);
+            
+            // Send a message to each player with their role
+            // and the id of the other player.
+            node.say('BIDDER', bidder.id, data_b);
+            node.say('RESPONDENT', respondent.id, data_r);
+        }
         console.log('Matching completed.');
     }
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
         console.log('********************** ultimatum room ' + counter++ + ' **********************');
+
+        // Add session name to data in DB.
+        node.game.memory.on('insert', function(o) {
+            o.session = gameRoom.name
+        });
 
         // Register player disconnection, and wait for him...
         node.on.pdisconnect(function(p) {
@@ -135,8 +149,7 @@ module.exports = function(node, channel, gameRoom) {
             // Notify other player he is back.
             // TODO: add it automatically if we return TRUE? It must be done
             // both in the alias and the real event handler
-            node.game.pl.each(function(player) {
-                debugger
+            node.game.pl.each(function(player) {                
                 node.socket.send(node.msg.create({
                     target: 'PCONNECT',
                     data: p,
@@ -203,7 +216,7 @@ module.exports = function(node, channel, gameRoom) {
 
 	    if (response.response === 'ACCEPT') {
 		resWin = parseInt(response.value);
-		bidWin = 100 - resWin;
+		bidWin = COINS - resWin;
 		
 		// Respondent payoff.
 		code = dk.codes.id.get(msg.from);
@@ -280,17 +293,17 @@ module.exports = function(node, channel, gameRoom) {
             
             accesscode = code.AccessCode;
 	    exitcode = code.ExitCode;
-	    code.win = (code.win || 0) / 1000;
+	    code.win = (code.win || 0) / EXCHANGE_RATE;
 	    dk.checkOut(accesscode, exitcode, code.win);
 	    node.say('WIN', p.id, code.win);
             console.log(p.id, ': ' +  code.win);
 	});
 	
         // Saving results to FS.
-        debugger
+
         node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
         node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
-        debugger
+
         node.fs.saveMemory('csv', DUMP_DIR + 'memory.csv');
         node.fs.saveMemory('json', DUMP_DIR + 'memory.nddb');
         
@@ -319,25 +332,25 @@ module.exports = function(node, channel, gameRoom) {
     stager.addStage({
         id: 'precache',
         cb: precache,
-        minPlayers: [ 2, notEnoughPlayers ]
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
     stager.addStage({
         id: 'instructions',
         cb: instructions,
-        minPlayers: [ 2, notEnoughPlayers ]
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
     stager.addStage({
         id: 'quiz',
         cb: quiz,
-        minPlayers: [ 2, notEnoughPlayers ]
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
     stager.addStage({
         id: 'ultimatum',
         cb: ultimatum,
-        minPlayers: [ 2, notEnoughPlayers ]
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
     stager.addStage({
@@ -368,7 +381,7 @@ module.exports = function(node, channel, gameRoom) {
         nodename: 'lgc' + counter,
         game_metadata: {
             name: 'ultimatum',
-            version: '0.0.1'
+            version: '0.1.0'
         },
         game_settings: {
             // Will not publish any update of stage / stageLevel, etc.
@@ -383,12 +396,12 @@ module.exports = function(node, channel, gameRoom) {
         plot: stager.getState(),
         // If debug is false (default false), exception will be caught and
         // and printed to screen, and the game will continue.
-        debug: true,
+        debug: settings.DEBUG,
         // Controls the amount of information printed to screen.
         verbosity: 0,
         // nodeGame enviroment variables.
         env: {
-            auto: false
+            auto: settings.AUTO
         }
     };
 

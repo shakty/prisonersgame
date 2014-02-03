@@ -137,7 +137,7 @@ function precache() {
         '/ultimatum/html/postgame.html',
         '/ultimatum/html/ended.html'
     ], function() {
-        console.log('AAAAAA');
+        console.log('Precache done.');
         // Pre-Caching done; proceed to the next stage.
         node.done();
     });

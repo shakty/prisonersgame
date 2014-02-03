@@ -1,1 +1,13 @@
+*.nddb
+_*
+Session.vim
+*.tar.gz
+~*
+*~
+*.tar.gz
+
+\#*
+.\#*
+
+server/csv
 server/data
