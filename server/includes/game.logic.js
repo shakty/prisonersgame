@@ -107,7 +107,7 @@ module.exports = function(node, channel, gameRoom) {
 
         // Add session name to data in DB.
         node.game.memory.on('insert', function(o) {
-            o.session = gameRoom.name
+            o.session = node.nodename;
         });
 
         // Register player disconnection, and wait for him...

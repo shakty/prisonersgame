@@ -199,8 +199,10 @@ function quiz() {
     var that = this;
     W.loadFrame('/ultimatum/html/quiz.html', function() {
         var b, QUIZ;
-        node.env('auto', function() {            
-            node.timer.randomEmit('DONE', 2000);
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                node.game.timer.doTimeUp();
+            });            
         });
     });
     console.log('Quiz');
@@ -385,8 +387,10 @@ function ultimatum() {
 
 function postgame(){
     W.loadFrame('/ultimatum/html/postgame.html', function() {
-	node.env('auto', function(){
-	    node.timer.randomEmit('DONE');
+	node.env('auto', function() {
+	    node.timer.randomExec(function() {
+                node.game.timer.doTimeUp();
+            });
 	});
     });
     console.log('Postgame');
@@ -394,7 +398,8 @@ function postgame(){
 
 function endgame(){
     W.loadFrame('/ultimatum/html/ended.html', function() {
-	node.on.data('WIN', function(msg) {
+	node.game.timer.setToZero();
+        node.on.data('WIN', function(msg) {
             var win, exitcode, codeErr;
             codeErr = 'ERROR (code not found)';
             win = msg.data && msg.data.win || 0;
@@ -498,12 +503,11 @@ stager.addStage({
         
         answers = QUIZ.checkAnswers(b);
         isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
-        
-        if (!answers.__correct__) {
-            if (!isTimeUp) {
-                return false;
-            }
+
+        if (!answers.__correct__ && !isTimeUp) {
+            return false;
         }
+
         answers.timeUp = isTimeUp;
 
         // On TimeUp there are no answers
@@ -547,6 +551,7 @@ stager.addStage({
         var q1, q2, q2checked, i, isTimeup;
         q1 = W.getElementById('comment').value;
         q2 = W.getElementById('disconnect_form');
+        q2checked = -1;
 
         for (i = 0; i < q2.length; i++) {
 	    if (q2[i].checked) {
@@ -559,12 +564,9 @@ stager.addStage({
 
         // If there is still some time left, let's ask the player
         // to complete at least the second question.
-        if (!q2checked) {            
-            if (!isTimeup) {
-                alert('Please answer Question 2');
-                return false;
-            }
-            q2checked = -1;
+        if (q2checked === -1 && !isTimeUp) {                        
+            alert('Please answer Question 2');
+            return false;
         }
 
         node.set('questionnaire', {

@@ -43,7 +43,7 @@ module.exports = {
     DEBUG: true,
 
     // AUTO-PLAY.
-    AUTO: false
+    AUTO: true
 
     // * =  If you change this, you need to update the instructions and quiz
 };
