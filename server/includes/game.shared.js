@@ -31,7 +31,7 @@ module.exports = {
     CHOSEN_TREATMENT: 'pp',
 
     // Number or rounds to repeat the bidding. *
-    REPEAT: 1,
+    REPEAT: 20,
 
     // Number of coins to split. *
     COINS: 100,

@@ -112,22 +112,19 @@ module.exports = function(node, channel, gameRoom) {
     stager.setOnInit(function() {
         console.log('********************** ultimatum room ' + counter++ + ' **********************');
 
-        node.on('REALLY_DONE', function() {
+        // "STEPPING" is the last event emitted before the stage is updated.
+        node.on('STEPPING', function() {
             var currentStage, db;
             currentStage = node.game.getCurrentGameStage();
             db = node.game.memory.stage[currentStage];
             
-//            // Saving results to FS.
-//            
-//            console.log('***********');
-//            console.log(DUMP_DIR);
-//
-//            node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
-//            node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
-//
-//            node.fs.saveMemory('csv', DUMP_DIR + 'memory.csv');
-//            node.fs.saveMemory('json', DUMP_DIR + 'memory.nddb');
-        
+            // Saving results to FS.
+            node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
+                               '.csv', db);
+            node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
+                               '.nddb', db);        
+
+            console.log('Round data saved ', currentStage);            
         });
 
         // Add session name to data in DB.
@@ -269,8 +266,12 @@ module.exports = function(node, channel, gameRoom) {
 
      // Event handler registered in the init function are always valid.
     stager.setOnGameOver(function() {
-        console.log('************** GAMEOVER ' + gameRoom.name + '****************');
-        
+        console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
+
+        // Saving all indexes.
+        node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
+        node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
+
         // TODO: update database.
         channel.destroyGameRoom(gameRoom.name);
     });
@@ -324,8 +325,10 @@ module.exports = function(node, channel, gameRoom) {
 	});
 	
 	console.log('***********************');
-	
 	console.log('Game ended');
+        
+        // Go to gameover.
+        node.done();
     } 
 
     function notEnoughPlayers() {
