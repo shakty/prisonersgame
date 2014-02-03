@@ -1,6 +1,6 @@
 /**
  * # Logic code for Ultimatum Game
- * Copyright(c) 2013 Stefano Balietti
+ * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
@@ -35,8 +35,6 @@ var J = ngc.JSUS;
 
 var stager = new Stager();
 
-var DUMP_DIR = path.resolve(__dirname, '..', 'data') + '/';
-
 var settings = require('./game.shared');
 var REPEAT = settings.REPEAT;
 var MIN_PLAYERS = settings.MIN_PLAYERS;
@@ -52,6 +50,15 @@ var counter = settings.SESSION_ID;
 // - channel: the ServerChannel object in which this logic will be running.
 // - gameRoom: the GameRoom object in which this logic will be running. 
 module.exports = function(node, channel, gameRoom) {
+
+    var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
+    DUMP_DIR = path.resolve(__dirname, '..', 'data') + '/' + counter + '/';
+    DUMP_DIR_JSON = DUMP_DIR + 'json/';
+    DUMP_DIR_CSV = DUMP_DIR + 'csv/';
+
+    // Recursively create directories, sub-trees and all.
+    J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
+    J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
 
     // Client game to send to reconnecting players.
     var client = channel.require(__dirname + '/game.client', { ngc: ngc });
@@ -104,6 +111,24 @@ module.exports = function(node, channel, gameRoom) {
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
         console.log('********************** ultimatum room ' + counter++ + ' **********************');
+
+        node.on('REALLY_DONE', function() {
+            var currentStage, db;
+            currentStage = node.game.getCurrentGameStage();
+            db = node.game.memory.stage[currentStage];
+            
+//            // Saving results to FS.
+//            
+//            console.log('***********');
+//            console.log(DUMP_DIR);
+//
+//            node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
+//            node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
+//
+//            node.fs.saveMemory('csv', DUMP_DIR + 'memory.csv');
+//            node.fs.saveMemory('json', DUMP_DIR + 'memory.nddb');
+        
+        });
 
         // Add session name to data in DB.
         node.game.memory.on('insert', function(o) {
@@ -274,7 +299,6 @@ module.exports = function(node, channel, gameRoom) {
     }
 
     function endgame() {
-        var DUMP_DIR_JSON, DUMP_DIR_CSV;
         var code, exitcode, accesscode;
         console.log('endgame');
 
@@ -299,19 +323,6 @@ module.exports = function(node, channel, gameRoom) {
             console.log(p.id, ': ',  code.win, code.ExitCode);
 	});
 	
-        // Saving results to FS.
-        DUMP_DIR_JSON = DUMP_DIR + 'json/';
-        DUMP_DIR_CSV = DUMP_DIR + 'csv/';
-        
-        console.log('***********');
-        console.log(DUMP_DIR);
-
-        node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
-        node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
-
-        node.fs.saveMemory('csv', DUMP_DIR + 'memory.csv');
-        node.fs.saveMemory('json', DUMP_DIR + 'memory.nddb');
-        
 	console.log('***********************');
 	
 	console.log('Game ended');
