@@ -18,25 +18,32 @@ module.exports = {
     // Minimum number of players that must be always connected.
     MIN_PLAYERS: 2,
 
+    // Session Counter start from.
+    SESSION_ID: 100,
+
     // Game settings.
+    
+    // Available treatments.
     TREATMENTS: ['pp', 'normal'],
 
     // Which treatment to play.
     // Leave undefined for a randomly chosen treatment.
     CHOSEN_TREATMENT: 'pp',
 
-    // Number or rounds to repeat the bidding.
-    REPEAT: 3,
+    // Number or rounds to repeat the bidding. *
+    REPEAT: 1,
 
-    // Number of coins to split. 
+    // Number of coins to split. *
     COINS: 100,
 
-    // Divider ECU / DOLLARS
+    // Divider ECU / DOLLARS *
     EXCHANGE_RATE: 1000,
 
     // DEBUG.
     DEBUG: true,
 
     // AUTO-PLAY.
-    AUTO: true
+    AUTO: false
+
+    // * =  If you change this, you need to update the instructions and quiz
 };

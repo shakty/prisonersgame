@@ -1,22 +1,12 @@
-var QUIZ = (function() {
+function QUIZ(answers) {
     var node =  parent.node,
     J = parent.JSUS,
     W = parent.W;
 
-    node.window.noEscape(window);
-
-    var results = {};
-
-    var answers = {
-        howMuch: 100,
-        reject: 3
+    var results = {
+        __correct__: false
     };
     
-    node.env('auto', function(){
-        node.set('QUIZ', results);
-        node.timer.randomEmit('DONE', 2000);
-    });
-
     function checkAnswer(a) {
         if (!a || !answers) return;
         
@@ -47,10 +37,9 @@ var QUIZ = (function() {
         
         if (counter === document.forms.length) {
             submitButton.disabled = true;
-            node.set('QUIZ', results);
-            node.timer.randomEmit('DONE', 3000);
+            results.__correct__ = true;
         }
-        
+        return results;
     }
 
     function getCheckedValue(radioObj) {
@@ -92,5 +81,4 @@ var QUIZ = (function() {
         getCheckedValue: getCheckedValue,
         checkAnswers: checkAnswers
     };
-
-})();
+}

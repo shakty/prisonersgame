@@ -45,7 +45,7 @@ var EXCHANGE_RATE = settings.EXCHANGE_RATE;
 
 // Variable registered outside of the export function are shared among all
 // instances of game logics.
-var counter = 0;
+var counter = settings.SESSION_ID;
 
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
@@ -302,6 +302,9 @@ module.exports = function(node, channel, gameRoom) {
         // Saving results to FS.
         DUMP_DIR_JSON = DUMP_DIR + 'json/';
         DUMP_DIR_CSV = DUMP_DIR + 'csv/';
+        
+        console.log('***********');
+        console.log(DUMP_DIR);
 
         node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
         node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);

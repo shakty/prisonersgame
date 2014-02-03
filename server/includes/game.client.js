@@ -20,6 +20,7 @@ var constants = ngc.constants;
 var stager = new Stager();
 var game = {};
 
+var MIN_PLAYERS = settings.MIN_PLAYERS;
 module.exports = game;
 
 // GLOBALS
@@ -128,6 +129,9 @@ stager.setOnGameOver(function() {
 /////////////////////////////////////////////
 function precache() {
     W.lockScreen('Loading...');
+    node.done();
+    return;
+    // preCache is broken.
     W.preCache([
         '/ultimatum/html/instructions.html',
         '/ultimatum/html/quiz.html',
@@ -194,7 +198,10 @@ function instructions() {
 function quiz() {
     var that = this;
     W.loadFrame('/ultimatum/html/quiz.html', function() {
-
+        var b, QUIZ;
+        node.env('auto', function() {            
+            node.timer.randomEmit('DONE', 2000);
+        });
     });
     console.log('Quiz');
 }
@@ -360,12 +367,10 @@ function ultimatum() {
                     });
 
                     accept.onclick = function() {
-                        console.log('=========');
                         node.emit('RESPONSE_DONE', 'ACCEPT', msg.data, other);
                     };
 
                     reject.onclick = function() {
-                        console.log('=========!');
                         node.emit('RESPONSE_DONE', 'REJECT', msg.data, other);
                     };
                 });
@@ -404,6 +409,8 @@ function endgame(){
 
 function clearFrame() {
     node.emit('INPUT_DISABLE');
+    // We save also the time to complete the step.
+    node.set('timestep', node.timer.getTimeSince('step'));
     return true;
 }
 
@@ -457,7 +464,7 @@ stager.addStage({
     // `minPlayers` triggers the execution of a callback in the case
     // the number of players (including this client) falls the below
     // the chosen threshold. Related: `maxPlayers`, and `exactPlayers`.
-    minPlayers: [ 2, notEnoughPlayers ],
+    minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
     syncOnLoaded: true,
     done: clearFrame
 });
@@ -465,7 +472,7 @@ stager.addStage({
 stager.addStage({
     id: 'instructions',
     cb: instructions,
-    minPlayers: [ 2, notEnoughPlayers ],
+    minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
     syncOnLoaded: true,
     timer: 600000,
     done: clearFrame
@@ -474,7 +481,7 @@ stager.addStage({
 stager.addStage({
     id: 'quiz',
     cb: quiz,
-    minPlayers: [ 2, notEnoughPlayers ],
+    minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
     syncOnLoaded: true,
     // `timer` starts automatically the timer managed by the widget VisualTimer
     // if the widget is loaded. When the time is up it fires the DONE event.
@@ -484,13 +491,34 @@ stager.addStage({
     //     the latter being the name of the event to fire (default DONE)
     // - or a function returning the number of milliseconds.
     timer: 60000,
-    done: clearFrame
+    done: function() {
+        var b, QUIZ, answers, isTimeup;
+        QUIZ = W.getFrameWindow().QUIZ;
+        b = W.getElementById('submitQuiz');
+        
+        answers = QUIZ.checkAnswers(b);
+        isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
+        
+        if (!answers.__correct__) {
+            if (!isTimeUp) {
+                return false;
+            }
+        }
+        answers.timeUp = isTimeUp;
+
+        // On TimeUp there are no answers
+        node.set('QUIZ', answers);
+        node.emit('INPUT_DISABLE');
+        // We save also the time to complete the step.
+        node.set('timestep', node.timer.getTimeSince('step'));
+        return true;
+    }
 });
 
 stager.addStage({
     id: 'ultimatum',
     cb: ultimatum,
-    minPlayers: [ 2, notEnoughPlayers ],
+    minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
     // `syncOnLoaded` forces the clients to wait for all the others to be
     // fully loaded before releasing the control of the screen to the players.
     // This options introduces a little overhead in communications and delay
@@ -503,19 +531,53 @@ stager.addStage({
 stager.addStage({
     id: 'endgame',
     cb: endgame,
-    // `done` is a callback function that is executed as soon as a
-    // _DONE_ event is emitted. It can perform clean-up operations (such
-    // as disabling all the forms) and only if it returns true, the
-    // client will enter the _DONE_ stage level, and the step rule
-    // will be evaluated.
     done: clearFrame
 });
 
 stager.addStage({
     id: 'questionnaire',
-    cb: postgame
-});
+    cb: postgame,
+    timer: 60000,
+    // `done` is a callback function that is executed as soon as a
+    // _DONE_ event is emitted. It can perform clean-up operations (such
+    // as disabling all the forms) and only if it returns true, the
+    // client will enter the _DONE_ stage level, and the step rule
+    // will be evaluated.
+    done: function() {
+        var q1, q2, q2checked, i, isTimeup;
+        q1 = W.getElementById('comment').value;
+        q2 = W.getElementById('disconnect_form');
 
+        for (i = 0; i < q2.length; i++) {
+	    if (q2[i].checked) {
+		q2checked = i;
+                break;
+	    }
+	}
+
+        isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
+
+        // If there is still some time left, let's ask the player
+        // to complete at least the second question.
+        if (!q2checked) {            
+            if (!isTimeup) {
+                alert('Please answer Question 2');
+                return false;
+            }
+            q2checked = -1;
+        }
+
+        node.set('questionnaire', {
+            q1: q1 || '',
+            q2: q2checked,
+            timeUp: isTimeUp
+        });
+        
+        node.emit('INPUT_DISABLE');        
+        node.set('timestep', node.timer.getTimeSince('step'));
+        return true;
+    }
+});
 
 // Now that all the stages have been added,
 // we can build the game plot
@@ -536,7 +598,6 @@ game.plot = stager.getState();
 game.metadata = {
     name: 'ultimatum',
     version: '0.1.0',
-    session: 1,
     description: 'no descr'
 };
 
