@@ -38,5 +38,5 @@ module.exports = {
     DEBUG: true,
 
     // AUTO-PLAY.
-    AUTO: false
+    AUTO: true
 };

@@ -11,7 +11,6 @@
  */
 
 var settings = require('./game.shared');
-var REPEAT = settings.REPEAT;
 
 var ngc = module.parent.exports.ngc;
 var Stager = ngc.Stager;
@@ -391,7 +390,12 @@ function postgame(){
 function endgame(){
     W.loadFrame('/ultimatum/html/ended.html', function() {
 	node.on.data('WIN', function(msg) {
-	    W.write('Your bonus in this game is: ' + msg.data || 0);
+            var win, exitcode, codeErr;
+            codeErr = 'ERROR (code not found)';
+            win = msg.data && msg.data.win || 0;
+            exitcode = msg.data && msg.data.exitcode || codeErr;
+	    W.writeln('Your bonus in this game is: ' + win);
+            W.writeln('Your exitcode is: ' + exitcode);
 	});
     });
 
@@ -520,7 +524,7 @@ stager.init()
     .next('precache')
     .next('instructions')
     .next('quiz')
-    .repeat('ultimatum', REPEAT)
+    .repeat('ultimatum', settings.REPEAT)
     .next('questionnaire')
     .next('endgame')
     .gameover();
@@ -531,7 +535,7 @@ game.plot = stager.getState();
 // Let's add the metadata information.
 game.metadata = {
     name: 'ultimatum',
-    version: '0.0.1',
+    version: '0.1.0',
     session: 1,
     description: 'no descr'
 };
@@ -541,6 +545,6 @@ game.settings = {
     publishLevel: 2
 };
 game.env = {
-    auto: false
+    auto: settings.AUTO
 };
 game.verbosity = 100;

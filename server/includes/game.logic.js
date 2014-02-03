@@ -35,9 +35,10 @@ var J = ngc.JSUS;
 
 var stager = new Stager();
 
+var DUMP_DIR = path.resolve(__dirname, '..', 'data') + '/';
+
 var settings = require('./game.shared');
 var REPEAT = settings.REPEAT;
-// Number of required players.
 var MIN_PLAYERS = settings.MIN_PLAYERS;
 var COINS = settings.COINS;
 var EXCHANGE_RATE = settings.EXCHANGE_RATE;
@@ -45,11 +46,6 @@ var EXCHANGE_RATE = settings.EXCHANGE_RATE;
 // Variable registered outside of the export function are shared among all
 // instances of game logics.
 var counter = 0;
-var PLAYING_STAGE = 2;
-
-var DUMP_DIR = path.resolve(__dirname, '..', 'data') + '/';
-var DUMP_DIR_JSON = DUMP_DIR + 'json/';
-var DUMP_DIR_CSV = DUMP_DIR + 'csv/';
 
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
@@ -215,7 +211,7 @@ module.exports = function(node, channel, gameRoom) {
             }
 
 	    if (response.response === 'ACCEPT') {
-		resWin = parseInt(response.value);
+		resWin = parseInt(response.value, 10);
 		bidWin = COINS - resWin;
 		
 		// Respondent payoff.
@@ -278,6 +274,7 @@ module.exports = function(node, channel, gameRoom) {
     }
 
     function endgame() {
+        var DUMP_DIR_JSON, DUMP_DIR_CSV;
         var code, exitcode, accesscode;
         console.log('endgame');
 
@@ -295,11 +292,16 @@ module.exports = function(node, channel, gameRoom) {
 	    exitcode = code.ExitCode;
 	    code.win = (code.win || 0) / EXCHANGE_RATE;
 	    dk.checkOut(accesscode, exitcode, code.win);
-	    node.say('WIN', p.id, code.win);
-            console.log(p.id, ': ' +  code.win);
+	    node.say('WIN', p.id, {
+                win: code.win,
+                exitcode: code.ExitCode
+            });
+            console.log(p.id, ': ',  code.win, code.ExitCode);
 	});
 	
         // Saving results to FS.
+        DUMP_DIR_JSON = DUMP_DIR + 'json/';
+        DUMP_DIR_CSV = DUMP_DIR + 'csv/';
 
         node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
         node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
