@@ -66,17 +66,19 @@ module.exports = function(node, channel, gameRoom) {
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, '..', 'descil.conf.js');
     var dk = require('descil-mturk')(confPath);
-//    dk.getCodes(function() {
-//        debugger
-//        if (!dk.codes.size()) {
-//            throw new Error('game.logic: no codes found.');
-//        }
-//    });
-    dk.readCodes(function() {
+
+    function codesNotFound() {
         if (!dk.codes.size()) {
-            throw new Errors('requirements.room: no codes found.');
+            throw new Error('game.logic: no codes found.');
         }
-    });
+    }
+
+    if (settings.AUTH === 'MTURK') {
+        dk.getCodes(codesNotFound);
+    }
+    else if (settings.AUTH === 'LOCAL') {
+        dk.readCodes(codesNotFound);
+    }
 
     function doMatch() {
         var g, bidder, respondent, data_b, data_r;

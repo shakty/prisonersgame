@@ -43,7 +43,10 @@ module.exports = {
     DEBUG: true,
 
     // AUTO-PLAY.
-    AUTO: true
+    AUTO: true,
+
+    // AUTHORIZATION.
+    AUTH: 'MTURK' // MTURK, LOCAL, NO.
 
     // * =  If you change this, you need to update the instructions and quiz
 };

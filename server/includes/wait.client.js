@@ -1,10 +1,9 @@
 /**
  * # Antechamber for Ultimatum Game
- * Copyright(c) 2013 Stefano Balietti
+ * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
  * Displays a simple waiting page for clients about to start a game.
- *
  * ---
  */
 

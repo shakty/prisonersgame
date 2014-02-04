@@ -1,6 +1,6 @@
 /**
  * # Requirements Room for Ultimatum Game
- * Copyright(c) 2013 Stefano Balietti
+ * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
  * Handles incoming connections, validates authorization tokens
@@ -11,6 +11,9 @@ module.exports = function(node, channel, room) {
 
     var path = require('path');
     
+    // Load shared settings.
+    var settings = require(__dirname + '/includes/game.shared.js');
+
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
     var dk = require('descil-mturk')(confPath);
@@ -24,13 +27,20 @@ module.exports = function(node, channel, room) {
         var that = this;
 
         console.log('********Requirements Room Created*****************');
-        
-        // Load code database
-//        dk.getCodes(function() {
-//            if (!dk.codes.size()) {
-//                throw new Errors('requirements.room: no codes found.');
-//            }
-//        });
+
+        function codesNotFound() {
+            if (!dk.codes.size()) {
+                throw new Error('requirements.room: no codes found.');
+            }
+        }
+
+        if (settings.AUTH === 'MTURK') {
+            dk.getCodes(codesNotFound);
+        }
+        else if (settings.AUTH === 'LOCAL') {
+            dk.readCodes(codesNotFound);
+        }
+     
         dk.readCodes(function() {
             if (!dk.codes.size()) {
                 throw new Errors('requirements.room: no codes found.');

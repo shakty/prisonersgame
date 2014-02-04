@@ -1,6 +1,6 @@
 /**
  * # Waiting Room for Ultimatum Game
- * Copyright(c) 2013 Stefano Balietti
+ * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
  * Handles incoming connections, matches them, sets the Ultimatum game
@@ -13,21 +13,28 @@ module.exports = function(node, channel, room) {
     
     var J = require('JSUS').JSUS;
 
+    // Load shared settings.
+    var settings = require(__dirname + '/includes/game.shared.js');
+
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
     
     // Load the code database.
     var dk = require('descil-mturk')(confPath);
-//    dk.getCodes(function() {
-//        if (!dk.codes.size()) {
-//            throw new Error('game.room: no codes found.');
-//        }
-//    });
-    dk.readCodes(function() {
+    function codesNotFound() {
         if (!dk.codes.size()) {
-            throw new Errors('ultimatum game.room: no codes found.');
+            throw new Error('game.room: no codes found.');
         }
-    });
+        // Add a ref to the node obj.
+        node.dk = dk;
+    }
+
+    if (settings.AUTH === 'MTURK') {
+        dk.getCodes(codesNotFound);
+    }
+    else if (settings.AUTH === 'LOCAL') {
+        dk.readCodes(codesNotFound);
+    }
 
 
     // Loads the database layer. If you do not use an external database
@@ -51,9 +58,6 @@ module.exports = function(node, channel, room) {
             return true;
         }
     });
-
-    // Load shared settings.
-    var settings = require(__dirname + '/includes/game.shared.js');
 
     // Loading the logic rules that will be used in each sub-gaming room.
     var logicPath = __dirname + '/includes/game.logic';
@@ -213,7 +217,7 @@ module.exports = function(node, channel, room) {
                     node.remoteSetup('game_settings', p.id, client.settings);
                     node.remoteSetup('plot', p.id, client.plot);
                     node.remoteSetup('env', p.id, client.env);
-                     node.remoteSetup('env', p.id, {
+                    node.remoteSetup('env', p.id, {
                          treatment: treatment
                     });
                 });

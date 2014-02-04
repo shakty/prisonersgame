@@ -33,6 +33,7 @@ stager.setOnInit(function() {
     var that = this;
     var waitingForPlayers;
     var treatment;
+    var header;
 
     console.log('INIT PLAYER!');
 
@@ -47,7 +48,24 @@ stager.setOnInit(function() {
     // - state display widget,
     // - iframe of play,
     // - player.css
-    W.setupFrame('PLAYER');
+    // W.setupFrame('PLAYER');
+
+    // We setup the page manually.
+    header = W.generateHeader();
+
+    node.game.visualState = node.widgets.append('VisualState', header);
+    node.game.timer = node.widgets.append('VisualTimer', header);
+
+    W.generateFrame();
+
+    // Adding the WaitScreen.
+    node.widgets.append('WaitScreen');
+
+    // Add default CSS.
+    if (node.conf.host) {
+        W.addCSS(W.getFrameRoot(), node.conf.host + '/stylesheets/player.css');
+    }
+
 
     this.other = null;
 
