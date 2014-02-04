@@ -11,6 +11,8 @@ module.exports = function(node, channel, room) {
 
     var path = require('path');
     
+    var J = require('JSUS').JSUS;
+
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
     
@@ -41,6 +43,14 @@ module.exports = function(node, channel, room) {
     // stages for this waiting rooms.
     var stager = new node.Stager();
 
+    // Creating a unique game stage that will handle all incoming connections. 
+    stager.addStage({
+        id: 'waiting',
+        cb: function() {
+            // Returning true in a stage callback means execution ok.
+            return true;
+        }
+    });
 
     // Load shared settings.
     var settings = require(__dirname + '/includes/game.shared.js');
@@ -58,14 +68,15 @@ module.exports = function(node, channel, room) {
         ngc: ngc
     });
 
-    // Creating a unique game stage that will handle all incoming connections. 
-    stager.addStage({
-        id: 'waiting',
-        cb: function() {
-            // Returning true in a stage callback means execution ok.
-            return true;
+       // Assigns a treatment condition to a group.
+    function decideRoom(treatment) {        
+        if ('undefined' === typeof treatment) {            
+            treatment = J.randomInt(0, settings.TREATMENTS.length);
+            treatment = settings.TREATMENTS[treatment];
         }
-    });
+        // Implement logic here.
+        return treatment;
+    }
     
     // Creating an authorization function for the players.
     // This is executed before the client the PCONNECT listener.
@@ -142,7 +153,7 @@ module.exports = function(node, channel, room) {
 
         function connectingPlayer(p) {
             var gameRoom, wRoom, tmpPlayerList;
-            var nPlayers, i, len;
+            var nPlayers, i, len, treatment;
 
             console.log('-----------Player connected ' + p.id);
             
@@ -177,6 +188,9 @@ module.exports = function(node, channel, room) {
                 // Doing the random matching.
                 tmpPlayerList = wRoom.shuffle().limit(GROUP_SIZE);
                 
+                // Assigning a treatment to this list of players
+                treatment = decideRoom(settings.CHOSEN_TREATMENT);
+
                 // Creating a sub gaming room.
                 // The object must contains the following information:
                 // - clients: a list of players (array or PlayerList)
@@ -199,6 +213,9 @@ module.exports = function(node, channel, room) {
                     node.remoteSetup('game_settings', p.id, client.settings);
                     node.remoteSetup('plot', p.id, client.plot);
                     node.remoteSetup('env', p.id, client.env);
+                     node.remoteSetup('env', p.id, {
+                         treatment: treatment
+                    });
                 });
                 
                 // Start the logic.

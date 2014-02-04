@@ -328,7 +328,8 @@ module.exports = function(node, channel, gameRoom) {
 	console.log('Game ended');
         
         // Go to gameover.
-        node.done();
+        // Cannot be called now - it blocks the players too.
+        // node.done();
     } 
 
     function notEnoughPlayers() {

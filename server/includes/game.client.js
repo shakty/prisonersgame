@@ -32,6 +32,7 @@ game.globals = {};
 stager.setOnInit(function() {
     var that = this;
     var waitingForPlayers;
+    var treatment;
 
     console.log('INIT PLAYER!');
 
@@ -106,6 +107,17 @@ stager.setOnInit(function() {
         return !isNaN(n) && isFinite(n) && n >= 0 && n <= 100;
     };
 
+    treatment = node.env('treatment');
+
+    // Adapting the game to the treatment.
+    node.game.instructionsPage = '/ultimatum/html/';
+    if (treatment === 'pp') {
+        node.game.instructionsPage += 'instructions_pp.html';
+    }
+    else {
+        node.game.instructionsPage += 'instructions.html';
+    }
+
 });
 
 stager.setOnGameOver(function() {
@@ -133,7 +145,7 @@ function precache() {
     return;
     // preCache is broken.
     W.preCache([
-        '/ultimatum/html/instructions.html',
+        node.game.instructionsPage,
         '/ultimatum/html/quiz.html',
         //'/ultimatum/html/bidder.html',  // these two are cached by following
         //'/ultimatum/html/resp.html',    // loadFrame calls (for demonstration)
@@ -162,7 +174,7 @@ function instructions() {
     // passed as second parameter.
     //
     /////////////////////////////////////////////
-    W.loadFrame('/ultimatum/html/instructions.html', function() {
+    W.loadFrame(node.game.instructionsPage, function() {
 	var b = W.getElementById('read');
 	b.onclick = function() {
 	    node.done();
@@ -479,7 +491,7 @@ stager.addStage({
     cb: instructions,
     minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
     syncOnLoaded: true,
-    timer: 600000,
+    timer: 90000,
     done: clearFrame
 });
 
