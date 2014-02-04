@@ -317,7 +317,8 @@ module.exports = function(node, channel, gameRoom) {
             
             accesscode = code.AccessCode;
 	    exitcode = code.ExitCode;
-	    code.win = (code.win || 0) / EXCHANGE_RATE;
+	    code.win = Number((code.win || 0) / EXCHANGE_RATE).toFixed(2);
+            code.win = parseFloat(code.win, 10);
 	    dk.checkOut(accesscode, exitcode, code.win);
 	    node.say('WIN', p.id, {
                 win: code.win,

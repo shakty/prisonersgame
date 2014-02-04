@@ -37,7 +37,7 @@ module.exports = {
     COINS: 100,
 
     // Divider ECU / DOLLARS *
-    EXCHANGE_RATE: 1000,
+    EXCHANGE_RATE: 2000,
 
     // DEBUG.
     DEBUG: true,
@@ -46,7 +46,7 @@ module.exports = {
     AUTO: true,
 
     // AUTHORIZATION.
-    AUTH: 'MTURK' // MTURK, LOCAL, NO.
+    AUTH: 'LOCAL' // MTURK, LOCAL, NO.
 
     // * =  If you change this, you need to update the instructions and quiz
 };
