@@ -18,6 +18,8 @@ function Requirements() {
 
     var div, token;
 
+    var gameLink;
+
     div = W.getElementById('widgets_div');
     token = J.getQueryString('id');
 
@@ -52,6 +54,7 @@ function Requirements() {
 
     req.onSuccess = function() {
         var str, args;
+        var button, link;
         node.emit('HIDE', 'unsupported');
         str = '%spanYou are allowed to take the HIT.%span';
         args = {
@@ -61,6 +64,17 @@ function Requirements() {
         };
         W.sprintf(str, args, div);
         node.store.cookie('token', token);
+
+        div.appendChild(document.createElement('br'));        
+        div.appendChild(document.createElement('br'));
+
+        link = document.createElement('a');
+        link.href = gameLink;
+        button = document.createElement('button');
+        button.innerHTML = 'Proceed to the game';
+        button.className = 'btn btn-lg btn-primary';
+        link.appendChild(button);
+        div.appendChild(link);
     };
 
     // Synchronous callback function for the Requirements widget.
@@ -86,6 +100,7 @@ function Requirements() {
                 node.get('MTID', function(authorized) {
                     var msg;
                     if (authorized.success) {
+                        gameLink = authorized.gameLink;
                         // No errors.
                         result([]);
                     }
@@ -191,7 +206,6 @@ function Requirements() {
     );
 
     req.checkRequirements();
-
 
     node.log('Testing requirements.');
 }

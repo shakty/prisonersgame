@@ -452,7 +452,7 @@ function clearFrame() {
 function notEnoughPlayers() {
     console.log('Not enough players');
     node.game.pause();
-    W.lockScreen('The other player disconnected. We are now waiting to see if ' +
+    W.lockScreen('One player disconnected. We are now waiting to see if ' +
                 ' he or she reconnects. If not the game will be terminated.');
 }
 

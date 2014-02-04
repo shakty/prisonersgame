@@ -303,16 +303,21 @@ module.exports = function(node, channel, gameRoom) {
 
     function endgame() {
         var code, exitcode, accesscode;
+        var bonusFile, bonus;
+
         console.log('endgame');
+
+        bonusFile = DUMP_DIR + 'bonus.csv';
 
         console.log('FINAL PAYOFF PER PLAYER');
 	console.log('***********************');
 	
-        node.game.pl.each(function(p) {
+        bonus = node.game.pl.map(function(p) {
+
             code = dk.codes.id.get(p.id);
             if (!code) {
                 console.log('ERROR: no code in endgame:', p.id);
-                return;
+                return ['NA', 'NA'];
             }
             
             accesscode = code.AccessCode;
@@ -320,16 +325,29 @@ module.exports = function(node, channel, gameRoom) {
 	    code.win = Number((code.win || 0) / EXCHANGE_RATE).toFixed(2);
             code.win = parseFloat(code.win, 10);
 	    dk.checkOut(accesscode, exitcode, code.win);
+
 	    node.say('WIN', p.id, {
                 win: code.win,
                 exitcode: code.ExitCode
             });
+
             console.log(p.id, ': ',  code.win, code.ExitCode);
+            return [p.id, code.ExitCode, code.win];
 	});
 	
 	console.log('***********************');
 	console.log('Game ended');
         
+        // try {
+        node.fs.writeCsv(bonusFile, bonus, {
+            headers: ["access", "exit", "bonus"]
+        });
+        // }
+        // catch(e) {
+        //    console.log('ERROR: could not save the bonus file: ', 
+        //                DUMP_DIR + 'bonus.csv');
+        // }
+
         // Go to gameover.
         // Cannot be called now - it blocks the players too.
         // node.done();

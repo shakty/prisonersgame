@@ -84,7 +84,8 @@ module.exports = function(node, channel, room) {
 	        };
             }
 
-	    if (code.usage && !code.disconnected) {
+            // usage is for LOCAL check, IsUsed for MTURK
+	    if ((code.usage || code.IsUsed) && !code.disconnected) {
 		//console.log('Code ' +  mtid + ' already in use ' + code.usage + ' times.');
 		// errUri = '/ultiturk/unauthr.html?id=' + mtid + '&codeInUse=1';
 		// node.redirect(errUri, msg.data.id);
@@ -97,7 +98,8 @@ module.exports = function(node, channel, room) {
 	    
             return {
                 success: true,
-                msg: 'Code validated.'
+                msg: 'Code validated.',
+                gameLink: '/ultimatum/'
             };
         });
 

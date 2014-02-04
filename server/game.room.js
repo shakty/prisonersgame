@@ -36,7 +36,6 @@ module.exports = function(node, channel, room) {
         dk.readCodes(codesNotFound);
     }
 
-
     // Loads the database layer. If you do not use an external database
     // you do not need these lines.
     var Database = require('nodegame-db').Database;
@@ -114,7 +113,8 @@ module.exports = function(node, channel, room) {
         }
         
         // Code in use.
-	if (code.usage) {
+        //  usage is for LOCAL check, IsUsed for MTURK
+	if (code.usage || code.IsUsed) {
             if (code.disconnected) {
                 return true;
             }
@@ -126,6 +126,10 @@ module.exports = function(node, channel, room) {
 
         // Mark the code as in use.
         dk.incrementUsage(token);
+
+        if (settings.AUTH === 'MTURK') {        
+            dk.checkIn(token);
+        }
 
         // Client Authorized
         return true;
