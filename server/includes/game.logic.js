@@ -165,6 +165,9 @@ module.exports = function(node, channel, gameRoom) {
             // Delete countdown to terminate the game.
             clearTimeout(this.countdown);
 
+            // Clear any message in the buffer from.
+            node.remoteCommand('erase_buffer', 'ALL');
+
             // Notify other player he is back.
             // TODO: add it automatically if we return TRUE? It must be done
             // both in the alias and the real event handler
@@ -375,6 +378,7 @@ module.exports = function(node, channel, gameRoom) {
 
         this.countdown = setTimeout(function() {
             console.log('Countdown fired. Going to Step: questionnaire.');
+            node.remoteCommand('erase_buffer', 'ALL');
             node.remoteCommand('resume', 'ALL');
             node.game.gameTerminated = true;
             // if syncStepping = false
