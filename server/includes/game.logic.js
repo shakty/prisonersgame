@@ -134,8 +134,8 @@ module.exports = function(node, channel, gameRoom) {
             // Morever, If the last stage is equal to the current one, we are
             // re-playing the same stage cause of a reconnection. In this
             // case we do not update the database, or save files.
-            if (!GameStage.compare(currentStage, new GameStage()) ||
-                !GameStage.compare(currentStage, node.game.lastStage)) {
+            if (!GameStage.compare(currentStage, new GameStage())) {// ||
+                //!GameStage.compare(currentStage, node.game.lastStage)) {
                 return;
             }
             // Update last stage reference.
