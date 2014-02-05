@@ -105,6 +105,12 @@ stager.setOnInit(function() {
         node.done();
     });
 
+    
+    // Remove the content of the previous frame before loading the next one.
+    node.on('STEPPING', function() {
+        W.clearFrame();
+    });
+
     this.randomAccept = function(offer, other) {
         var accepted = Math.round(Math.random());
         console.log('randomaccept');
@@ -503,7 +509,7 @@ stager.addStage({
     // the number of players (including this client) falls the below
     // the chosen threshold. Related: `maxPlayers`, and `exactPlayers`.
     minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-    syncOnLoaded: true,
+    // syncOnLoaded: true,
     done: clearFrame
 });
 
@@ -511,7 +517,7 @@ stager.addStage({
     id: 'instructions',
     cb: instructions,
     minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-    syncOnLoaded: true,
+    // syncOnLoaded: true,
     timer: 90000,
     done: clearFrame
 });
@@ -520,7 +526,7 @@ stager.addStage({
     id: 'quiz',
     cb: quiz,
     minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-    syncOnLoaded: true,
+    // syncOnLoaded: true,
     // `timer` starts automatically the timer managed by the widget VisualTimer
     // if the widget is loaded. When the time is up it fires the DONE event.
     // It accepts as parameter:
@@ -561,7 +567,7 @@ stager.addStage({
     // This options introduces a little overhead in communications and delay
     // in the execution of a stage. It is probably not necessary in local
     // networks, and it is FALSE by default.
-    syncOnLoaded: true,
+    // syncOnLoaded: true,
     done: clearFrame
 });
 

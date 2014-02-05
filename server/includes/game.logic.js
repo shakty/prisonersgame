@@ -114,18 +114,64 @@ module.exports = function(node, channel, gameRoom) {
     stager.setOnInit(function() {
         console.log('********************** ultimatum room ' + counter++ + ' **********************');
 
+        node.game.lastStage = node.game.getCurrentGameStage();
+
+        node.game.gameTerminated = false;
+        
+        // If players disconnects and then re-connects within the same round
+        // we need to take into account only the final bids within that round.
+        node.game.lastBids = {};
+
         // "STEPPING" is the last event emitted before the stage is updated.
         node.on('STEPPING', function() {
-            var currentStage, db;
-            currentStage = node.game.getCurrentGameStage();
-            db = node.game.memory.stage[currentStage];
-            // Saving results to FS.
-            node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
-                               '.csv', null, db);
-            node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
-                               '.nddb', null, db);        
+            var currentStage, db, p, gain;
 
-            console.log('Round data saved ', currentStage);            
+            currentStage = node.game.getCurrentGameStage();
+
+            debugger
+
+            // We do not save stage 0.0.0. 
+            // Morever, If the last stage is equal to the current one, we are
+            // re-playing the same stage cause of a reconnection. In this
+            // case we do not update the database, or save files.
+            if (!GameStage.compare(currentStage, new GameStage()) ||
+                !GameStage.compare(currentStage, node.game.lastStage)) {
+                return;
+            }
+            // Update last stage reference.
+            node.game.lastStage = currentStage;
+
+            for (p in node.game.lastBids) {
+                if (node.game.lastBids.hasOwnProperty(p)) {
+         
+	            // Respondent payoff.
+	            code = dk.codes.id.get(p);
+                    if (!code) {
+                        console.log('AAAH code not found!');
+                        return;
+                    }
+                    gain = node.game.lastBids[p];
+                    if (gain) {
+	                code.win = !code.win ? gain : code.win + gain;
+	                console.log('Added to ' + p + ' ' + gain + ' ECU');
+                    }
+	        }
+            }
+
+            db = node.game.memory.stage[currentStage];
+
+            if (db && db.size()) {
+                // Saving results to FS.
+                node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
+                                   '.csv', { flags: 'w' }, db);
+                node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
+                                   '.nddb', null, db);        
+
+                console.log('Round data saved ', currentStage);
+            }
+
+            // Resets last bids;
+            node.game.lastBids = {};         
         });
 
         // Add session name to data in DB.
@@ -135,6 +181,9 @@ module.exports = function(node, channel, gameRoom) {
 
         // Register player disconnection, and wait for him...
         node.on.pdisconnect(function(p) {
+            
+            delete node.game.memory.stage[node.game.getCurrentGameStage()];
+
             dk.updateCode(p.id, {
                 disconnected: true,
                 stage: p.stage
@@ -243,37 +292,11 @@ module.exports = function(node, channel, gameRoom) {
 		resWin = parseInt(response.value, 10);
 		bidWin = COINS - resWin;
 		
-		// Respondent payoff.
-		code = dk.codes.id.get(msg.from);
-                if (!code) {
-                    console.log('AAAH code not found!');
-                    return;
-                }
-
-                if ('number' !== typeof response.value ||
-                    isNaN(response.value)) {
-                    debugger
-                }
-                if ('number' !== typeof bidWin ||
-                    isNaN(bidWin)) {
-                    debugger
-                }
-
-		code.win = (!code.win) ? resWin : code.win + resWin;
-		console.log('Added to respondent ' + msg.from + ' ' +
-                         response.value + ' ECU');
-		
-		// Bidder payoff
-		code = dk.codes.id.get(response.from);
-                
-                if (!code) {
-                    console.log('AAAH code not found for respondent 2!');
-                    return;
-                }
-
-		code.win = (!code.win) ? bidWin : code.win + bidWin;
-		console.log('Added to bidder ' + response.from + ' ' +
-                         bidWin + ' ECU');
+                // Save the results in a temporary variables. If the round
+                // finishes without a disconnection we will add them to the
+                // database.
+                node.game.lastBids[msg.from] = resWin;
+                node.game.lastBids[response.from] = bidWin;
 	    }
 	});
 
