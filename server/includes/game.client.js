@@ -349,17 +349,14 @@ function ultimatum() {
             other = msg.data.other;
             node.set('ROLE', 'RESPONDENT');
 
-            options = {
-                milliseconds: 30000,
-                timeup: function() {
-                    that.randomAccept(msg.data, other);
-                }
-            };
-            node.game.timer.init(options);
-            node.game.timer.updateDisplay();
+           
 
             W.loadFrame('/ultimatum/html/resp.html', function() {
-
+                options = {
+                        milliseconds: 30000
+                };
+                node.game.timer.init(options);
+                node.game.timer.updateDisplay();
 
                 //////////////////////////////////////////////
                 // nodeGame hint:
@@ -382,6 +379,12 @@ function ultimatum() {
                 node.on.data('OFFER', function(msg) {
                     var offered, accept, reject;
 
+                    options = {
+                        timeup: function() {
+                            that.randomAccept(msg.data, other);
+                        }
+                    };
+                    node.game.timer.init(options);
                     // Start the timer only after an offer is received.
                     node.game.timer.start();
 

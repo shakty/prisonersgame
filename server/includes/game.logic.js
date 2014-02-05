@@ -119,7 +119,6 @@ module.exports = function(node, channel, gameRoom) {
             var currentStage, db;
             currentStage = node.game.getCurrentGameStage();
             db = node.game.memory.stage[currentStage];
-            debugger;
             // Saving results to FS.
             node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
                                '.csv', null, db);
@@ -192,6 +191,9 @@ module.exports = function(node, channel, gameRoom) {
 	    node.remoteSetup('game_settings', p.id, client.settings);
 	    node.remoteSetup('plot', p.id, client.plot);
             node.remoteSetup('env', p.id, client.env);
+            node.remoteSetup('env', p.id, {
+                treatment: node.env('treatment')
+            });
 
             // Start the game on the reconnecting client.
             node.remoteCommand('start', p.id);
@@ -243,6 +245,15 @@ module.exports = function(node, channel, gameRoom) {
                 if (!code) {
                     console.log('AAAH code not found!');
                     return;
+                }
+
+                if ('number' !== typeof response.value ||
+                    isNaN(response.value)) {
+                    debugger
+                }
+                if ('number' !== typeof bidWin ||
+                    isNaN(bidWin)) {
+                    debugger
                 }
 
 		code.win = (!code.win) ? resWin : code.win + resWin;
@@ -322,9 +333,15 @@ module.exports = function(node, channel, gameRoom) {
             
             accesscode = code.AccessCode;
 	    exitcode = code.ExitCode;
-	    code.win = Number((code.win || 0) / EXCHANGE_RATE).toFixed(2);
-            code.win = parseFloat(code.win, 10);
-	    dk.checkOut(accesscode, exitcode, code.win);
+
+            if (node.env('treatment') === 'pp' && node.game.gameTerminated) {
+                code.win = 0;
+            }
+            else {
+	        code.win = Number((code.win || 0) / EXCHANGE_RATE).toFixed(2);
+                code.win = parseFloat(code.win, 10);
+	    }
+            dk.checkOut(accesscode, exitcode, code.win);
 
 	    node.say('WIN', p.id, {
                 win: code.win,
@@ -332,7 +349,7 @@ module.exports = function(node, channel, gameRoom) {
             });
 
             console.log(p.id, ': ',  code.win, code.ExitCode);
-            return [p.id, code.ExitCode, code.win];
+            return [p.id, code.ExitCode, code.win, node.game.gameTerminated];
 	});
 	
 	console.log('***********************');
@@ -340,7 +357,7 @@ module.exports = function(node, channel, gameRoom) {
         
         // try {
         node.fs.writeCsv(bonusFile, bonus, {
-            headers: ["access", "exit", "bonus"]
+            headers: ["access", "exit", "bonus", "terminated"]
         });
         // }
         // catch(e) {
@@ -359,6 +376,7 @@ module.exports = function(node, channel, gameRoom) {
         this.countdown = setTimeout(function() {
             console.log('Countdown fired. Going to Step: questionnaire.');
             node.remoteCommand('resume', 'ALL');
+            node.game.gameTerminated = true;
             // if syncStepping = false
             //node.remoteCommand('goto_step', 5);
             node.game.gotoStep(new GameStage('5'));

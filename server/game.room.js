@@ -161,7 +161,7 @@ module.exports = function(node, channel, room) {
 
         function connectingPlayer(p) {
             var gameRoom, wRoom, tmpPlayerList;
-            var nPlayers, i, len, treatment;
+            var nPlayers, i, len, treatment, runtimeConf;
 
             console.log('-----------Player connected ' + p.id);
             
@@ -225,9 +225,15 @@ module.exports = function(node, channel, room) {
                          treatment: treatment
                     });
                 });
+
+                runtimeConf = {
+                    env: {
+                        treatment: treatment
+                    }
+                };
                 
                 // Start the logic.
-                gameRoom.startGame();
+                gameRoom.startGame(runtimeConf);
             }
             
             // TODO: node.game.pl.size() is unchanged.
