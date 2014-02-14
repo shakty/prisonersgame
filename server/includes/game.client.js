@@ -424,7 +424,7 @@ function ultimatum() {
     console.log('Ultimatum');
 }
 
-function postgame(){
+function postgame() {
     W.loadFrame('/ultimatum/html/postgame.html', function() {
 	node.env('auto', function() {
 	    node.timer.randomExec(function() {
@@ -435,7 +435,7 @@ function postgame(){
     console.log('Postgame');
 }
 
-function endgame(){
+function endgame() {
     W.loadFrame('/ultimatum/html/ended.html', function() {
 	node.game.timer.setToZero();
         node.on.data('WIN', function(msg) {
@@ -454,7 +454,10 @@ function endgame(){
 function clearFrame() {
     node.emit('INPUT_DISABLE');
     // We save also the time to complete the step.
-    node.set('timestep', node.timer.getTimeSince('step'));
+    node.set('timestep', {
+        time: node.timer.getTimeSince('step'),
+        timeup: node.game.timer.gameTimer.timeLeft <= 0
+    });
     return true;
 }
 
@@ -553,7 +556,10 @@ stager.addStage({
         node.set('QUIZ', answers);
         node.emit('INPUT_DISABLE');
         // We save also the time to complete the step.
-        node.set('timestep', node.timer.getTimeSince('step'));
+        node.set('timestep', {
+            time: node.timer.getTimeSince('step'),
+            timeup: isTimeUp
+        });
         return true;
     }
 });
@@ -580,7 +586,7 @@ stager.addStage({
 stager.addStage({
     id: 'questionnaire',
     cb: postgame,
-    timer: 60000,
+    timer: 90000,
     // `done` is a callback function that is executed as soon as a
     // _DONE_ event is emitted. It can perform clean-up operations (such
     // as disabling all the forms) and only if it returns true, the
@@ -610,12 +616,14 @@ stager.addStage({
 
         node.set('questionnaire', {
             q1: q1 || '',
-            q2: q2checked,
-            timeUp: isTimeUp
+            q2: q2checked
         });
         
         node.emit('INPUT_DISABLE');        
-        node.set('timestep', node.timer.getTimeSince('step'));
+        node.set('timestep', {
+            time: node.timer.getTimeSince('step'),
+            timeup: isTimeUp
+        });
         return true;
     }
 });

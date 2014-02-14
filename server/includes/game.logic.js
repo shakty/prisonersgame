@@ -128,8 +128,6 @@ module.exports = function(node, channel, gameRoom) {
 
             currentStage = node.game.getCurrentGameStage();
 
-            debugger
-
             // We do not save stage 0.0.0. 
             // Morever, If the last stage is equal to the current one, we are
             // re-playing the same stage cause of a reconnection. In this

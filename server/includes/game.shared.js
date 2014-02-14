@@ -12,11 +12,11 @@ module.exports = {
     // Group settings.
 
     // How many players have to connect before a random subset is drawn.
-    POOL_SIZE: 4,
+    POOL_SIZE: 2,
     // How many players in each group ( must be <= POOL_SIZE).
-    GROUP_SIZE: 4,
+    GROUP_SIZE: 2,
     // Minimum number of players that must be always connected.
-    MIN_PLAYERS: 4,
+    MIN_PLAYERS: 2,
 
     // Session Counter start from.
     SESSION_ID: 100,

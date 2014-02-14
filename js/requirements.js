@@ -1,6 +1,6 @@
 /**
  * # Requirements for Ultimatum Game
- * Copyright(c) 2013 Stefano Balietti
+ * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
  * Incoming connections are validated:
@@ -22,6 +22,11 @@ function Requirements() {
 
     div = W.getElementById('widgets_div');
     token = J.getQueryString('id');
+
+
+    if ('undefined' === token || token === '') {
+        alert('You came to this page following a wrong link. Please report the error in a trouble ticket.');
+    }
 
     // Requirements Box.
     window.req = node.widgets.append('Requirements', div, {
