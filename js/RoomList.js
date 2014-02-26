@@ -50,20 +50,19 @@
                 text = content.name;
                 break;
 
-            //case 1:
-            //    text = content.nConnClients +
-            //           ' (+' + content.nDisconnClients + ')';
-            //    break;
-            //
-            //case 2:
-            //    text = content.nConnPlayers +
-            //           ' (+' + content.nDisconnPlayers + ')';
-            //    break;
-            //
-            //case 3:
-            //    text = content.nConnAdmins +
-            //           ' (+' + content.nDisconnAdmins + ')';
-            //    break;
+            case 1:
+                //text = content.nConnClients +
+                //       ' (+' + content.nDisconnClients + ')';
+                text = '' + content.nClients;
+                break;
+            
+            case 2:
+                text = '' + content.nPlayers;
+                break;
+            
+            case 3:
+                text = '' + content.nAdmins
+                break;
 
             default:
                 text = 'N/A';
@@ -114,17 +113,17 @@
 
         root.appendChild(this.table.table);
 
-        // Ask server for room list:
-        node.socket.send(node.msg.create({
-            target: 'SERVERCOMMAND',
-            text:   'INFO',
-            data: {
-                type: 'ROOMS',
-                channel: this.channelName
-            }
-        }));
+        //// Ask server for room list:
+        //node.socket.send(node.msg.create({
+        //    target: 'SERVERCOMMAND',
+        //    text:   'INFO',
+        //    data: {
+        //        type: 'ROOMS',
+        //        channel: this.channelName
+        //    }
+        //}));
 
-        this.table.parse();
+        //this.table.parse();
 
         return root;
     };
@@ -137,6 +136,22 @@
         node.on.data('INFO_ROOMS', function(msg) {
 console.log('***', msg.data);
             that.writeRooms(msg.data);
+        });
+
+        node.on('USECHANNEL', function(channel) {
+            this.channelName = channel;
+
+            // Ask server for room list:
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'INFO',
+                data: {
+                    type: 'ROOMS',
+                    channel: this.channelName
+                }
+            }));
+
+            this.table.parse();
         });
     };
 
@@ -151,7 +166,7 @@ console.log('***', msg.data);
                 roomObj = rooms[roomName];
 
                 this.table.addRow(
-                        [roomObj]);
+                        [roomObj, roomObj, roomObj, roomObj]);
             }
         }
 

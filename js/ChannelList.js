@@ -72,7 +72,7 @@
             textElem = document.createElement('span');
             textElem.appendChild(document.createTextNode(text));
             textElem.onclick = function() {
-                alert(content.name);
+                node.emit('USECHANNEL', content.name);
             };
 
             if (o.x >= 2) {  // number of clients/players/admins
