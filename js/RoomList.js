@@ -1,6 +1,6 @@
 /**
  * # RoomList widget for nodeGame
- * Copyright(c) 2013 Stefano Balietti
+ * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
  * Shows current, previous and next state.
@@ -61,7 +61,7 @@
                 break;
             
             case 3:
-                text = '' + content.nAdmins
+                text = '' + content.nAdmins;
                 break;
 
             default:
@@ -106,24 +106,27 @@
         this.channelName = channelName;
     };
 
-    RoomList.prototype.append = function(root, ids) {
-        if ('string' !== typeof this.channelName) {
-            throw new Error('RoomList.append: channel must be set');
-        }
+    RoomList.prototype.refresh = function() {
+        if ('string' !== typeof this.channelName) return;
 
+        // Ask server for room list:
+        node.socket.send(node.msg.create({
+            target: 'SERVERCOMMAND',
+            text:   'INFO',
+            data: {
+                type:    'ROOMS',
+                channel: this.channelName
+            }
+        }));
+
+        this.table.parse();
+    };
+
+    RoomList.prototype.append = function(root, ids) {
         root.appendChild(this.table.table);
 
-        //// Ask server for room list:
-        //node.socket.send(node.msg.create({
-        //    target: 'SERVERCOMMAND',
-        //    text:   'INFO',
-        //    data: {
-        //        type: 'ROOMS',
-        //        channel: this.channelName
-        //    }
-        //}));
-
-        //this.table.parse();
+        // Query server:
+        this.refresh();
 
         return root;
     };
@@ -133,25 +136,17 @@
 
         that = this;
 
+        // Listen for server reply:
         node.on.data('INFO_ROOMS', function(msg) {
-console.log('***', msg.data);
             that.writeRooms(msg.data);
         });
 
+        // Listen for events from ChannelList saying to switch channels:
         node.on('USECHANNEL', function(channel) {
-            this.channelName = channel;
+            that.setChannel(channel);
 
-            // Ask server for room list:
-            node.socket.send(node.msg.create({
-                target: 'SERVERCOMMAND',
-                text:   'INFO',
-                data: {
-                    type: 'ROOMS',
-                    channel: this.channelName
-                }
-            }));
-
-            this.table.parse();
+            // Query server:
+            that.refresh();
         });
     };
 

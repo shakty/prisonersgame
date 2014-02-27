@@ -1,6 +1,6 @@
 /**
  * # ChannelList widget for nodeGame
- * Copyright(c) 2013 Stefano Balietti
+ * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
  * Shows current, previous and next state.
@@ -72,6 +72,7 @@
             textElem = document.createElement('span');
             textElem.appendChild(document.createTextNode(text));
             textElem.onclick = function() {
+                // Signal the RoomList to switch channels:
                 node.emit('USECHANNEL', content.name);
             };
 
@@ -106,9 +107,7 @@
         return this.root;
     };
 
-    ChannelList.prototype.append = function(root, ids) {
-        root.appendChild(this.table.table);
-
+    ChannelList.prototype.refresh = function() {
         // Ask server for channel list:
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
@@ -120,6 +119,13 @@
         }));
 
         this.table.parse();
+    };
+
+    ChannelList.prototype.append = function(root, ids) {
+        root.appendChild(this.table.table);
+
+        // Query server:
+        this.refresh();
 
         return root;
     };
@@ -129,6 +135,7 @@
 
         that = this;
 
+        // Listen for server reply:
         node.on.data('INFO_CHANNELS', function(msg) {
             that.writeChannels(msg.data);
         });

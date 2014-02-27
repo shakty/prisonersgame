@@ -4,9 +4,8 @@ function Monitor(node) {
 
     stager.setOnInit(function() {
         console.log('INIT MONITOR!');
-        //node.window.setup('MONITOR');
         node.widgets.append('ChannelList');
-        node.widgets.append('RoomList', undefined, {channel: 'ultimatum'});
+        node.widgets.append('RoomList');
     });
 
     stager.addStage({
