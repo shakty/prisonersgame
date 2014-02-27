@@ -6,6 +6,7 @@ function Monitor(node) {
         console.log('INIT MONITOR!');
         node.widgets.append('ChannelList');
         node.widgets.append('RoomList');
+        node.widgets.append('ClientList');
     });
 
     stager.addStage({

@@ -1,5 +1,5 @@
 /**
- * # RoomList widget for nodeGame
+ * # ClientList widget for nodeGame
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
@@ -12,28 +12,29 @@
 
     "use strict";
 
-    node.widgets.register('RoomList', RoomList);
+    node.widgets.register('ClientList', ClientList);
 
     var JSUS = node.JSUS,
-    Table = node.window.Table;
+        Table = node.window.Table,
+        GameStage = node.GameStage;
 
     // ## Defaults
 
-    RoomList.defaults = {};
-    RoomList.defaults.id = 'roomlist';
-    RoomList.defaults.fieldset = {
-        legend: 'Rooms',
-        id: 'roomlist_fieldset'
+    ClientList.defaults = {};
+    ClientList.defaults.id = 'clientlist';
+    ClientList.defaults.fieldset = {
+        legend: 'Clients',
+        id: 'clientlist_fieldset'
     };
 
     // ## Meta-data
 
-    RoomList.version = '0.1.0';
-    RoomList.description = 'Visually display all rooms in a channel.';
+    ClientList.version = '0.1.0';
+    ClientList.description = 'Visually display all clients in a room.';
 
     // ## Dependencies
 
-    RoomList.dependencies = {
+    ClientList.dependencies = {
         JSUS: {},
         Table: {}
     };
@@ -47,21 +48,23 @@
         if ('object' === typeof content) {
             switch (o.x) {
             case 0:
-                text = content.name;
+                text = content.id;
                 break;
 
             case 1:
-                //text = content.nConnClients +
-                //       ' (+' + content.nDisconnClients + ')';
-                text = '' + content.nClients;
+                text = content.admin ? 'admin' : 'player';
                 break;
             
             case 2:
-                text = '' + content.nPlayers;
+                text = GameStage.toHash(content.stage, 'S.s.r');
                 break;
             
             case 3:
-                text = '' + content.nAdmins;
+                text = content.disconnected ? 'disconnected' : 'connected';
+                break;
+            
+            case 4:
+                text = content.sid;
                 break;
 
             default:
@@ -71,8 +74,7 @@
 
             textElem.appendChild(document.createTextNode(text));
             textElem.onclick = function() {
-                // Signal the ClientList to switch rooms:
-                node.emit('USEROOM', content.name);
+                alert(content.id);
             };
         }
         else {
@@ -82,11 +84,12 @@
         return textElem;
     }
 
-    function RoomList(options) {
+    function ClientList(options) {
         this.id = options.id;
 
         this.root = null;
         this.channelName = options.channel || null;
+        this.roomName = options.room || null;
         this.table = new Table({
             render: {
                 pipeline: renderCell,
@@ -95,35 +98,40 @@
         });
 
         // Create header:
-        this.table.setHeader(['Name',
-                              '# Clients', '# Players', '# Admins']);
+        this.table.setHeader(['ID', 'Type', 'Stage', 'Connection', 'SID']);
     }
 
-    RoomList.prototype.getRoot = function() {
+    ClientList.prototype.getRoot = function() {
         return this.root;
     };
 
-    RoomList.prototype.setChannel = function(channelName) {
+    ClientList.prototype.setChannel = function(channelName) {
         this.channelName = channelName;
     };
 
-    RoomList.prototype.refresh = function() {
-        if ('string' !== typeof this.channelName) return;
+    ClientList.prototype.setRoom = function(roomName) {
+        this.roomName = roomName;
+    };
 
-        // Ask server for room list:
+    ClientList.prototype.refresh = function() {
+        if ('string' !== typeof this.channelName) return;
+        if ('string' !== typeof this.roomName) return;
+
+        // Ask server for client list:
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
             text:   'INFO',
             data: {
-                type:    'ROOMS',
-                channel: this.channelName
+                type:    'CLIENTS',
+                channel: this.channelName,
+                room: this.roomName
             }
         }));
 
         this.table.parse();
     };
 
-    RoomList.prototype.append = function(root, ids) {
+    ClientList.prototype.append = function(root, ids) {
         root.appendChild(this.table.table);
 
         // Query server:
@@ -132,37 +140,43 @@
         return root;
     };
 
-    RoomList.prototype.listeners = function() {
+    ClientList.prototype.listeners = function() {
         var that;
 
         that = this;
 
         // Listen for server reply:
-        node.on.data('INFO_ROOMS', function(msg) {
-            that.writeRooms(msg.data);
+        node.on.data('INFO_CLIENTS', function(msg) {
+            that.writeClients(msg.data);
         });
 
         // Listen for events from ChannelList saying to switch channels:
         node.on('USECHANNEL', function(channel) {
             that.setChannel(channel);
+            that.setRoom(null);
+        });
+
+        // Listen for events from RoomList saying to switch rooms:
+        node.on('USEROOM', function(room) {
+            that.setRoom(room);
 
             // Query server:
             that.refresh();
         });
     };
 
-    RoomList.prototype.writeRooms = function(rooms) {
-        var roomName, roomObj;
+    ClientList.prototype.writeClients = function(clients) {
+        var clientName, clientObj;
 
         this.table.clear(true);
 
-        // Create a row for each room:
-        for (roomName in rooms) {
-            if (rooms.hasOwnProperty(roomName)) {
-                roomObj = rooms[roomName];
+        // Create a row for each client:
+        for (clientName in clients) {
+            if (clients.hasOwnProperty(clientName)) {
+                clientObj = clients[clientName];
 
                 this.table.addRow(
-                        [roomObj, roomObj, roomObj, roomObj]);
+                    [clientObj, clientObj, clientObj, clientObj, clientObj]);
             }
         }
 
