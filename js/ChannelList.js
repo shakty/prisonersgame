@@ -15,7 +15,7 @@
     node.widgets.register('ChannelList', ChannelList);
 
     var JSUS = node.JSUS,
-    Table = node.window.Table;
+        Table = node.window.Table;
 
     // ## Defaults
 

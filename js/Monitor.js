@@ -3,10 +3,22 @@ function Monitor(node) {
     var stager = new node.Stager();
 
     stager.setOnInit(function() {
-        console.log('INIT MONITOR!');
-        node.widgets.append('ChannelList');
-        node.widgets.append('RoomList');
-        node.widgets.append('ClientList');
+        var refreshBtn;
+        var widgetList = [];
+
+        // Add refresh button:
+        refreshBtn = document.createElement('button');
+        refreshBtn.innerHTML = 'Refresh';
+        document.body.appendChild(refreshBtn);
+        refreshBtn.onclick = function() {
+            // Tell widgets to refresh themselves:
+            widgetList.forEach(function(w) { w.refresh(); });
+        };
+
+        // Add widgets:
+        widgetList.push(node.widgets.append('ChannelList'));
+        widgetList.push(node.widgets.append('RoomList'));
+        widgetList.push(node.widgets.append('ClientList'));
     });
 
     stager.addStage({
