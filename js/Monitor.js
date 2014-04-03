@@ -18,9 +18,9 @@ function Monitor(node) {
         document.body.appendChild(button);
 
         // Add widgets:
-        channelLlist = node.widgets.append('ChannelList');
-        roomList     = node.widgets.append('RoomList');
-        clientList   = node.widgets.append('ClientList');
+        channelList = node.widgets.append('ChannelList');
+        roomList    = node.widgets.append('RoomList');
+        clientList  = node.widgets.append('ClientList');
     });
 
     stager.addStage({

@@ -116,8 +116,8 @@
             target: 'SERVERCOMMAND',
             text:   'INFO',
             data: {
-                type:    'CLIENTS',
-                roomId:  this.roomId
+                type:   'CLIENTS',
+                roomId: this.roomId
             }
         }));
 
@@ -125,23 +125,40 @@
     };
 
     ClientList.prototype.append = function(root, ids) {
+        var that;
         var button;
+
+        that = this;
 
         // Add client table:
         root.appendChild(this.table.table);
 
         // Add buttons for start/pause/resume:
         button = document.createElement('button');
+        button.innerHTML = 'Start';
+        button.onclick = function() {
+            node.remoteCommand('start', 'ROOM_' + that.roomId);
+        };
+        root.appendChild(button);
+
+        button = document.createElement('button');
+        button.innerHTML = 'Stop';
+        button.onclick = function() {
+            node.remoteCommand('stop', 'ROOM_' + that.roomId);
+        };
+        root.appendChild(button);
+
+        button = document.createElement('button');
         button.innerHTML = 'Pause';
         button.onclick = function() {
-            node.remoteCommand('pause', 'ALL');
+            node.remoteCommand('pause', 'ROOM_' + that.roomId);
         };
         root.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Resume';
         button.onclick = function() {
-            node.remoteCommand('resume', 'ALL');
+            node.remoteCommand('resume', 'ROOM_' + that.roomId);
         };
         root.appendChild(button);
 
