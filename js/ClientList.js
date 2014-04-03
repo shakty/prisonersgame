@@ -88,8 +88,7 @@
         this.id = options.id;
 
         this.root = null;
-        this.channelName = options.channel || null;
-        this.roomName = options.room || null;
+        this.roomId = options.roomId || null;
         this.table = new Table({
             render: {
                 pipeline: renderCell,
@@ -105,17 +104,12 @@
         return this.root;
     };
 
-    ClientList.prototype.setChannel = function(channelName) {
-        this.channelName = channelName;
-    };
-
-    ClientList.prototype.setRoom = function(roomName) {
-        this.roomName = roomName;
+    ClientList.prototype.setRoom = function(roomId) {
+        this.roomId = roomId;
     };
 
     ClientList.prototype.refresh = function() {
-        if ('string' !== typeof this.channelName) return;
-        if ('string' !== typeof this.roomName) return;
+        if ('string' !== typeof this.roomId) return;
 
         // Ask server for client list:
         node.socket.send(node.msg.create({
@@ -123,8 +117,7 @@
             text:   'INFO',
             data: {
                 type:    'CLIENTS',
-                channel: this.channelName,
-                room: this.roomName
+                roomId:  this.roomId
             }
         }));
 
@@ -132,7 +125,25 @@
     };
 
     ClientList.prototype.append = function(root, ids) {
+        var button;
+
+        // Add client table:
         root.appendChild(this.table.table);
+
+        // Add buttons for start/pause/resume:
+        button = document.createElement('button');
+        button.innerHTML = 'Pause';
+        button.onclick = function() {
+            node.remoteCommand('pause', 'ALL');
+        };
+        root.appendChild(button);
+
+        button = document.createElement('button');
+        button.innerHTML = 'Resume';
+        button.onclick = function() {
+            node.remoteCommand('resume', 'ALL');
+        };
+        root.appendChild(button);
 
         // Query server:
         this.refresh();
@@ -150,15 +161,9 @@
             that.writeClients(msg.data);
         });
 
-        // Listen for events from ChannelList saying to switch channels:
-        node.on('USECHANNEL', function(channel) {
-            that.setChannel(channel);
-            that.setRoom(null);
-        });
-
         // Listen for events from RoomList saying to switch rooms:
-        node.on('USEROOM', function(room) {
-            that.setRoom(room);
+        node.on('USEROOM', function(roomId) {
+            that.setRoom(roomId);
 
             // Query server:
             that.refresh();

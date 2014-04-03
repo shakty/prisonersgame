@@ -3,22 +3,24 @@ function Monitor(node) {
     var stager = new node.Stager();
 
     stager.setOnInit(function() {
-        var refreshBtn;
-        var widgetList = [];
+        var button;
+        var channelList, roomList, clientList;
 
         // Add refresh button:
-        refreshBtn = document.createElement('button');
-        refreshBtn.innerHTML = 'Refresh';
-        document.body.appendChild(refreshBtn);
-        refreshBtn.onclick = function() {
+        button = document.createElement('button');
+        button.innerHTML = 'Refresh';
+        button.onclick = function() {
             // Tell widgets to refresh themselves:
-            widgetList.forEach(function(w) { w.refresh(); });
+            channelList.refresh();
+            roomList.refresh();
+            clientList.refresh();
         };
+        document.body.appendChild(button);
 
         // Add widgets:
-        widgetList.push(node.widgets.append('ChannelList'));
-        widgetList.push(node.widgets.append('RoomList'));
-        widgetList.push(node.widgets.append('ClientList'));
+        channelLlist = node.widgets.append('ChannelList');
+        roomList     = node.widgets.append('RoomList');
+        clientList   = node.widgets.append('ClientList');
     });
 
     stager.addStage({

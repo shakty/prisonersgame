@@ -51,16 +51,18 @@
                 break;
 
             case 1:
-                //text = content.nConnClients +
-                //       ' (+' + content.nDisconnClients + ')';
+                text = content.id;
+                break;
+
+            case 2:
                 text = '' + content.nClients;
                 break;
             
-            case 2:
+            case 3:
                 text = '' + content.nPlayers;
                 break;
             
-            case 3:
+            case 4:
                 text = '' + content.nAdmins;
                 break;
 
@@ -72,7 +74,7 @@
             textElem.appendChild(document.createTextNode(text));
             textElem.onclick = function() {
                 // Signal the ClientList to switch rooms:
-                node.emit('USEROOM', content.name);
+                node.emit('USEROOM', content.id);
             };
         }
         else {
@@ -95,7 +97,7 @@
         });
 
         // Create header:
-        this.table.setHeader(['Name',
+        this.table.setHeader(['Name', 'ID',
                               '# Clients', '# Players', '# Admins']);
     }
 
@@ -162,7 +164,7 @@
                 roomObj = rooms[roomName];
 
                 this.table.addRow(
-                        [roomObj, roomObj, roomObj, roomObj]);
+                        [roomObj, roomObj, roomObj, roomObj, roomObj]);
             }
         }
 
