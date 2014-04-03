@@ -344,8 +344,8 @@ function ultimatum() {
                     W.write(' Your offer was rejected.');
                     node.timer.randomEmit('DONE', 3000);
                 });
-
-            }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+            });
+            //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
 
         });
 
@@ -415,8 +415,8 @@ function ultimatum() {
                         node.emit('RESPONSE_DONE', 'REJECT', msg.data, other);
                     };
                 });
-
-            }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+            });
+            //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
 
         });
     //});
