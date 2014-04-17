@@ -86,6 +86,7 @@ module.exports = function(node, channel, room) {
     // Here direct messages to the client can be sent only using
     // his socketId property, since no clientId has been created yet.
     channel.player.authorization(function(header, cookies, room) {
+return true;
         var code, player, token;
         playerId = cookies.player;
         token = cookies.token;
@@ -136,15 +137,15 @@ module.exports = function(node, channel, room) {
     });
 
     // Assigns Player Ids based on cookie token.
-    channel.player.clientIdGenerator(function(headers, cookies, validCookie, 
-                                              ids, info) {
-        
-        // Return the id only if token was validated.
-        // More checks could be done here to ensure that token is unique in ids.
-        if (cookies.token && validCookie) {
-            return cookies.token;
-        }
-    });
+//    channel.player.clientIdGenerator(function(headers, cookies, validCookie, 
+//                                              ids, info) {
+//        
+//        // Return the id only if token was validated.
+//        // More checks could be done here to ensure that token is unique in ids.
+//        if (cookies.token && validCookie) {
+//            return cookies.token;
+//        }
+//    });
 
     // Creating an init function.
     // Event listeners registered here are valid for all the stages of the game.
@@ -178,7 +179,7 @@ module.exports = function(node, channel, room) {
             node.remoteSetup('plot', p.id, clientWait.plot);
             node.remoteCommand('start', p.id);
             
-            node.say('waitingRoom', 'ALL', {
+            node.say('waitingRoom', 'ROOM', {
                 poolSize: POOL_SIZE,
                 nPlayers: nPlayers
             });

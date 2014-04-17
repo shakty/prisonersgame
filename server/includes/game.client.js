@@ -51,15 +51,19 @@ stager.setOnInit(function() {
     // W.setupFrame('PLAYER');
 
     // We setup the page manually.
-    header = W.generateHeader();
+    if (!W.getHeader()) {
+        header = W.generateHeader();
 
-    node.game.visualState = node.widgets.append('VisualState', header);
-    node.game.timer = node.widgets.append('VisualTimer', header);
+        node.game.visualState = node.widgets.append('VisualState', header);
+        node.game.timer = node.widgets.append('VisualTimer', header);
+    }
 
-    W.generateFrame();
+    if (!W.getFrame()) {
+        W.generateFrame();
 
-    // Adding the WaitScreen.
-    node.widgets.append('WaitScreen');
+        // Adding the WaitScreen.
+        node.widgets.append('WaitScreen');
+    }
 
     // Add default CSS.
     if (node.conf.host) {

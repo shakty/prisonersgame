@@ -213,7 +213,7 @@ module.exports = function(node, channel, gameRoom) {
             clearTimeout(this.countdown);
 
             // Clear any message in the buffer from.
-            node.remoteCommand('erase_buffer', 'ALL');
+            node.remoteCommand('erase_buffer', 'ROOM');
 
             // Notify other player he is back.
             // TODO: add it automatically if we return TRUE? It must be done
@@ -399,8 +399,8 @@ module.exports = function(node, channel, gameRoom) {
 
         this.countdown = setTimeout(function() {
             console.log('Countdown fired. Going to Step: questionnaire.');
-            node.remoteCommand('erase_buffer', 'ALL');
-            node.remoteCommand('resume', 'ALL');
+            node.remoteCommand('erase_buffer', 'ROOM');
+            node.remoteCommand('resume', 'ROOM');
             node.game.gameTerminated = true;
             // if syncStepping = false
             //node.remoteCommand('goto_step', 5);
