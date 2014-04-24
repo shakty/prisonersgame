@@ -55,6 +55,8 @@
             textElem.onclick = function() {
                 that.selectedGame = content.info.name;
                 that.writeGameInfo();
+                that.selectedTreatment = null;
+                that.writeTreatmentInfo();
             };
         }
         else {
@@ -90,6 +92,13 @@
         JSUS.style(this.gameDetailDiv, {float: 'left'});
         this.gameDetailDiv.appendChild(this.detailTable.table);
 
+        this.treatmentTable = new Table();
+        this.treatmentTable.setHeader(['Key', 'Value']);
+
+        this.treatmentDiv = document.createElement('div');
+        JSUS.style(this.treatmentDiv, {float: 'left'});
+        this.treatmentDiv.appendChild(this.treatmentTable.table);
+
         this.gameData = {};
         this.selectedGame = null;
         this.selectedTreatment = null;
@@ -115,6 +124,7 @@
     GameList.prototype.append = function(root, ids) {
         root.appendChild(this.gamesTableDiv);
         root.appendChild(this.gameDetailDiv);
+        root.appendChild(this.treatmentDiv);
 
         // Query server:
         this.refresh();
@@ -147,6 +157,14 @@
                 treatments: {
                     standard: {
                         poolSize: 3,
+                        fizzLevel: 5
+                    },
+                    beginner: {
+                        poolSize: 3,
+                        fizzLevel: 1
+                    },
+                    advanced: {
+                        poolSize: 3,
                         fizzLevel: 9001
                     }
                 }
@@ -167,12 +185,19 @@
             this.gameData = msg.data;
             that.writeGames();
 
-            // If currently selected game disappeared, deselect it:
+            // If currently selected game or treatment disappeared, deselect it:
             if (!that.gameData.hasOwnProperty(that.selectedGame)) {
                 that.selectedGame = null;
+                that.selectedTreatment = null;
+            }
+            else if (!that.gameData[that.selectedGame].treatments
+                      .hasOwnProperty(that.selectedTreatment)) {
+
+                that.selectedTreatment = null;
             }
 
             that.writeGameInfo();
+            that.writeTreatmentInfo();
         });
     };
 
@@ -195,9 +220,13 @@
 
     GameList.prototype.writeGameInfo = function() {
         var selGame;
-        var treatment, treatmentList;
+        var treatment, treatmentList, elem;
+        var firstElem;
+        var that;
 
+        that = this;
         this.detailTable.clear(true);
+        this.detailTable.parse();
 
         selGame = this.gameData[this.selectedGame];
         if (!selGame) return;
@@ -206,15 +235,59 @@
         this.detailTable.addRow([selGame.info.alias.join(', ')]);
         this.detailTable.addRow([selGame.info.descr]);
 
-        treatmentList = [];
+        treatmentList = document.createElement('span');
+        firstElem = true;
         for (treatment in selGame.treatments) {
             if (selGame.treatments.hasOwnProperty(treatment)) {
-                treatmentList.push(treatment);
+                // Add ', ' between elements:
+                if (!firstElem) {
+                    elem = document.createElement('span');
+                    elem.innerHTML = ', ';
+                    treatmentList.appendChild(elem);
+                }
+                else {
+                    firstElem = false;
+                }
+
+                elem = document.createElement('span');
+                elem.innerHTML = treatment;
+                elem.onclick = function(t) {
+                    return function() {
+                        that.selectedTreatment = t;
+                        that.writeTreatmentInfo();
+                    };
+                }(treatment);
+                treatmentList.appendChild(elem);
             }
         }
-        this.detailTable.addRow([treatmentList.join(', ')]);
+        this.detailTable.addRow([treatmentList]);
 
         this.detailTable.parse();
+    };
+
+    GameList.prototype.writeTreatmentInfo = function() {
+        var selGame;
+        var selTreatment;
+        var prop;
+
+        this.treatmentTable.clear(true);
+        this.treatmentTable.parse();
+
+        selGame = this.gameData[this.selectedGame];
+        if (!selGame) return;
+
+        selTreatment = selGame.treatments[this.selectedTreatment];
+        if (!selTreatment) return;
+
+        this.treatmentTable.addRow(['<name>', this.selectedTreatment]);
+        // Create a row for each option:
+        for (prop in selTreatment) {
+            if (selTreatment.hasOwnProperty(prop)) {
+                this.treatmentTable.addRow([prop, selTreatment[prop]]);
+            }
+        }
+
+        this.treatmentTable.parse();
     };
 
 })(node);
