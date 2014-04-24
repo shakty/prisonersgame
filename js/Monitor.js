@@ -21,6 +21,7 @@ function Monitor(node) {
         channelList = node.widgets.append('ChannelList');
         roomList    = node.widgets.append('RoomList');
         clientList  = node.widgets.append('ClientList');
+        gameList    = node.widgets.append('GameList');
     });
 
     stager.addStage({
