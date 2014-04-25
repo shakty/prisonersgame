@@ -10,15 +10,15 @@
 module.exports = function(node, channel, room) {
 
     var path = require('path');
-    
+
     var J = require('JSUS').JSUS;
 
-    // Load shared settings.
-    var settings = require(__dirname + '/includes/game.shared.js');
+    // Load settings.
+    var settings = require(__dirname + '/includes/game.settings.js');
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
-    
+
     // Load the code database.
     var dk = require('descil-mturk')(confPath);
     function codesNotFound() {
@@ -49,7 +49,7 @@ module.exports = function(node, channel, room) {
     // stages for this waiting rooms.
     var stager = new node.Stager();
 
-    // Creating a unique game stage that will handle all incoming connections. 
+    // Creating a unique game stage that will handle all incoming connections.
     stager.addStage({
         id: 'waiting',
         cb: function() {
@@ -61,26 +61,26 @@ module.exports = function(node, channel, room) {
     // Loading the logic rules that will be used in each sub-gaming room.
     var logicPath = __dirname + '/includes/game.logic';
 
-    // You can share objects with the included file. Include them in the
-    // object passed as second parameter.
-    var client = channel.require(__dirname + '/includes/game.client', {
-        ngc: ngc
-    });
+    var client;
 
     var clientWait = channel.require(__dirname + '/includes/wait.client', {
         ngc: ngc
     });
 
-       // Assigns a treatment condition to a group.
-    function decideRoom(treatment) {        
-        if ('undefined' === typeof treatment) {            
-            treatment = J.randomInt(0, settings.TREATMENTS.length);
-            treatment = settings.TREATMENTS[treatment];
+    // Assigns a treatment condition to a group.
+    function decideRoom(treatment) {
+        var treatmentList;
+
+        if ('undefined' === typeof treatment) {
+            treatmentList = J.keys(settings.treatments);
+            treatmentList.push('default');
+            treatment = J.randomInt(0, treatmentList.length);
+            treatment = treatmentList[treatment];
         }
         // Implement logic here.
         return treatment;
     }
-    
+
     // Creating an authorization function for the players.
     // This is executed before the client the PCONNECT listener.
     // Here direct messages to the client can be sent only using
@@ -92,7 +92,7 @@ return true;
         token = cookies.token;
 
         console.log('game.room: checking auth.');
-        
+
         // Weird thing.
         if ('string' !== typeof playerId) {
             console.log('no player: ', player)
@@ -104,18 +104,18 @@ return true;
             console.log('no token: ', token)
             return false;
         }
-        
+
         code = dk.codeExists(token);
-        
+
         // Code not existing.
-	if (!code) {
+        if (!code) {
             console.log('not existing token: ', token);
             return false;
         }
-        
+
         // Code in use.
         //  usage is for LOCAL check, IsUsed for MTURK
-	if (code.usage || code.IsUsed) {
+        if (code.usage || code.IsUsed) {
             if (code.disconnected) {
                 return true;
             }
@@ -123,12 +123,12 @@ return true;
                 console.log('token already in use: ', token);
                 return false;
             }
-	}
+        }
 
         // Mark the code as in use.
         dk.incrementUsage(token);
 
-        if (settings.AUTH === 'MTURK') {        
+        if (settings.AUTH === 'MTURK') {
             dk.checkIn(token);
         }
 
@@ -137,9 +137,9 @@ return true;
     });
 
     // Assigns Player Ids based on cookie token.
-//    channel.player.clientIdGenerator(function(headers, cookies, validCookie, 
+//    channel.player.clientIdGenerator(function(headers, cookies, validCookie,
 //                                              ids, info) {
-//        
+//
 //        // Return the id only if token was validated.
 //        // More checks could be done here to ensure that token is unique in ids.
 //        if (cookies.token && validCookie) {
@@ -150,7 +150,7 @@ return true;
     // Creating an init function.
     // Event listeners registered here are valid for all the stages of the game.
     stager.setOnInit(function() {
-        var counter = 0;        
+        var counter = 0;
         var POOL_SIZE = settings.POOL_SIZE;
         var GROUP_SIZE = settings.GROUP_SIZE;
 
@@ -165,7 +165,7 @@ return true;
             var nPlayers, i, len, treatment, runtimeConf;
 
             console.log('-----------Player connected ' + p.id);
-            
+
 //            node.remoteAlert('Your code has been marked as in use. Do not ' +
 //                             'leave this page, otherwise you might not be ' +
 //                             'able to join the experiment again.', p.id);
@@ -178,12 +178,12 @@ return true;
             node.remoteSetup('game_metadata',  p.id, clientWait.metadata);
             node.remoteSetup('plot', p.id, clientWait.plot);
             node.remoteCommand('start', p.id);
-            
+
             node.say('waitingRoom', 'ROOM', {
                 poolSize: POOL_SIZE,
                 nPlayers: nPlayers
             });
-            
+
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
                 return;
@@ -196,9 +196,16 @@ return true;
 
                 // Doing the random matching.
                 tmpPlayerList = wRoom.shuffle().limit(GROUP_SIZE);
-                
+
                 // Assigning a treatment to this list of players
                 treatment = decideRoom(settings.CHOSEN_TREATMENT);
+
+                // The client function needs to be given a treatment name and
+                // the treatment options, and it returns a game object.
+                // TODO: Only pass the options from the current treatment; at
+                // the moment, the entire game.settings structure is passed.
+                client = require(__dirname + '/includes/game.client')(
+                        treatment, settings);
 
                 // Creating a sub gaming room.
                 // The object must contains the following information:
@@ -212,8 +219,8 @@ return true;
                     channel: channel,
                     logicPath: logicPath
                 });
-                
-	        // Setting metadata, settings, and plot.
+
+                // Setting metadata, settings, and plot.
                 tmpPlayerList.each(function (p) {
                     // Clearing the waiting stage.
                     node.remoteCommand('stop', p.id);
@@ -232,11 +239,11 @@ return true;
                         treatment: treatment
                     }
                 };
-                
+
                 // Start the logic.
-                gameRoom.startGame(runtimeConf);
+                gameRoom.startGame(runtimeConf, false, treatment, settings);
             }
-            
+
             // TODO: node.game.pl.size() is unchanged.
             // We need to check with wRoom.size()
             nPlayers = room.clients.player.size();
@@ -290,20 +297,20 @@ return true;
 
         // This callback is executed when a player disconnects from the channel.
         node.on.pdisconnect(function(p) {
-            
+
             // Client really disconnected (not moved into another game room).
             if (channel.registry.clients.disconnected.get(p.id)) {
                 // Free up the code.
                 dk.decrementUsage(p.id);
             }
-            
-            
+
+
         });
     });
-    
+
     // This function will be executed once node.game.gameover() is called.
     stager.setOnGameOver(function() {
-	console.log('^^^^^^^^^^^^^^^^GAME OVER^^^^^^^^^^^^^^^^^^');
+        console.log('^^^^^^^^^^^^^^^^GAME OVER^^^^^^^^^^^^^^^^^^');
     });
 
     // Defining the game structure:
@@ -318,18 +325,18 @@ return true;
     // Returns all the information about this waiting room.
     return {
         nodename: 'wroom',
-	game_metadata: {
-	    name: 'wroom',
-	    version: '0.2.0'
-	},
-	game_settings: {
-	    publishLevel: 0
-	},
-	plot: stager.getState(),
-        // If debug is true, the ErrorManager will throw errors 
+        game_metadata: {
+            name: 'wroom',
+            version: '0.2.0'
+        },
+        game_settings: {
+            publishLevel: 0
+        },
+        plot: stager.getState(),
+        // If debug is true, the ErrorManager will throw errors
         // also for the sub-rooms.
-	debug: settings.DEBUG, 
-	verbosity: 0,
+        debug: settings.DEBUG,
+        verbosity: 0,
         publishLevel: 2
     };
 };
