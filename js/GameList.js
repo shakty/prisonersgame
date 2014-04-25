@@ -129,49 +129,6 @@
         // Query server:
         this.refresh();
 
-        // DEBUG dummy data, TODO: remove
-        this.gameData = {
-            gameA: {
-                info: {
-                    name:  'gameA',
-                    alias: ['chess', 'chGame'],
-                    descr: 'A game fit for a king!'
-                },
-                treatments: {
-                    standard: {
-                        poolSize: 2
-                    },
-                    extreme: {
-                        poolSize: 4,
-                        timeLimit: 50
-                    }
-                }
-            },
-
-            gameB: {
-                info: {
-                    name:  'gameB',
-                    alias: [],
-                    descr: 'Very fun game, you should play it.'
-                },
-                treatments: {
-                    standard: {
-                        poolSize: 3,
-                        fizzLevel: 5
-                    },
-                    beginner: {
-                        poolSize: 3,
-                        fizzLevel: 1
-                    },
-                    advanced: {
-                        poolSize: 3,
-                        fizzLevel: 9001
-                    }
-                }
-            }
-        };
-        this.writeGames();
-
         return root;
     };
 
@@ -182,7 +139,7 @@
 
         // Listen for server reply:
         node.on.data('INFO_GAMES', function(msg) {
-            this.gameData = msg.data;
+            that.gameData = msg.data;
             that.writeGames();
 
             // If currently selected game or treatment disappeared, deselect it:
