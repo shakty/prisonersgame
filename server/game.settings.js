@@ -8,6 +8,12 @@
  */
 
 module.exports = {
+
+    // Files
+
+    logicPath: "game.logic.js",
+    clientPath: "game.client.js",
+
     // Group settings.
 
     // How many players have to connect before a random subset is drawn.

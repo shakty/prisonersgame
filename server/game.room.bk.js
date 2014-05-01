@@ -59,9 +59,9 @@ module.exports = function(node, channel, room) {
     });
 
     // Loading the logic rules that will be used in each sub-gaming room.
-    // var logicPath = __dirname + '/includes/game.logic';
+    var logicPath = __dirname + '/includes/game.logic';
 
-    // var client;
+    var client;
 
     var clientWait = channel.require(__dirname + '/includes/wait.client', {
         ngc: ngc
@@ -205,8 +205,8 @@ return true;
                 // the treatment options, and it returns a game object.
                 // TODO: Only pass the options from the current treatment; at
                 // the moment, the entire game.settings structure is passed.
-                // client = require(__dirname + '/includes/game.client')(
-                //         treatment, settings);
+                client = require(__dirname + '/includes/game.client')(
+                        treatment, settings);
 
                 // Creating a sub gaming room.
                 // The object must contains the following information:
@@ -216,28 +216,23 @@ return true;
                 gameRoom = channel.createGameRoom({
                     group: 'ultimatum',
                     clients: tmpPlayerList,
-                    gameName: 'ultimatum',
-                    treatmentName: treatment
-                    //logicPath: logicPath
+                    logicPath: logicPath
                 });
-
-                gameRoom.setupGame();
-                gameRoom.startGame();
 
                 // Setting metadata, settings, and plot.
 
-//                 tmpPlayerList.each(function (p) {
-//                     // Clearing the waiting stage.
-//                     node.remoteCommand('stop', p.id);
-//                     // Setting the actual game.
-//                     node.remoteSetup('game_metadata',  p.id, client.metadata);
-//                     node.remoteSetup('game_settings', p.id, client.settings);
-//                     node.remoteSetup('plot', p.id, client.plot);
-//                     node.remoteSetup('env', p.id, client.env);
-//                     node.remoteSetup('env', p.id, {
-//                          treatment: treatment
-//                     });
-//                 });
+                tmpPlayerList.each(function (p) {
+                    // Clearing the waiting stage.
+                    node.remoteCommand('stop', p.id);
+                    // Setting the actual game.
+                    node.remoteSetup('game_metadata',  p.id, client.metadata);
+                    node.remoteSetup('game_settings', p.id, client.settings);
+                    node.remoteSetup('plot', p.id, client.plot);
+                    node.remoteSetup('env', p.id, client.env);
+                    node.remoteSetup('env', p.id, {
+                         treatment: treatment
+                    });
+                });
 
 // After refactoring nodegame-client we can use an array of id instead of a loop.
 //                 idxs = tmpPlayerList.id.getAllKeys();
@@ -251,16 +246,16 @@ return true;
 //                 node.remoteSetup('env', p.id, {
 //                     treatment: treatment
 //                 });
-// 
-//                runtimeConf = {
-//                    env: {
-//                        treatment: treatment
-//                    }
-//                };
-// 
-//                debugger
-//                // Start the logic.
-//                gameRoom.startGame(runtimeConf, false, treatment, settings);
+
+                runtimeConf = {
+                    env: {
+                        treatment: treatment
+                    }
+                };
+
+                debugger
+                // Start the logic.
+                gameRoom.startGame(runtimeConf, false, treatment, settings);
             }
 
             // TODO: node.game.pl.size() is unchanged.
