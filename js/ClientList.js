@@ -133,32 +133,82 @@
         // Add client table:
         root.appendChild(this.table.table);
 
-        // Add buttons for start/pause/resume:
+        // Add buttons for setup/start/stop/pause/resume:
+        button = document.createElement('button');
+        button.innerHTML = 'Setup';
+        button.onclick = function() {
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'ROOMCOMMAND',
+                data: {
+                    type:   'SETUP',
+                    roomId: that.roomId
+                }
+            }));
+        };
+        root.appendChild(button);
+
         button = document.createElement('button');
         button.innerHTML = 'Start';
         button.onclick = function() {
-            node.remoteCommand('start', 'ROOM_' + that.roomId);
+            //node.remoteCommand('start', 'ROOM_' + that.roomId);
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'ROOMCOMMAND',
+                data: {
+                    type:      'START',
+                    roomId:    that.roomId,
+                    doPlayers: true
+                }
+            }));
         };
         root.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Stop';
         button.onclick = function() {
-            node.remoteCommand('stop', 'ROOM_' + that.roomId);
+            //node.remoteCommand('stop', 'ROOM_' + that.roomId);
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'ROOMCOMMAND',
+                data: {
+                    type:      'STOP',
+                    roomId:    that.roomId,
+                    doPlayers: true
+                }
+            }));
         };
         root.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Pause';
         button.onclick = function() {
-            node.remoteCommand('pause', 'ROOM_' + that.roomId);
+            //node.remoteCommand('pause', 'ROOM_' + that.roomId);
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'ROOMCOMMAND',
+                data: {
+                    type:      'PAUSE',
+                    roomId:    that.roomId,
+                    doPlayers: true
+                }
+            }));
         };
         root.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Resume';
         button.onclick = function() {
-            node.remoteCommand('resume', 'ROOM_' + that.roomId);
+            //node.remoteCommand('resume', 'ROOM_' + that.roomId);
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'ROOMCOMMAND',
+                data: {
+                    type:      'RESUME',
+                    roomId:    that.roomId,
+                    doPlayers: true
+                }
+            }));
         };
         root.appendChild(button);
 
