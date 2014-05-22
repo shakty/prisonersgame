@@ -130,6 +130,8 @@
 
         that = this;
 
+        this.root = root;
+
         // Add client table:
         root.appendChild(this.table.table);
 
@@ -158,7 +160,7 @@
                 data: {
                     type:      'START',
                     roomId:    that.roomId,
-                    doPlayers: true
+                    doPlayers: false
                 }
             }));
         };

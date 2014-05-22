@@ -122,6 +122,8 @@
     };
 
     ChannelList.prototype.append = function(root, ids) {
+        this.root = root;
+
         root.appendChild(this.table.table);
 
         // Query server:

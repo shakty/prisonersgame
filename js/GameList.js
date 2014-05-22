@@ -122,6 +122,8 @@
     };
 
     GameList.prototype.append = function(root, ids) {
+        this.root = root;
+
         root.appendChild(this.gamesTableDiv);
         root.appendChild(this.gameDetailDiv);
         root.appendChild(this.treatmentDiv);
