@@ -168,7 +168,9 @@
             if (this.gameData.hasOwnProperty(gameKey)) {
                 gameObj = this.gameData[gameKey];
 
-                this.gamesTable.addRow([gameObj]);
+                if (gameObj.info.name === gameKey) {  // don't show aliases
+                    this.gamesTable.addRow([gameObj]);
+                }
             }
         }
 
