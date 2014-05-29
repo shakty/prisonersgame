@@ -17,19 +17,13 @@
     var JSUS = node.JSUS,
         Table = node.window.Table;
 
-    // ## Defaults
-
-    ChannelList.defaults = {};
-    ChannelList.defaults.id = 'channellist';
-    ChannelList.defaults.fieldset = {
-        legend: 'Channels',
-        id: 'channellist_fieldset'
-    };
-
     // ## Meta-data
 
     ChannelList.version = '0.1.0';
     ChannelList.description = 'Visually display all channels on the server.';
+
+    ChannelList.title = 'Channels';
+    ChannelList.className = 'channellist';
 
     // ## Dependencies
 
@@ -90,7 +84,6 @@
     function ChannelList(options) {
         this.id = options.id;
 
-        this.root = null;
         this.table = new Table({
             render: {
                 pipeline: renderCell,
@@ -102,10 +95,6 @@
         this.table.setHeader(['Name', '# Rooms',
                               '# Clients', '# Players', '# Admins']);
     }
-
-    ChannelList.prototype.getRoot = function() {
-        return this.root;
-    };
 
     ChannelList.prototype.refresh = function() {
         // Ask server for channel list:
@@ -121,15 +110,11 @@
         this.table.parse();
     };
 
-    ChannelList.prototype.append = function(root, ids) {
-        this.root = root;
-
-        root.appendChild(this.table.table);
+    ChannelList.prototype.append = function() {
+        this.bodyDiv.appendChild(this.table.table);
 
         // Query server:
         this.refresh();
-
-        return root;
     };
 
     ChannelList.prototype.listeners = function() {

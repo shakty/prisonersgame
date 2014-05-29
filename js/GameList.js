@@ -17,19 +17,13 @@
     var JSUS = node.JSUS,
         Table = node.window.Table;
 
-    // ## Defaults
-
-    GameList.defaults = {};
-    GameList.defaults.id = 'gamelist';
-    GameList.defaults.fieldset = {
-        legend: 'Games',
-        id: 'gamelist_fieldset'
-    };
-
     // ## Meta-data
 
     GameList.version = '0.1.0';
     GameList.description = 'Visually display available games on the server.';
+
+    GameList.title = 'Games';
+    GameList.className = 'gamelist';
 
     // ## Dependencies
 
@@ -72,7 +66,6 @@
         that = this;
 
         this.id = options.id;
-        this.root = null;
 
         this.gamesTable = new Table({
             render: {
@@ -104,10 +97,6 @@
         this.selectedTreatment = null;
     }
 
-    GameList.prototype.getRoot = function() {
-        return this.root;
-    };
-
     GameList.prototype.refresh = function() {
         // Ask server for games:
         node.socket.send(node.msg.create({
@@ -121,17 +110,13 @@
         this.gamesTable.parse();
     };
 
-    GameList.prototype.append = function(root, ids) {
-        this.root = root;
-
-        root.appendChild(this.gamesTableDiv);
-        root.appendChild(this.gameDetailDiv);
-        root.appendChild(this.treatmentDiv);
+    GameList.prototype.append = function() {
+        this.bodyDiv.appendChild(this.gamesTableDiv);
+        this.bodyDiv.appendChild(this.gameDetailDiv);
+        this.bodyDiv.appendChild(this.treatmentDiv);
 
         // Query server:
         this.refresh();
-
-        return root;
     };
 
     GameList.prototype.listeners = function() {

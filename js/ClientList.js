@@ -18,19 +18,13 @@
         Table = node.window.Table,
         GameStage = node.GameStage;
 
-    // ## Defaults
-
-    ClientList.defaults = {};
-    ClientList.defaults.id = 'clientlist';
-    ClientList.defaults.fieldset = {
-        legend: 'Clients',
-        id: 'clientlist_fieldset'
-    };
-
     // ## Meta-data
 
     ClientList.version = '0.1.0';
     ClientList.description = 'Visually display all clients in a room.';
+
+    ClientList.title = 'Clients';
+    ClientList.className = 'clientlist';
 
     // ## Dependencies
 
@@ -87,7 +81,6 @@
     function ClientList(options) {
         this.id = options.id;
 
-        this.root = null;
         this.roomId = options.roomId || null;
         this.table = new Table({
             render: {
@@ -99,10 +92,6 @@
         // Create header:
         this.table.setHeader(['ID', 'Type', 'Stage', 'Connection', 'SID']);
     }
-
-    ClientList.prototype.getRoot = function() {
-        return this.root;
-    };
 
     ClientList.prototype.setRoom = function(roomId) {
         this.roomId = roomId;
@@ -124,16 +113,14 @@
         this.table.parse();
     };
 
-    ClientList.prototype.append = function(root, ids) {
+    ClientList.prototype.append = function() {
         var that;
         var button;
 
         that = this;
 
-        this.root = root;
-
         // Add client table:
-        root.appendChild(this.table.table);
+        this.bodyDiv.appendChild(this.table.table);
 
         // Add buttons for setup/start/stop/pause/resume:
         button = document.createElement('button');
@@ -148,7 +135,7 @@
                 }
             }));
         };
-        root.appendChild(button);
+        this.bodyDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Start';
@@ -164,7 +151,7 @@
                 }
             }));
         };
-        root.appendChild(button);
+        this.bodyDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Stop';
@@ -180,7 +167,7 @@
                 }
             }));
         };
-        root.appendChild(button);
+        this.bodyDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Pause';
@@ -196,7 +183,7 @@
                 }
             }));
         };
-        root.appendChild(button);
+        this.bodyDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Resume';
@@ -212,12 +199,10 @@
                 }
             }));
         };
-        root.appendChild(button);
+        this.bodyDiv.appendChild(button);
 
         // Query server:
         this.refresh();
-
-        return root;
     };
 
     ClientList.prototype.listeners = function() {

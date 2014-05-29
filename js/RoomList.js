@@ -17,19 +17,13 @@
     var JSUS = node.JSUS,
         Table = node.window.Table;
 
-    // ## Defaults
-
-    RoomList.defaults = {};
-    RoomList.defaults.id = 'roomlist';
-    RoomList.defaults.fieldset = {
-        legend: 'Rooms',
-        id: 'roomlist_fieldset'
-    };
-
     // ## Meta-data
 
     RoomList.version = '0.1.0';
     RoomList.description = 'Visually display all rooms in a channel.';
+
+    RoomList.title = 'Rooms';
+    RoomList.className = 'roomlist';
 
     // ## Dependencies
 
@@ -87,7 +81,6 @@
     function RoomList(options) {
         this.id = options.id;
 
-        this.root = null;
         this.channelName = options.channel || null;
         this.table = new Table({
             render: {
@@ -100,10 +93,6 @@
         this.table.setHeader(['Name', 'ID',
                               '# Clients', '# Players', '# Admins']);
     }
-
-    RoomList.prototype.getRoot = function() {
-        return this.root;
-    };
 
     RoomList.prototype.setChannel = function(channelName) {
         this.channelName = channelName;
@@ -125,15 +114,11 @@
         this.table.parse();
     };
 
-    RoomList.prototype.append = function(root, ids) {
-        this.root = root;
-
-        root.appendChild(this.table.table);
+    RoomList.prototype.append = function() {
+        this.bodyDiv.appendChild(this.table.table);
 
         // Query server:
         this.refresh();
-
-        return root;
     };
 
     RoomList.prototype.listeners = function() {
