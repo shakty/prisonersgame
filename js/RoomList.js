@@ -100,7 +100,7 @@
 
         // Create header:
         this.table.setHeader(['Name', 'ID',
-                              '# Clients', '# Players', '# Admins']);
+                              'Clients', 'Players', 'Admins']);
     }
 
     RoomList.prototype.setChannel = function(channelName) {

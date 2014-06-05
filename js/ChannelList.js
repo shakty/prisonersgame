@@ -98,8 +98,8 @@
         });
 
         // Create header:
-        this.table.setHeader(['Name', '# Rooms',
-                              '# Clients', '# Players', '# Admins']);
+        this.table.setHeader(['Name', 'Rooms',
+                              'Clients', 'Players', 'Admins']);
     }
 
     ChannelList.prototype.refresh = function() {
