@@ -48,7 +48,7 @@ module.exports = function(treatmentName, settings) {
         // - visual state widget,
         // - state display widget,
         // - iframe of play,
-        // - player.css
+        // - nodegame.css
         // W.setupFrame('PLAYER');
 
         // We setup the page manually.
@@ -69,7 +69,7 @@ module.exports = function(treatmentName, settings) {
         // Add default CSS.
         if (node.conf.host) {
             W.addCSS(W.getFrameRoot(), node.conf.host +
-                                       '/stylesheets/player.css');
+                                       '/stylesheets/nodegame.css');
         }
 
 
