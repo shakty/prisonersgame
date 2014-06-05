@@ -81,6 +81,7 @@
     function ClientList(options) {
         this.id = options.id;
 
+        this.channelName = options.channel || null;
         this.roomId = options.roomId || null;
         this.table = new Table({
             render: {
@@ -92,6 +93,18 @@
         // Create header:
         this.table.setHeader(['ID', 'Type', 'Stage', 'Connection', 'SID']);
     }
+
+    ClientList.prototype.setChannel = function(channelName) {
+        // Hide this panel if the channel changed:
+        if (!channelName || channelName !== this.channelName) {
+            this.roomId = null;
+            if (this.panelDiv) {
+                this.panelDiv.style.display = 'none';
+            }
+        }
+
+        this.channelName = channelName;
+    };
 
     ClientList.prototype.setRoom = function(roomId) {
         this.roomId = roomId;
@@ -118,6 +131,9 @@
         var button;
 
         that = this;
+
+        // Hide the panel initially:
+        this.panelDiv.style.display = 'none';
 
         // Add client table:
         this.bodyDiv.appendChild(this.table.table);
@@ -212,7 +228,17 @@
 
         // Listen for server reply:
         node.on.data('INFO_CLIENTS', function(msg) {
+            // Update the contents:
             that.writeClients(msg.data);
+            that.updateTitle();
+
+            // Show the panel:
+            that.panelDiv.style.display = '';
+        });
+
+        // Listen for events from ChannelList saying to switch channels:
+        node.on('USECHANNEL', function(channel) {
+            that.setChannel(channel);
         });
 
         // Listen for events from RoomList saying to switch rooms:
@@ -240,6 +266,30 @@
         }
 
         this.table.parse();
+    };
+
+    ClientList.prototype.updateTitle = function() {
+        var ol, li;
+
+        // Use breadcrumbs of the form "<channelname> / <roomname> / Clients".
+        ol = document.createElement('ol');
+        ol.className = 'breadcrumb';
+
+        li = document.createElement('li');
+        li.innerHTML = this.channelName;
+        li.className = 'active';
+        ol.appendChild(li);
+
+        li = document.createElement('li');
+        li.innerHTML = this.roomId;
+        li.className = 'active';
+        ol.appendChild(li);
+
+        li = document.createElement('li');
+        li.innerHTML = 'Clients';
+        ol.appendChild(li);
+
+        this.setTitle(ol);
     };
 
 })(node);
