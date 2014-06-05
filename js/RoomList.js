@@ -65,14 +65,20 @@
                 break;
             }
 
-            textElem.appendChild(document.createTextNode(text));
-            textElem.onclick = function() {
-                // Signal the ClientList to switch rooms:
-                node.emit('USEROOM', {
-                    id: content.id,
-                    name: content.name
-                });
-            };
+            if (o.x === 0) {
+                textElem.innerHTML = '<a href="#">' + text + '</a>';
+
+                textElem.onclick = function() {
+                    // Signal the ClientList to switch rooms:
+                    node.emit('USEROOM', {
+                        id: content.id,
+                        name: content.name
+                    });
+                };
+            }
+            else {
+                textElem.innerHTML = text;
+            }
         }
         else {
             textElem = document.createTextNode(content);

@@ -64,11 +64,17 @@
             }
 
             textElem = document.createElement('span');
-            textElem.appendChild(document.createTextNode(text));
-            textElem.onclick = function() {
-                // Signal the RoomList to switch channels:
-                node.emit('USECHANNEL', content.name);
-            };
+
+            if (o.x === 0) {
+                textElem.innerHTML = '<a href="#">' + text + '</a>';
+                textElem.onclick = function() {
+                    // Signal the RoomList to switch channels:
+                    node.emit('USECHANNEL', content.name);
+                };
+            }
+            else {
+                textElem.innerHTML = text;
+            }
 
             if (o.x >= 2) {  // number of clients/players/admins
                 textElem.title = 'Connected (+ Disconnected)';

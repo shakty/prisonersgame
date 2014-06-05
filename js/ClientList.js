@@ -66,10 +66,7 @@
                 break;
             }
 
-            textElem.appendChild(document.createTextNode(text));
-            textElem.onclick = function() {
-                alert(content.id);
-            };
+            textElem.innerHTML = text;
         }
         else {
             textElem = document.createTextNode(content);
