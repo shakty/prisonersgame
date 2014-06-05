@@ -83,6 +83,7 @@
 
         this.channelName = options.channel || null;
         this.roomId = options.roomId || null;
+        this.roomName = options.roomName || null;
         this.table = new Table({
             render: {
                 pipeline: renderCell,
@@ -98,6 +99,7 @@
         // Hide this panel if the channel changed:
         if (!channelName || channelName !== this.channelName) {
             this.roomId = null;
+            this.roomName = null;
             if (this.panelDiv) {
                 this.panelDiv.style.display = 'none';
             }
@@ -106,8 +108,9 @@
         this.channelName = channelName;
     };
 
-    ClientList.prototype.setRoom = function(roomId) {
+    ClientList.prototype.setRoom = function(roomId, roomName) {
         this.roomId = roomId;
+        this.roomName = roomName;
     };
 
     ClientList.prototype.refresh = function() {
@@ -242,8 +245,8 @@
         });
 
         // Listen for events from RoomList saying to switch rooms:
-        node.on('USEROOM', function(roomId) {
-            that.setRoom(roomId);
+        node.on('USEROOM', function(roomInfo) {
+            that.setRoom(roomInfo.id, roomInfo.name);
 
             // Query server:
             that.refresh();
@@ -281,7 +284,7 @@
         ol.appendChild(li);
 
         li = document.createElement('li');
-        li.innerHTML = this.roomId;
+        li.innerHTML = this.roomName;
         li.className = 'active';
         ol.appendChild(li);
 

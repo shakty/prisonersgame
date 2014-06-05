@@ -68,7 +68,10 @@
             textElem.appendChild(document.createTextNode(text));
             textElem.onclick = function() {
                 // Signal the ClientList to switch rooms:
-                node.emit('USEROOM', content.id);
+                node.emit('USEROOM', {
+                    id: content.id,
+                    name: content.name
+                });
             };
         }
         else {
