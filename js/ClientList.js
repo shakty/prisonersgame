@@ -49,7 +49,8 @@
                 text = content.admin ? 'admin' : 'player';
                 // Highlight this monitor.
                 if (content.id === node.player.id) {
-                    text += ' (monitor)';
+                    text += '*';
+                    textElem.title = 'This is the monitor itself.';
                 }
                 break;
             
