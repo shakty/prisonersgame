@@ -66,7 +66,7 @@
             textElem = document.createElement('span');
 
             if (o.x === 0) {
-                textElem.innerHTML = '<a href="#">' + text + '</a>';
+                textElem.innerHTML = '<a class="ng_clickable">' + text + '</a>';
                 textElem.onclick = function() {
                     // Signal the RoomList to switch channels:
                     node.emit('USECHANNEL', content.name);

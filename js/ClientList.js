@@ -47,6 +47,10 @@
 
             case 1:
                 text = content.admin ? 'admin' : 'player';
+                // Highlight this monitor.
+                if (content.id === node.player.id) {
+                    text += ' (monitor)';
+                }
                 break;
             
             case 2:
