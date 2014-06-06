@@ -1,5 +1,5 @@
 /**
- * # Settings shared between logic and clients
+ * # Game settings: Ultimatum Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
@@ -45,7 +45,7 @@ module.exports = {
     DEBUG: true,
 
     // AUTO-PLAY.
-    AUTO: true,
+    AUTO: false,
 
     // AUTHORIZATION.
     AUTH: 'LOCAL', // MTURK, LOCAL, NO.

@@ -26,6 +26,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
     game = {};
     MIN_PLAYERS = settings.MIN_PLAYERS;
 
+    // GLOBALS
+
     game.globals = {};
 
     // INIT and GAMEOVER
