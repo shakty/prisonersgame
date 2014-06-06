@@ -45,7 +45,7 @@
             }
 
             textElem = document.createElement('span');
-            textElem.appendChild(document.createTextNode(text));
+            textElem.innerHTML = '<a class="ng_clickable">' + text + '</a>';
             textElem.onclick = function() {
                 that.selectedGame = content.info.name;
                 that.writeGameInfo();
@@ -196,7 +196,7 @@
                 }
 
                 elem = document.createElement('span');
-                elem.innerHTML = treatment;
+                elem.innerHTML = '<a class="ng_clickable">' + treatment +'</a>';
                 elem.onclick = function(t) {
                     return function() {
                         that.selectedTreatment = t;

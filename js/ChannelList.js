@@ -64,11 +64,17 @@
             }
 
             textElem = document.createElement('span');
-            textElem.appendChild(document.createTextNode(text));
-            textElem.onclick = function() {
-                // Signal the RoomList to switch channels:
-                node.emit('USECHANNEL', content.name);
-            };
+
+            if (o.x === 0) {
+                textElem.innerHTML = '<a class="ng_clickable">' + text + '</a>';
+                textElem.onclick = function() {
+                    // Signal the RoomList to switch channels:
+                    node.emit('USECHANNEL', content.name);
+                };
+            }
+            else {
+                textElem.innerHTML = text;
+            }
 
             if (o.x >= 2) {  // number of clients/players/admins
                 textElem.title = 'Connected (+ Disconnected)';
@@ -92,8 +98,8 @@
         });
 
         // Create header:
-        this.table.setHeader(['Name', '# Rooms',
-                              '# Clients', '# Players', '# Admins']);
+        this.table.setHeader(['Name', 'Rooms',
+                              'Clients', 'Players', 'Admins']);
     }
 
     ChannelList.prototype.refresh = function() {

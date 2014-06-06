@@ -50,7 +50,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // - visual state widget,
         // - state display widget,
         // - iframe of play,
-        // - player.css
+        // - nodegame.css
         // W.setupFrame('PLAYER');
 
         // We setup the page manually.
@@ -63,15 +63,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         if (!W.getFrame()) {
             W.generateFrame();
-
-            // Adding the WaitScreen.
-            node.widgets.append('WaitScreen');
         }
 
         // Add default CSS.
         if (node.conf.host) {
             W.addCSS(W.getFrameRoot(), node.conf.host +
-                                       '/stylesheets/player.css');
+                                       '/stylesheets/nodegame.css');
         }
 
         this.other = null;

@@ -47,6 +47,11 @@
 
             case 1:
                 text = content.admin ? 'admin' : 'player';
+                // Highlight this monitor.
+                if (content.id === node.player.id) {
+                    text += '*';
+                    textElem.title = 'This is the monitor itself.';
+                }
                 break;
             
             case 2:
@@ -66,10 +71,7 @@
                 break;
             }
 
-            textElem.appendChild(document.createTextNode(text));
-            textElem.onclick = function() {
-                alert(content.id);
-            };
+            textElem.innerHTML = text;
         }
         else {
             textElem = document.createTextNode(content);
@@ -81,7 +83,9 @@
     function ClientList(options) {
         this.id = options.id;
 
+        this.channelName = options.channel || null;
         this.roomId = options.roomId || null;
+        this.roomName = options.roomName || null;
         this.table = new Table({
             render: {
                 pipeline: renderCell,
@@ -93,8 +97,22 @@
         this.table.setHeader(['ID', 'Type', 'Stage', 'Connection', 'SID']);
     }
 
-    ClientList.prototype.setRoom = function(roomId) {
+    ClientList.prototype.setChannel = function(channelName) {
+        // Hide this panel if the channel changed:
+        if (!channelName || channelName !== this.channelName) {
+            this.roomId = null;
+            this.roomName = null;
+            if (this.panelDiv) {
+                this.panelDiv.style.display = 'none';
+            }
+        }
+
+        this.channelName = channelName;
+    };
+
+    ClientList.prototype.setRoom = function(roomId, roomName) {
         this.roomId = roomId;
+        this.roomName = roomName;
     };
 
     ClientList.prototype.refresh = function() {
@@ -118,6 +136,9 @@
         var button;
 
         that = this;
+
+        // Hide the panel initially:
+        this.panelDiv.style.display = 'none';
 
         // Add client table:
         this.bodyDiv.appendChild(this.table.table);
@@ -212,12 +233,22 @@
 
         // Listen for server reply:
         node.on.data('INFO_CLIENTS', function(msg) {
+            // Update the contents:
             that.writeClients(msg.data);
+            that.updateTitle();
+
+            // Show the panel:
+            that.panelDiv.style.display = '';
+        });
+
+        // Listen for events from ChannelList saying to switch channels:
+        node.on('USECHANNEL', function(channel) {
+            that.setChannel(channel);
         });
 
         // Listen for events from RoomList saying to switch rooms:
-        node.on('USEROOM', function(roomId) {
-            that.setRoom(roomId);
+        node.on('USEROOM', function(roomInfo) {
+            that.setRoom(roomInfo.id, roomInfo.name);
 
             // Query server:
             that.refresh();
@@ -240,6 +271,30 @@
         }
 
         this.table.parse();
+    };
+
+    ClientList.prototype.updateTitle = function() {
+        var ol, li;
+
+        // Use breadcrumbs of the form "<channelname> / <roomname> / Clients".
+        ol = document.createElement('ol');
+        ol.className = 'breadcrumb';
+
+        li = document.createElement('li');
+        li.innerHTML = this.channelName;
+        li.className = 'active';
+        ol.appendChild(li);
+
+        li = document.createElement('li');
+        li.innerHTML = this.roomName;
+        li.className = 'active';
+        ol.appendChild(li);
+
+        li = document.createElement('li');
+        li.innerHTML = 'Clients';
+        ol.appendChild(li);
+
+        this.setTitle(ol);
     };
 
 })(node);

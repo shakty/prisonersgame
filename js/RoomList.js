@@ -65,11 +65,20 @@
                 break;
             }
 
-            textElem.appendChild(document.createTextNode(text));
-            textElem.onclick = function() {
-                // Signal the ClientList to switch rooms:
-                node.emit('USEROOM', content.id);
-            };
+            if (o.x === 0) {
+                textElem.innerHTML = '<a class="ng_clickable">' + text + '</a>';
+
+                textElem.onclick = function() {
+                    // Signal the ClientList to switch rooms:
+                    node.emit('USEROOM', {
+                        id: content.id,
+                        name: content.name
+                    });
+                };
+            }
+            else {
+                textElem.innerHTML = text;
+            }
         }
         else {
             textElem = document.createTextNode(content);
@@ -91,7 +100,7 @@
 
         // Create header:
         this.table.setHeader(['Name', 'ID',
-                              '# Clients', '# Players', '# Admins']);
+                              'Clients', 'Players', 'Admins']);
     }
 
     RoomList.prototype.setChannel = function(channelName) {
@@ -115,6 +124,9 @@
     };
 
     RoomList.prototype.append = function() {
+        // Hide the panel initially:
+        this.panelDiv.style.display = 'none';
+
         this.bodyDiv.appendChild(this.table.table);
 
         // Query server:
@@ -128,7 +140,12 @@
 
         // Listen for server reply:
         node.on.data('INFO_ROOMS', function(msg) {
+            // Update the contents:
             that.writeRooms(msg.data);
+            that.updateTitle();
+
+            // Show the panel:
+            that.panelDiv.style.display = '';
         });
 
         // Listen for events from ChannelList saying to switch channels:
@@ -156,6 +173,25 @@
         }
 
         this.table.parse();
+    };
+
+    RoomList.prototype.updateTitle = function() {
+        var ol, li;
+
+        // Use breadcrumbs of the form "<channelname> / Rooms".
+        ol = document.createElement('ol');
+        ol.className = 'breadcrumb';
+
+        li = document.createElement('li');
+        li.innerHTML = this.channelName;
+        li.className = 'active';
+        ol.appendChild(li);
+
+        li = document.createElement('li');
+        li.innerHTML = 'Rooms';
+        ol.appendChild(li);
+
+        this.setTitle(ol);
     };
 
 })(node);
