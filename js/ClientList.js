@@ -169,7 +169,6 @@
         this.selectAll.onclick = function() {
             that.updateSelection(true);
         };
-        that.updateSelection(true);
         this.bodyDiv.appendChild(this.selectAll);
 
         // Add client table:
