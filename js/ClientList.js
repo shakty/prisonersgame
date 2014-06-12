@@ -46,6 +46,13 @@
                 elem.onclick = function() {
                     content.that.updateSelection(false);
                 };
+                if (content.prevSel.hasOwnProperty(content.id)) {
+                    elem.checked = content.prevSel[content.id];
+                }
+                else {
+                    elem.checked = !content.that.selectAll.indeterminate &&
+                        content.that.selectAll.checked;
+                }
                 content.that.checkboxes[content.id] = elem;
                 break;
 
@@ -143,8 +150,6 @@
                 roomId: this.roomId
             }
         }));
-
-        this.table.parse();
     };
 
     ClientList.prototype.append = function() {
@@ -283,7 +288,17 @@
     };
 
     ClientList.prototype.writeClients = function(clients) {
+        var i;
         var clientName, clientObj;
+        var prevSel;
+
+        // Save previous state of selection:
+        prevSel = {};
+        for (i in this.checkboxes) {
+            if (this.checkboxes.hasOwnProperty(i)) {
+                prevSel[i] = this.checkboxes[i].checked;
+            }
+        }
 
         this.checkboxes = {};
         this.table.clear(true);
@@ -294,13 +309,13 @@
                 clientObj = clients[clientName];
 
                 this.table.addRow(
-                    [{id: clientObj.id, that: this},
+                    [{id: clientObj.id, prevSel: prevSel, that: this},
                      clientObj, clientObj, clientObj, clientObj, clientObj]);
             }
         }
 
         this.table.parse();
-        this.updateSelection(true);
+        this.updateSelection(false);
     };
 
     ClientList.prototype.updateTitle = function() {
