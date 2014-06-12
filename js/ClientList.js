@@ -160,7 +160,6 @@
         this.selectAll = document.createElement('input');
         this.selectAll.type = 'checkbox';
         this.selectAll.checked = true;
-        this.selectAll.innerHTML = 'Select All';
         this.selectAll.title = 'Select All';
         this.selectAll.onclick = function() {
             that.updateSelection(true);
@@ -286,8 +285,8 @@
     ClientList.prototype.writeClients = function(clients) {
         var clientName, clientObj;
 
-        this.table.clear(true);
         this.checkboxes = {};
+        this.table.clear(true);
 
         // Create a row for each client:
         for (clientName in clients) {
@@ -332,9 +331,27 @@
         var i;
         var allSelected, noneSelected;
 
+        // Get state of selections:
+        allSelected = true;
+        noneSelected = true;
+        for (i in this.checkboxes) {
+            if (this.checkboxes.hasOwnProperty(i)) {
+                if (this.checkboxes[i].checked)
+                {
+                    noneSelected = false;
+                }
+                else {
+                    allSelected = false;
+                }
+            }
+        }
+
         if (useSelectAll) {
             // Apply the "Select All" setting to the other checkboxes.
-            this.selectAll.indeterminate = false;
+            if (!allSelected && !noneSelected) {
+                // The state was indeterminate before; deselect everything:
+                this.selectAll.checked = false;
+            }
             if (this.selectAll.checked) {
                 for (i in this.checkboxes) {
                     if (this.checkboxes.hasOwnProperty(i)) {
@@ -352,19 +369,6 @@
         }
         else {
             // Apply the setting of the other checkboxes to "Select All".
-            allSelected = true;
-            noneSelected = true;
-            for (i in this.checkboxes) {
-                if (this.checkboxes.hasOwnProperty(i)) {
-                    if (this.checkboxes[i].checked)
-                    {
-                        noneSelected = false;
-                    }
-                    else {
-                        allSelected = false;
-                    }
-                }
-            }
             this.selectAll.checked = allSelected;
             this.selectAll.indeterminate = !noneSelected && !allSelected;
         }
