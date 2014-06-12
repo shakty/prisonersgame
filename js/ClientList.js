@@ -35,49 +35,61 @@
 
     function renderCell(o) {
         var content;
-        var text, textElem;
+        var elem;
 
         content = o.content;
-        textElem = document.createElement('span');
         if ('object' === typeof content) {
             switch (o.x) {
             case 0:
-                text = content.id;
+                elem = document.createElement('input');
+                elem.type = 'checkbox';
+                elem.onclick = function() {
+                    content.that.updateSelection(false);
+                };
+                content.that.checkboxes[content.id] = elem;
                 break;
 
             case 1:
-                text = content.admin ? 'admin' : 'player';
+                elem = document.createElement('span');
+                elem.innerHTML = content.id;
+                break;
+
+            case 2:
+                elem = document.createElement('span');
+                elem.innerHTML = content.admin ? 'admin' : 'player';
                 // Highlight this monitor.
                 if (content.id === node.player.id) {
-                    text += '*';
-                    textElem.title = 'This is the monitor itself.';
+                    elem.innerHTML += '*';
+                    elem.title = 'This is the monitor itself.';
                 }
                 break;
             
-            case 2:
-                text = GameStage.toHash(content.stage, 'S.s.r');
-                break;
-            
             case 3:
-                text = content.disconnected ? 'disconnected' : 'connected';
+                elem = document.createElement('span');
+                elem.innerHTML = GameStage.toHash(content.stage, 'S.s.r');
                 break;
             
             case 4:
-                text = content.sid;
+                elem = document.createElement('span');
+                elem.innerHTML = content.disconnected ? 'disconnected' : 'connected';
+                break;
+            
+            case 5:
+                elem = document.createElement('span');
+                elem.innerHTML = content.sid;
                 break;
 
             default:
-                text = 'N/A';
+                elem = document.createElement('span');
+                elem.innerHTML = 'N/A';
                 break;
             }
-
-            textElem.innerHTML = text;
         }
         else {
-            textElem = document.createTextNode(content);
+            elem = document.createTextNode(content);
         }
 
-        return textElem;
+        return elem;
     }
 
     function ClientList(options) {
@@ -93,8 +105,12 @@
             }
         });
 
+        // Maps client IDs to the selection checkbox elements:
+        this.checkboxes = {};
+        this.selectAll = null;
+
         // Create header:
-        this.table.setHeader(['ID', 'Type', 'Stage', 'Connection', 'SID']);
+        this.table.setHeader(['', 'ID', 'Type', 'Stage', 'Connection', 'SID']);
     }
 
     ClientList.prototype.setChannel = function(channelName) {
@@ -139,6 +155,18 @@
 
         // Hide the panel initially:
         this.panelDiv.style.display = 'none';
+
+        // Add "Select All" checkbox:
+        this.selectAll = document.createElement('input');
+        this.selectAll.type = 'checkbox';
+        this.selectAll.checked = true;
+        this.selectAll.innerHTML = 'Select All';
+        this.selectAll.title = 'Select All';
+        this.selectAll.onclick = function() {
+            that.updateSelection(true);
+        };
+        that.updateSelection(true);
+        this.bodyDiv.appendChild(this.selectAll);
 
         // Add client table:
         this.bodyDiv.appendChild(this.table.table);
@@ -259,6 +287,7 @@
         var clientName, clientObj;
 
         this.table.clear(true);
+        this.checkboxes = {};
 
         // Create a row for each client:
         for (clientName in clients) {
@@ -266,11 +295,13 @@
                 clientObj = clients[clientName];
 
                 this.table.addRow(
-                    [clientObj, clientObj, clientObj, clientObj, clientObj]);
+                    [{id: clientObj.id, that: this},
+                     clientObj, clientObj, clientObj, clientObj, clientObj]);
             }
         }
 
         this.table.parse();
+        this.updateSelection(true);
     };
 
     ClientList.prototype.updateTitle = function() {
@@ -295,6 +326,48 @@
         ol.appendChild(li);
 
         this.setTitle(ol);
+    };
+
+    ClientList.prototype.updateSelection = function(useSelectAll) {
+        var i;
+        var allSelected, noneSelected;
+
+        if (useSelectAll) {
+            // Apply the "Select All" setting to the other checkboxes.
+            this.selectAll.indeterminate = false;
+            if (this.selectAll.checked) {
+                for (i in this.checkboxes) {
+                    if (this.checkboxes.hasOwnProperty(i)) {
+                        this.checkboxes[i].checked = true;
+                    }
+                }
+            }
+            else {
+                for (i in this.checkboxes) {
+                    if (this.checkboxes.hasOwnProperty(i)) {
+                        this.checkboxes[i].checked = false;
+                    }
+                }
+            }
+        }
+        else {
+            // Apply the setting of the other checkboxes to "Select All".
+            allSelected = true;
+            noneSelected = true;
+            for (i in this.checkboxes) {
+                if (this.checkboxes.hasOwnProperty(i)) {
+                    if (this.checkboxes[i].checked)
+                    {
+                        noneSelected = false;
+                    }
+                    else {
+                        allSelected = false;
+                    }
+                }
+            }
+            this.selectAll.checked = allSelected;
+            this.selectAll.indeterminate = !noneSelected && !allSelected;
+        }
     };
 
 })(node);
