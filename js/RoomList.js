@@ -33,58 +33,26 @@
     };
 
     function renderCell(o) {
-        var content;
-        var text, textElem;
+        var elem;
 
-        content = o.content;
-        textElem = document.createElement('span');
-        if ('object' === typeof content) {
-            switch (o.x) {
-            case 0:
-                text = content.name;
-                break;
+        if (o.x === 0) {
+            elem = document.createElement('span');
+            elem.innerHTML =
+                '<a class="ng_clickable">' + o.content.name + '</a>';
 
-            case 1:
-                text = content.id;
-                break;
-
-            case 2:
-                text = '' + content.nClients;
-                break;
-            
-            case 3:
-                text = '' + content.nPlayers;
-                break;
-            
-            case 4:
-                text = '' + content.nAdmins;
-                break;
-
-            default:
-                text = 'N/A';
-                break;
-            }
-
-            if (o.x === 0) {
-                textElem.innerHTML = '<a class="ng_clickable">' + text + '</a>';
-
-                textElem.onclick = function() {
-                    // Signal the ClientList to switch rooms:
-                    node.emit('USEROOM', {
-                        id: content.id,
-                        name: content.name
-                    });
-                };
-            }
-            else {
-                textElem.innerHTML = text;
-            }
+            elem.onclick = function() {
+                // Signal the ClientList to switch rooms:
+                node.emit('USEROOM', {
+                    id: o.content.id,
+                    name: o.content.name
+                });
+            };
         }
         else {
-            textElem = document.createTextNode(content);
+            elem = document.createTextNode(o.content);
         }
 
-        return textElem;
+        return elem;
     }
 
     function RoomList(options) {
@@ -168,7 +136,9 @@
                 roomObj = rooms[roomName];
 
                 this.table.addRow(
-                        [roomObj, roomObj, roomObj, roomObj, roomObj]);
+                        [{id: roomObj.id, name: roomObj.name}, roomObj.id,
+                         '' + roomObj.nClients, '' + roomObj.nPlayers,
+                         '' + roomObj.nAdmins]);
             }
         }
 

@@ -59,11 +59,6 @@
                 content.that.checkboxes[content.id] = elem;
                 break;
 
-            case 1:
-                elem = document.createElement('span');
-                elem.innerHTML = content.id;
-                break;
-
             case 2:
                 elem = document.createElement('span');
                 elem.innerHTML = content.admin ? 'admin' : 'player';
@@ -72,21 +67,6 @@
                     elem.innerHTML += '*';
                     elem.title = 'This is the monitor itself.';
                 }
-                break;
-            
-            case 3:
-                elem = document.createElement('span');
-                elem.innerHTML = GameStage.toHash(content.stage, 'S.s.r');
-                break;
-            
-            case 4:
-                elem = document.createElement('span');
-                elem.innerHTML = content.disconnected ? 'disconnected' : 'connected';
-                break;
-            
-            case 5:
-                elem = document.createElement('span');
-                elem.innerHTML = content.sid;
                 break;
 
             default:
@@ -132,7 +112,8 @@
         };
 
         // Create header:
-        this.table.setHeader([this.selectAll, 'ID', 'Type', 'Stage', 'Connection', 'SID']);
+        this.table.setHeader([this.selectAll, 'ID', 'Type', 'Stage',
+                              'Connection', 'SID']);
     }
 
     ClientList.prototype.setChannel = function(channelName) {
@@ -316,7 +297,11 @@
 
                 this.table.addRow(
                     [{id: clientObj.id, prevSel: prevSel, that: this},
-                     clientObj, clientObj, clientObj, clientObj, clientObj]);
+                     clientObj.id,
+                     {id: clientObj.id, admin: clientObj.admin},
+                     GameStage.toHash(clientObj.stage, 'S.s.r'),
+                     clientObj.disconnected ? 'disconnected' : 'connected',
+                     clientObj.sid]);
             }
         }
 
