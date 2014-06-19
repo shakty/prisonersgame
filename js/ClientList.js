@@ -38,7 +38,10 @@
         var elem;
 
         content = o.content;
-        if ('object' === typeof content) {
+        if (JSUS.isElement(content)) {
+            return content;
+        }
+        else if ('object' === typeof content) {
             switch (o.x) {
             case 0:
                 elem = document.createElement('input');
@@ -100,6 +103,10 @@
     }
 
     function ClientList(options) {
+        var that;
+
+        that = this;
+
         this.id = options.id;
 
         this.channelName = options.channel || null;
@@ -114,20 +121,23 @@
 
         // Maps client IDs to the selection checkbox elements:
         this.checkboxes = {};
-        this.selectAll = null;
+
+        // Create "Select All" checkbox:
+        this.selectAll = document.createElement('input');
+        this.selectAll.type = 'checkbox';
+        this.selectAll.checked = true;
+        this.selectAll.title = 'Select All';
+        this.selectAll.onclick = function() {
+            that.updateSelection(true);
+        };
 
         // Create header:
-        this.table.setHeader(['', 'ID', 'Type', 'Stage', 'Connection', 'SID']);
+        this.table.setHeader([this.selectAll, 'ID', 'Type', 'Stage', 'Connection', 'SID']);
     }
 
     ClientList.prototype.setChannel = function(channelName) {
-        // Hide this panel if the channel changed:
         if (!channelName || channelName !== this.channelName) {
-            this.roomId = null;
-            this.roomName = null;
-            if (this.panelDiv) {
-                this.panelDiv.style.display = 'none';
-            }
+            this.setRoom(null, null);
         }
 
         this.channelName = channelName;
@@ -136,6 +146,13 @@
     ClientList.prototype.setRoom = function(roomId, roomName) {
         this.roomId = roomId;
         this.roomName = roomName;
+
+        if (!this.roomId || !this.roomName) {
+            // Hide this panel if no room is selected:
+            if (this.panelDiv) {
+                this.panelDiv.style.display = 'none';
+            }
+        }
     };
 
     ClientList.prototype.refresh = function() {
@@ -159,17 +176,7 @@
         that = this;
 
         // Hide the panel initially:
-        this.panelDiv.style.display = 'none';
-
-        // Add "Select All" checkbox:
-        this.selectAll = document.createElement('input');
-        this.selectAll.type = 'checkbox';
-        this.selectAll.checked = true;
-        this.selectAll.title = 'Select All';
-        this.selectAll.onclick = function() {
-            that.updateSelection(true);
-        };
-        this.bodyDiv.appendChild(this.selectAll);
+        this.setRoom(null, null);
 
         // Add client table:
         this.bodyDiv.appendChild(this.table.table);
