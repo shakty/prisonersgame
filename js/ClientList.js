@@ -336,6 +336,7 @@
     ClientList.prototype.updateSelection = function(useSelectAll) {
         var i;
         var allSelected, noneSelected;
+        var recipientsElem, recipients;
 
         // Get state of selections:
         allSelected = true;
@@ -377,6 +378,21 @@
             // Apply the setting of the other checkboxes to "Select All".
             this.selectAll.checked = allSelected;
             this.selectAll.indeterminate = !noneSelected && !allSelected;
+        }
+
+        // Apply selection to the MsgBar:
+        recipientsElem = document.getElementById('msgbar_to');
+        if (recipientsElem) {
+            recipients = [];
+            for (i in this.checkboxes) {
+                if (this.checkboxes.hasOwnProperty(i)) {
+                    if (this.checkboxes[i].checked)
+                    {
+                        recipients.push(i);
+                    }
+                }
+            }
+            recipientsElem.value = JSON.stringify(recipients);
         }
     };
 
