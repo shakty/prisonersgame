@@ -38,7 +38,7 @@
 
         content = o.content;
         if ('object' === typeof content) {
-            switch (o.x) {
+            switch (o.y) {
             case 0:
                 text = content.info.name;
                 break;

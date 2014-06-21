@@ -39,7 +39,7 @@
         content = o.content;
         textElem = document.createElement('span');
 
-        if (o.x === 0) {
+        if (o.y === 0) {
             textElem.innerHTML =
                 '<a class="ng_clickable">' + content + '</a>';
             textElem.onclick = function() {
@@ -51,7 +51,7 @@
             textElem.innerHTML = content;
         }
 
-        if (o.x >= 2) {  // number of clients/players/admins
+        if (o.y >= 2) {  // number of clients/players/admins
             textElem.title = 'Connected (+ Disconnected)';
         }
 

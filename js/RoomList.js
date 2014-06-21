@@ -35,7 +35,7 @@
     function renderCell(o) {
         var elem;
 
-        if (o.x === 0) {
+        if (o.y === 0) {
             elem = document.createElement('span');
             elem.innerHTML =
                 '<a class="ng_clickable">' + o.content.name + '</a>';
