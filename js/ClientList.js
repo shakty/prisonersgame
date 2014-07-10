@@ -152,7 +152,7 @@
 
     ClientList.prototype.append = function() {
         var that;
-        var button;
+        var buttonDiv, button;
 
         that = this;
 
@@ -161,6 +161,10 @@
 
         // Add client table:
         this.bodyDiv.appendChild(this.table.table);
+
+        // Add row for buttons:
+        buttonDiv = document.createElement('div');
+        this.bodyDiv.appendChild(buttonDiv);
 
         // Add buttons for setup/start/stop/pause/resume:
         button = document.createElement('button');
@@ -175,7 +179,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Start';
@@ -191,7 +195,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Stop';
@@ -207,7 +211,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Pause';
@@ -223,7 +227,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Resume';
@@ -239,7 +243,21 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
+
+        // Add another row for buttons:
+        buttonDiv = document.createElement('div');
+        this.bodyDiv.appendChild(buttonDiv);
+
+        // Add buttons for disable right click/disable ESC/prompt on leave/waitscreen
+        button = document.createElement('button');
+        button.innerHTML = 'Disable right-click';
+        button.onclick = function() {
+            // TODO
+            //node.remoteSetup('window', ...
+        };
+        buttonDiv.appendChild(button);
+        // TODO: more buttons
 
         // Query server:
         this.refresh();
@@ -307,6 +325,22 @@
 
         this.table.parse();
         this.updateSelection(false);
+    };
+
+    // Returns the array of client IDs that are selected with the checkboxes.
+    ClientList.prototype.getSelectedClients = function() {
+        var result;
+        var id;
+
+        result = [];
+        for (id in this.checkboxes) {
+            if (this.checkboxes.hasOwnProperty(id)) {
+               if (this.checkboxes[id].checked) {
+                   result.push(id);
+               }
+            }
+        }
+        return result;
     };
 
     ClientList.prototype.updateTitle = function() {
