@@ -253,8 +253,8 @@
         button = document.createElement('button');
         button.innerHTML = 'Disable right-click';
         button.onclick = function() {
-            // TODO
-            //node.remoteSetup('window', ...
+            node.remoteSetup('window', that.getSelectedClients(),
+                    { disableRightClick: true });
         };
         buttonDiv.appendChild(button);
         // TODO: more buttons
