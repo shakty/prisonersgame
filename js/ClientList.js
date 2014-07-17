@@ -153,6 +153,7 @@
     ClientList.prototype.append = function() {
         var that;
         var buttonDiv, button;
+        var setupOpts, btnLabel;
 
         that = this;
 
@@ -245,19 +246,38 @@
         };
         buttonDiv.appendChild(button);
 
+
         // Add another row for buttons:
-        buttonDiv = document.createElement('div');
+        //buttonDiv = document.createElement('div');
+        buttonDiv = document.createElement('fieldset');
+        buttonDiv.legend = 'Setup';
         this.bodyDiv.appendChild(buttonDiv);
 
         // Add buttons for disable right click/disable ESC/prompt on leave/waitscreen
-        button = document.createElement('button');
-        button.innerHTML = 'Disable right-click';
-        button.onclick = function() {
-            node.remoteSetup('window', that.getSelectedClients(),
-                    { disableRightClick: true });
+        setupOpts = {
+            'Disable right-click': { disableRightClick: true },
+            'Enable right-click': { disableRightClick: false },
+            'Disable Esc': { noEscape: true },
+            'Enable Esc': { noEscape: false },
+            'Enable prompt on leave': { promptOnleave: true },
+            'Disable prompt on leave': { promptOnleave: false },
+            'Enable wait-screen': { waitScreen: true },
+            'Disable wait-screen': { waitScreen: false }
         };
-        buttonDiv.appendChild(button);
-        // TODO: more buttons
+
+        for (btnLabel in setupOpts) {
+            if (setupOpts.hasOwnProperty(btnLabel)) {
+                button = document.createElement('button');
+                button.innerHTML = btnLabel;
+                button.onclick = function(opts) {
+                    return function() {
+                        node.remoteSetup('window', that.getSelectedClients(),
+                                         opts);
+                }}(setupOpts[btnLabel]);
+                buttonDiv.appendChild(button);
+            }
+        }
+
 
         // Query server:
         this.refresh();
