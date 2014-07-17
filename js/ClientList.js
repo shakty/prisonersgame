@@ -153,6 +153,7 @@
     ClientList.prototype.append = function() {
         var that;
         var buttonDiv, button;
+        var buttonTable, tableRow, tableCell;
         var setupOpts, btnLabel;
 
         that = this;
@@ -247,32 +248,51 @@
         buttonDiv.appendChild(button);
 
 
-        // Add another row for buttons:
-        buttonDiv = document.createElement('div');
-        this.bodyDiv.appendChild(buttonDiv);
+        // Add a table for buttons:
+        buttonTable = document.createElement('table');
+        this.bodyDiv.appendChild(buttonTable);
 
         // Add buttons for disable right click/disable ESC/prompt on leave/waitscreen
         setupOpts = {
-            'Disable right-click': { disableRightClick: true },
-            'Enable right-click': { disableRightClick: false },
-            'Disable Esc': { noEscape: true },
-            'Enable Esc': { noEscape: false },
-            'Enable prompt on leave': { promptOnleave: true },
-            'Disable prompt on leave': { promptOnleave: false },
-            'Enable wait-screen': { waitScreen: true },
-            'Disable wait-screen': { waitScreen: false }
+            'Disable right-click': 'disableRightClick',
+            'Disable Esc': 'noEscape',
+            'Prompt on leave': 'promptOnleave',
+            'Wait-screen': 'waitScreen'
         };
 
         for (btnLabel in setupOpts) {
             if (setupOpts.hasOwnProperty(btnLabel)) {
+                tableRow = document.createElement('tr');
+                buttonTable.appendChild(tableRow);
+
+                tableCell = document.createElement('td');
+                tableCell.innerHTML = btnLabel;
+                tableRow.appendChild(tableCell);
+
+                tableCell = document.createElement('td');
+                tableRow.appendChild(tableCell);
+
                 button = document.createElement('button');
-                button.innerHTML = btnLabel;
-                button.onclick = function(opts) {
+                button.innerHTML = 'On';
+                button.onclick = function(optName) {
                     return function() {
+                        var opts = {};
+                        opts[optName] = true;
                         node.remoteSetup('window', that.getSelectedClients(),
                                          opts);
                 }}(setupOpts[btnLabel]);
-                buttonDiv.appendChild(button);
+                tableCell.appendChild(button);
+
+                button = document.createElement('button');
+                button.innerHTML = 'Off';
+                button.onclick = function(optName) {
+                    return function() {
+                        var opts = {};
+                        opts[optName] = false
+                        node.remoteSetup('window', that.getSelectedClients(),
+                                         opts);
+                }}(setupOpts[btnLabel]);
+                tableCell.appendChild(button);
             }
         }
 
