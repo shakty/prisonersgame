@@ -248,9 +248,7 @@
 
 
         // Add another row for buttons:
-        //buttonDiv = document.createElement('div');
-        buttonDiv = document.createElement('fieldset');
-        buttonDiv.legend = 'Setup';
+        buttonDiv = document.createElement('div');
         this.bodyDiv.appendChild(buttonDiv);
 
         // Add buttons for disable right click/disable ESC/prompt on leave/waitscreen
