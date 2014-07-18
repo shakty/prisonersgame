@@ -12,7 +12,7 @@ module.exports = function(node, channel, room) {
     var path = require('path');
 
     // Load settings.
-    var settings = require(__dirname + '/includes/game.settings.js');
+    var settings = require(__dirname + '/game.settings.js');
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');

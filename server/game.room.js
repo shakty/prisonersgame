@@ -14,7 +14,7 @@ module.exports = function(node, channel, room) {
     var J = require('JSUS').JSUS;
 
     // Load settings.
-    var settings = require(__dirname + '/includes/game.settings.js');
+    var settings = require(__dirname + '/game.settings.js');
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
@@ -57,11 +57,6 @@ module.exports = function(node, channel, room) {
             return true;
         }
     });
-
-    // Loading the logic rules that will be used in each sub-gaming room.
-    // var logicPath = __dirname + '/includes/game.logic';
-
-    // var client;
 
     var clientWait = channel.require(__dirname + '/includes/wait.client', {
         ngc: ngc
@@ -201,66 +196,21 @@ return true;
                 // Assigning a treatment to this list of players
                 treatment = decideRoom(settings.CHOSEN_TREATMENT);
 
-                // The client function needs to be given a treatment name and
-                // the treatment options, and it returns a game object.
-                // TODO: Only pass the options from the current treatment; at
-                // the moment, the entire game.settings structure is passed.
-                // client = require(__dirname + '/includes/game.client')(
-                //         treatment, settings);
-
                 // Creating a sub gaming room.
                 // The object must contains the following information:
                 // - clients: a list of players (array or PlayerList)
-                // - logicPath: the path to the file containing the logic (string)
                 // - group: a name to group together multiple game rooms (string)
+                // - gameName: the name of the game to play (string)
+                // - treatmentName: the name of the treatment to play (string)
                 gameRoom = channel.createGameRoom({
                     group: 'ultimatum',
                     clients: tmpPlayerList,
                     gameName: 'ultimatum',
                     treatmentName: treatment
-                    //logicPath: logicPath
                 });
 
                 gameRoom.setupGame();
                 gameRoom.startGame();
-
-                // Setting metadata, settings, and plot.
-
-//                 tmpPlayerList.each(function (p) {
-//                     // Clearing the waiting stage.
-//                     node.remoteCommand('stop', p.id);
-//                     // Setting the actual game.
-//                     node.remoteSetup('game_metadata',  p.id, client.metadata);
-//                     node.remoteSetup('game_settings', p.id, client.settings);
-//                     node.remoteSetup('plot', p.id, client.plot);
-//                     node.remoteSetup('env', p.id, client.env);
-//                     node.remoteSetup('env', p.id, {
-//                          treatment: treatment
-//                     });
-//                 });
-
-// After refactoring nodegame-client we can use an array of id instead of a loop.
-//                 idxs = tmpPlayerList.id.getAllKeys();
-//                 // Clearing the waiting stage.
-//                 node.remoteCommand('stop', p.id);
-//                 // Setting the actual game.
-//                 node.remoteSetup('game_metadata',  p.id, client.metadata);
-//                 node.remoteSetup('game_settings', p.id, client.settings);
-//                 node.remoteSetup('plot', p.id, client.plot);
-//                 node.remoteSetup('env', p.id, client.env);
-//                 node.remoteSetup('env', p.id, {
-//                     treatment: treatment
-//                 });
-// 
-//                runtimeConf = {
-//                    env: {
-//                        treatment: treatment
-//                    }
-//                };
-// 
-//                debugger
-//                // Start the logic.
-//                gameRoom.startGame(runtimeConf, false, treatment, settings);
             }
 
             // TODO: node.game.pl.size() is unchanged.

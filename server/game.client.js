@@ -56,7 +56,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // We setup the page manually.
         if (!W.getHeader()) {
             header = W.generateHeader();
-            node.game.visualState = node.widgets.append('VisualState', header);
+            // Uncomment to visualize the name of the stages.
+            // node.game.visualState = node.widgets.append('VisualState', header);
             node.game.timer = node.widgets.append('VisualTimer', header);
         }
 
