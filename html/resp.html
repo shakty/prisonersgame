@@ -3,12 +3,13 @@
 <link rel="stylesheet" href="/ultimatum/html/css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="/ultimatum/html/css/style.css">
 <body>
-  <div id="root">
-    <h2>Your are the RESPONDENT</h2>
+  <div id="container">
+    <h2>Your are the RESPONDENT.</h2>
     <h3>Waiting to receive an offer...<h3>
 	<div id="offered" style="display:none;">
-	  <input type="button" value="Accept" id="accept" />
-	  <input type="button" value="Reject" id="reject" />
+          You received an offer of <span id="theoffer"></span>.
+	  <input type="button" value="Accept" id="accept" class="btn"/>
+	  <input type="button" value="Reject" id="reject" class="btn"/>
 	</div>
   </div>
 </body>

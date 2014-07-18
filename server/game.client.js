@@ -74,13 +74,15 @@ module.exports = function(gameRoom, treatmentName, settings) {
         this.other = null;
 
         node.on('BID_DONE', function(offer, to) {
+            var root;
             // TODO: check this timer obj.
             node.game.timer.stop();
             W.getElementById('submitOffer').disabled = 'disabled';
             node.set('offer', offer);
             node.say('OFFER', to, offer);
+            root = W.getElementById('container');
             W.write(' Your offer: ' +  offer +
-                    '. Waiting for the respondent... ');
+                    '. Waiting for the respondent... ', root);
         });
 
         node.on('RESPONSE_DONE', function(response, offer, from) {
@@ -118,16 +120,18 @@ module.exports = function(gameRoom, treatmentName, settings) {
         });
 
         this.randomAccept = function(offer, other) {
-            var accepted = Math.round(Math.random());
+            var root, accepted;
+            accepted = Math.round(Math.random());
             console.log('randomaccept');
             console.log(offer + ' ' + other);
+            root = W.getElementById('container');
             if (accepted) {
                 node.emit('RESPONSE_DONE', 'ACCEPT', offer, other);
-                W.write(' You accepted the offer.');
+                W.write(' You accepted the offer.', root);
             }
             else {
                 node.emit('RESPONSE_DONE', 'REJECT', offer, other);
-                W.write(' You rejected the offer.');
+                W.write(' You rejected the offer.', root);
             }
         };
 
@@ -271,167 +275,163 @@ module.exports = function(gameRoom, treatmentName, settings) {
         /////////////////////////////////////////////
         var that = this;
 
-        var b, options, other;
+        var root, b, options, other;
+        
+        // Load the BIDDER interface.
+        node.on.data('BIDDER', function(msg) {
+            console.log('RECEIVED BIDDER!');
+            other = msg.data.other;
+            node.set('ROLE', 'BIDDER');
 
-        // Load the ultimatum interface: waiting for the ROLE to be defined
-        //W.loadFrame('/ultimatum/html/ultimatum.html', function() {
+            //////////////////////////////////////////////
+            // nodeGame hint:
+            //
+            // W.loadFrame takes an optional third 'options' argument which
+            // can be used to request caching of the displayed frames (see
+            // the end of the following function call). The caching mode
+            // can be set with two fields: 'loadMode' and 'storeMode'.
+            //
+            // 'loadMode' specifies whether the frame should be reloaded
+            // regardless of caching (loadMode = 'reload') or whether the
+            // frame should be looked up in the cache (loadMode = 'cache',
+            // default).  If the frame is not in the cache, it is always
+            // loaded from the server.
+            //
+            // 'storeMode' says when, if at all, to store the loaded frame.
+            // By default the cache isn't updated (storeMode = 'off'). The
+            // other options are to cache the frame right after it has been
+            // loaded (storeMode = 'onLoad') and to cache it when it is
+            // closed, that is, when the frame is replaced by other
+            // contents (storeMode = 'onClose'). This last mode preserves
+            // all the changes done while the frame was open.
+            //
+            /////////////////////////////////////////////
+            W.loadFrame('/ultimatum/html/bidder.html', function() {
 
-            // Load the BIDDER interface.
-            node.on.data('BIDDER', function(msg) {
-                console.log('RECEIVED BIDDER!');
-                other = msg.data.other;
-                node.set('ROLE', 'BIDDER');
+                // Start the timer after an offer was received.
+                options = {
+                    milliseconds: 30000,
+                    timeup: function() {
+                        node.emit('BID_DONE', Math.floor(1 +
+                                                         Math.random()*100), other);
+                    }
+                };
+                node.game.timer.restart(options);
 
-                //////////////////////////////////////////////
-                // nodeGame hint:
-                //
-                // W.loadFrame takes an optional third 'options' argument which
-                // can be used to request caching of the displayed frames (see
-                // the end of the following function call). The caching mode
-                // can be set with two fields: 'loadMode' and 'storeMode'.
-                //
-                // 'loadMode' specifies whether the frame should be reloaded
-                // regardless of caching (loadMode = 'reload') or whether the
-                // frame should be looked up in the cache (loadMode = 'cache',
-                // default).  If the frame is not in the cache, it is always
-                // loaded from the server.
-                //
-                // 'storeMode' says when, if at all, to store the loaded frame.
-                // By default the cache isn't updated (storeMode = 'off'). The
-                // other options are to cache the frame right after it has been
-                // loaded (storeMode = 'onLoad') and to cache it when it is
-                // closed, that is, when the frame is replaced by other
-                // contents (storeMode = 'onClose'). This last mode preserves
-                // all the changes done while the frame was open.
-                //
-                /////////////////////////////////////////////
-                W.loadFrame('/ultimatum/html/bidder.html', function() {
+                b = W.getElementById('submitOffer');
 
-                    // Start the timer after an offer was received.
-                    options = {
-                        milliseconds: 30000,
-                        timeup: function() {
-                            node.emit('BID_DONE', Math.floor(1 +
-                                      Math.random()*100), other);
-                        }
-                    };
-                    node.game.timer.restart(options);
-
-                    b = W.getElementById('submitOffer');
-
-                    node.env('auto', function() {
-
-                        //////////////////////////////////////////////
-                        // nodeGame hint:
-                        //
-                        // Execute a function randomly
-                        // in a time interval between 0 and 1 second
-                        //
-                        //////////////////////////////////////////////
-                        node.timer.randomExec(function() {
-                            node.emit('BID_DONE',
-                                Math.floor(1+Math.random()*100),
-                                other);
-                        }, 4000);
-                    });
-
-                    b.onclick = function() {
-                        var offer = W.getElementById('offer');
-                        if (!that.isValidBid(offer.value)) {
-                            W.writeln('Please enter a number between 0 and 100');
-                            return;
-                        }
-                        node.emit('BID_DONE', offer.value, other);
-                    };
-
-                    node.on.data('ACCEPT', function(msg) {
-                        W.write(' Your offer was accepted.');
-                        node.timer.randomEmit('DONE', 3000);
-                    });
-
-                    node.on.data('REJECT', function(msg) {
-                        W.write(' Your offer was rejected.');
-                        node.timer.randomEmit('DONE', 3000);
-                    });
-                });
-                //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
-
-            });
-
-            // Load the respondent interface.
-            node.on.data('RESPONDENT', function(msg) {
-                console.log('RECEIVED RESPONDENT!');
-                other = msg.data.other;
-                node.set('ROLE', 'RESPONDENT');
-
-
-
-                W.loadFrame('/ultimatum/html/resp.html', function() {
-                    options = {
-                            milliseconds: 30000
-                    };
-                    node.game.timer.init(options);
-                    node.game.timer.updateDisplay();
+                node.env('auto', function() {
 
                     //////////////////////////////////////////////
                     // nodeGame hint:
                     //
-                    // nodeGame offers several types of event
-                    // listeners. They are all resemble the syntax
+                    // Execute a function randomly
+                    // in a time interval between 0 and 1 second
                     //
-                    // node.on.<target>
-                    //
-                    // For example: node.on.data(), node.on.plist().
-                    //
-                    // The low level event listener is simply
-                    //
-                    // node.on
-                    //
-                    // For example, node.on('in.say.DATA', cb) can
-                    // listen to all incoming DATA messages.
-                    //
-                    /////////////////////////////////////////////
-                    node.on.data('OFFER', function(msg) {
-                        var offered, accept, reject;
-
-                        options = {
-                            timeup: function() {
-                                that.randomAccept(msg.data, other);
-                            }
-                        };
-                        node.game.timer.init(options);
-                        // Start the timer only after an offer is received.
-                        node.game.timer.start();
-
-                        offered = W.getElementById('offered');
-                        W.write('You received an offer of ' + msg.data,
-                            offered);
-                        offered.style.display = '';
-
-                        accept = W.getElementById('accept');
-                        reject = W.getElementById('reject');
-
-                        node.env('auto', function() {
-                            node.timer.randomExec(function() {
-                                that.randomAccept(msg.data, other);
-                            }, 3000);
-                        });
-
-                        accept.onclick = function() {
-                            node.emit('RESPONSE_DONE', 'ACCEPT', msg.data,
-                                    other);
-                        };
-
-                        reject.onclick = function() {
-                            node.emit('RESPONSE_DONE', 'REJECT', msg.data,
-                                    other);
-                        };
-                    });
+                    //////////////////////////////////////////////
+                    node.timer.randomExec(function() {
+                        node.emit('BID_DONE',
+                                  Math.floor(1+Math.random()*100),
+                                  other);
+                    }, 4000);
                 });
-                //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
 
+                b.onclick = function() {
+                    var offer = W.getElementById('offer');
+                    if (!that.isValidBid(offer.value)) {
+                        W.writeln('Please enter a number between 0 and 100');
+                        return;
+                    }
+                    node.emit('BID_DONE', offer.value, other);
+                };
+                
+                root = W.getElementById('container');
+
+                node.on.data('ACCEPT', function(msg) {
+                    W.write(' Your offer was accepted.', root);
+                    node.timer.randomEmit('DONE', 3000);
+                });
+
+                node.on.data('REJECT', function(msg) {
+                    W.write(' Your offer was rejected.', root);
+                    node.timer.randomEmit('DONE', 3000);
+                });
             });
-        //});
+            //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+
+        });
+
+        // Load the respondent interface.
+        node.on.data('RESPONDENT', function(msg) {
+            console.log('RECEIVED RESPONDENT!');
+            other = msg.data.other;
+            node.set('ROLE', 'RESPONDENT');
+
+            W.loadFrame('/ultimatum/html/resp.html', function() {
+                options = {
+                    milliseconds: 30000
+                };
+                node.game.timer.init(options);
+                node.game.timer.updateDisplay();
+
+                //////////////////////////////////////////////
+                // nodeGame hint:
+                //
+                // nodeGame offers several types of event
+                // listeners. They are all resemble the syntax
+                //
+                // node.on.<target>
+                //
+                // For example: node.on.data(), node.on.plist().
+                //
+                // The low level event listener is simply
+                //
+                // node.on
+                //
+                // For example, node.on('in.say.DATA', cb) can
+                // listen to all incoming DATA messages.
+                //
+                /////////////////////////////////////////////
+                node.on.data('OFFER', function(msg) {
+                    var theofferSpan, offered, accept, reject;
+
+                    options = {
+                        timeup: function() {
+                            that.randomAccept(msg.data, other);
+                        }
+                    };
+                    node.game.timer.init(options);
+                    // Start the timer only after an offer is received.
+                    node.game.timer.start();
+
+                    offered = W.getElementById('offered');
+                    theofferSpan = W.getElementById('theoffer');
+                    theofferSpan.innerHTML = msg.data;
+                    offered.style.display = '';
+
+                    accept = W.getElementById('accept');
+                    reject = W.getElementById('reject');
+
+                    node.env('auto', function() {
+                        node.timer.randomExec(function() {
+                            that.randomAccept(msg.data, other);
+                        }, 3000);
+                    });
+
+                    accept.onclick = function() {
+                        node.emit('RESPONSE_DONE', 'ACCEPT', msg.data,
+                                  other);
+                    };
+
+                    reject.onclick = function() {
+                        node.emit('RESPONSE_DONE', 'REJECT', msg.data,
+                                  other);
+                    };
+                });
+            });
+            //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+
+        });
 
         console.log('Ultimatum');
     }
