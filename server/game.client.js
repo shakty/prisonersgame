@@ -56,7 +56,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // We setup the page manually.
         if (!W.getHeader()) {
             header = W.generateHeader();
-
             node.game.visualState = node.widgets.append('VisualState', header);
             node.game.timer = node.widgets.append('VisualTimer', header);
         }
