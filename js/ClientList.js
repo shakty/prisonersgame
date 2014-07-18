@@ -152,7 +152,9 @@
 
     ClientList.prototype.append = function() {
         var that;
-        var button;
+        var buttonDiv, button;
+        var buttonTable, tableRow, tableCell;
+        var setupOpts, btnLabel;
 
         that = this;
 
@@ -161,6 +163,10 @@
 
         // Add client table:
         this.bodyDiv.appendChild(this.table.table);
+
+        // Add row for buttons:
+        buttonDiv = document.createElement('div');
+        this.bodyDiv.appendChild(buttonDiv);
 
         // Add buttons for setup/start/stop/pause/resume:
         button = document.createElement('button');
@@ -175,7 +181,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Start';
@@ -191,7 +197,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Stop';
@@ -207,7 +213,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Pause';
@@ -223,7 +229,7 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
 
         button = document.createElement('button');
         button.innerHTML = 'Resume';
@@ -239,7 +245,57 @@
                 }
             }));
         };
-        this.bodyDiv.appendChild(button);
+        buttonDiv.appendChild(button);
+
+
+        // Add a table for buttons:
+        buttonTable = document.createElement('table');
+        this.bodyDiv.appendChild(buttonTable);
+
+        // Add buttons for disable right click/disable ESC/prompt on leave/waitscreen
+        setupOpts = {
+            'Disable right-click': 'disableRightClick',
+            'Disable Esc': 'noEscape',
+            'Prompt on leave': 'promptOnleave',
+            'Wait-screen': 'waitScreen'
+        };
+
+        for (btnLabel in setupOpts) {
+            if (setupOpts.hasOwnProperty(btnLabel)) {
+                tableRow = document.createElement('tr');
+                buttonTable.appendChild(tableRow);
+
+                tableCell = document.createElement('td');
+                tableCell.innerHTML = btnLabel;
+                tableRow.appendChild(tableCell);
+
+                tableCell = document.createElement('td');
+                tableRow.appendChild(tableCell);
+
+                button = document.createElement('button');
+                button.innerHTML = 'On';
+                button.onclick = function(optName) {
+                    return function() {
+                        var opts = {};
+                        opts[optName] = true;
+                        node.remoteSetup('window', that.getSelectedClients(),
+                                         opts);
+                }}(setupOpts[btnLabel]);
+                tableCell.appendChild(button);
+
+                button = document.createElement('button');
+                button.innerHTML = 'Off';
+                button.onclick = function(optName) {
+                    return function() {
+                        var opts = {};
+                        opts[optName] = false
+                        node.remoteSetup('window', that.getSelectedClients(),
+                                         opts);
+                }}(setupOpts[btnLabel]);
+                tableCell.appendChild(button);
+            }
+        }
+
 
         // Query server:
         this.refresh();
@@ -307,6 +363,22 @@
 
         this.table.parse();
         this.updateSelection(false);
+    };
+
+    // Returns the array of client IDs that are selected with the checkboxes.
+    ClientList.prototype.getSelectedClients = function() {
+        var result;
+        var id;
+
+        result = [];
+        for (id in this.checkboxes) {
+            if (this.checkboxes.hasOwnProperty(id)) {
+               if (this.checkboxes[id].checked) {
+                   result.push(id);
+               }
+            }
+        }
+        return result;
     };
 
     ClientList.prototype.updateTitle = function() {
