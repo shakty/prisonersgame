@@ -77,6 +77,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
             var root;
             // TODO: check this timer obj.
             node.game.timer.stop({waitTime: 30000});
+            node.game.timer.timerDiv.className = 'strike';
+            
             W.getElementById('submitOffer').disabled = 'disabled';
             node.set('offer', offer);
             node.say('OFFER', to, offer);
@@ -373,6 +375,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 };
                 node.game.timer.init(options);
                 node.game.timer.updateDisplay();
+                node.game.timer.start();
+                node.game.timer.stop();
+                node.game.timer.timerDiv.innerHTML = '';
 
                 //////////////////////////////////////////////
                 // nodeGame hint:
