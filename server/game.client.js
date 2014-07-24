@@ -76,7 +76,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.on('BID_DONE', function(offer, to) {
             var root;
             // TODO: check this timer obj.
-            node.game.timer.stop();
+            node.game.timer.stop({waitTime: 30000});
             W.getElementById('submitOffer').disabled = 'disabled';
             node.set('offer', offer);
             node.say('OFFER', to, offer);
