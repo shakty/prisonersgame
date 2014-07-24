@@ -24,6 +24,7 @@ function Monitor(node) {
         node.widgets.append('GameList');
 
         node.widgets.append('MsgBar');
+        node.widgets.append('StateBar');
     });
 
     stager.addStage({
