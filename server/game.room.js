@@ -81,8 +81,12 @@ module.exports = function(node, channel, room) {
     // Here direct messages to the client can be sent only using
     // his socketId property, since no clientId has been created yet.
     channel.player.authorization(function(header, cookies, room) {
-return true;
         var code, player, token;
+
+        if (settings.AUTH === 'NO') {
+            return true;
+        }
+
         playerId = cookies.player;
         token = cookies.token;
 
@@ -102,15 +106,23 @@ return true;
 
         code = dk.codeExists(token);
 
+        console.log(code);
+        console.log("-------------------");
+
         // Code not existing.
-        if (!code) {
+	if (!code) {
             console.log('not existing token: ', token);
+            return false;
+        }
+
+        if (code.checkedOut) {
+            console.log('token was already checked out: ', token);
             return false;
         }
 
         // Code in use.
         //  usage is for LOCAL check, IsUsed for MTURK
-        if (code.usage || code.IsUsed) {
+	if (code.valid === false) {
             if (code.disconnected) {
                 return true;
             }
@@ -118,29 +130,64 @@ return true;
                 console.log('token already in use: ', token);
                 return false;
             }
-        }
-
-        // Mark the code as in use.
-        dk.incrementUsage(token);
-
-        if (settings.AUTH === 'MTURK') {
-            dk.checkIn(token);
-        }
+	}
 
         // Client Authorized
         return true;
+
+// Old code.
+
+//         // Code not existing.
+//         if (!code) {
+//             console.log('not existing token: ', token);
+//             return false;
+//         }
+// 
+//         // Code in use.
+//         //  usage is for LOCAL check, IsUsed for MTURK
+//         if (code.usage || code.IsUsed) {
+//             if (code.disconnected) {
+//                 return true;
+//             }
+//             else {
+//                 console.log('token already in use: ', token);
+//                 return false;
+//             }
+//         }
+// 
+//         // Mark the code as in use.
+//         dk.incrementUsage(token);
+// 
+//         if (settings.AUTH === 'MTURK') {
+//             dk.checkIn(token);
+//         }
+// 
+//         // Client Authorized
+//         return true;
     });
 
     // Assigns Player Ids based on cookie token.
-//    channel.player.clientIdGenerator(function(headers, cookies, validCookie,
-//                                              ids, info) {
-//
-//        // Return the id only if token was validated.
-//        // More checks could be done here to ensure that token is unique in ids.
-//        if (cookies.token && validCookie) {
-//            return cookies.token;
-//        }
-//    });
+    channel.player.clientIdGenerator(function(headers, cookies, validCookie,
+                                              ids, info) {
+        var cid;
+
+        if (settings.AUTH === 'NO') {
+            cid = channel.registry.generateClientId();
+            
+            // If no auth, add the new code to the db.
+            dk.codes.insert({
+                AccessCode: cid,
+                ExitCode: cid + '_exit'
+            });
+            return cid;
+        }
+
+        // Return the id only if token was validated.
+        // More checks could be done here to ensure that token is unique in ids.
+        if (cookies.token && validCookie) {
+            return cookies.token;
+        }
+    });
 
     // Creating an init function.
     // Event listeners registered here are valid for all the stages of the game.
@@ -162,9 +209,7 @@ return true;
 
             console.log('-----------Player connected ' + p.id);
 
-//            node.remoteAlert('Your code has been marked as in use. Do not ' +
-//                             'leave this page, otherwise you might not be ' +
-//                             'able to join the experiment again.', p.id);
+            dk.markInvalid(p.id);
 
             // PlayerList object of waiting players.
             wRoom = room.clients.player;
@@ -266,14 +311,12 @@ return true;
 
         // This callback is executed when a player disconnects from the channel.
         node.on.pdisconnect(function(p) {
-
+          
             // Client really disconnected (not moved into another game room).
             if (channel.registry.clients.disconnected.get(p.id)) {
                 // Free up the code.
-                dk.decrementUsage(p.id);
+                dk.markValid(p.id);
             }
-
-
         });
     });
 

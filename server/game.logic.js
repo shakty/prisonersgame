@@ -183,7 +183,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node.on.pdisconnect(function(p) {
 
             delete node.game.memory.stage[node.game.getCurrentGameStage()];
-
+            
             dk.updateCode(p.id, {
                 disconnected: true,
                 stage: p.stage

@@ -33,7 +33,7 @@ module.exports = {
     CHOSEN_TREATMENT: 'pp',
 
     // Number or rounds to repeat the bidding. *
-    REPEAT: 2,
+    REPEAT: 20,
 
     // Number of coins to split. *
     COINS: 100,
@@ -48,7 +48,7 @@ module.exports = {
     AUTO: false,
 
     // AUTHORIZATION.
-    AUTH: 'LOCAL', // MTURK, LOCAL, NO.
+    AUTH: 'NO', // MTURK, LOCAL, NO.
 
     // Available treatments:
     // (there is also the "default" treatment, using the options above)
