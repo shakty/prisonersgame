@@ -381,11 +381,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     milliseconds: 30000
                 };
                 
-                node.game.timer.init(options);
-                node.game.timer.start();
+                node.game.timer.restart(options);
                 node.game.timer.switchActiveBoxTo(node.game.timer.waitBox);
                 node.game.timer.mainBox.hideBox();
-                node.game.timer.updateDisplay();
+                node.game.timer.waitBox.unhideBox();
 
                 //////////////////////////////////////////////
                 // nodeGame hint:
@@ -413,9 +412,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             that.randomAccept(msg.data, other);
                         }
                     };
-                    node.game.timer.init(options);
-                    // Start the timer only after an offer is received.
-                    node.game.timer.start();
+                    node.game.timer.restart(options);
+                    
 
                     offered = W.getElementById('offered');
                     theofferSpan = W.getElementById('theoffer');
