@@ -213,11 +213,13 @@
         tableStructure.appendChild(tableRow);
 
         tableCell = document.createElement('td');
+        tableCell.style['border-right'] = '1px solid #ccc';
         tableRow.appendChild(tableCell);
         tableCell.appendChild(this.channelTable.table);
 
         tableCell = document.createElement('td');
         tableRow.appendChild(tableCell);
+        tableCell.style['border-right'] = '1px solid #ccc';
         tableCell.appendChild(this.roomTable.table);
 
         tableCell = document.createElement('td');
