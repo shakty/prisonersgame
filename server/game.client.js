@@ -76,8 +76,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
         node.on('BID_DONE', function(offer, to) {
             var root;
             // TODO: check this timer obj.
-            node.game.timer.stop({waitTime: 30000});
-            node.game.timer.timerDiv.className = 'strike';
+            node.game.timer.switchActiveBoxTo(node.game.timer.waitBox,{waitTime: 30000});
+            node.game.timer.waitBox.unhideBox();
+            node.game.timer.mainBox.setClassNameBody('strike');
+            node.game.timer.updateDisplay();
             
             W.getElementById('submitOffer').disabled = 'disabled';
             node.set('offer', offer);
@@ -313,12 +315,17 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 // Start the timer after an offer was received.
                 options = {
                     milliseconds: 30000,
-                    timeup: function() {
+                    timeup: function() { 
                         node.emit('BID_DONE', Math.floor(1 +
                                                          Math.random()*100), other);
                     }
                 };
+                
                 node.game.timer.restart(options);
+                node.game.timer.switchActiveBoxTo(node.game.timer.mainBox,-1);
+                node.game.timer.mainBox.unhideBox();
+                node.game.timer.mainBox.setClassNameBody('');
+                node.game.timer.waitBox.hideBox();
 
                 b = W.getElementById('submitOffer');
 
@@ -373,11 +380,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 options = {
                     milliseconds: 30000
                 };
+                
                 node.game.timer.init(options);
-                node.game.timer.updateDisplay();
                 node.game.timer.start();
-                node.game.timer.stop();
-                node.game.timer.timerDiv.innerHTML = '';
+                node.game.timer.switchActiveBoxTo(node.game.timer.waitBox);
+                node.game.timer.mainBox.hideBox();
+                node.game.timer.updateDisplay();
 
                 //////////////////////////////////////////////
                 // nodeGame hint:
