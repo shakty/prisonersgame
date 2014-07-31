@@ -122,8 +122,10 @@
 
     ClientList.prototype.setChannel = function(channelName) {
         if (!channelName || channelName !== this.channelName) {
-            this.roomTable.clear(true);
-            this.roomTable.parse();
+            // Hide room table if channel changed or no channel is selected:
+            if (this.roomTable && this.roomTable.table.parentNode) {
+                this.roomTable.table.parentNode.style.display = 'none';
+            }
             this.setRoom(null, null);
         }
 
@@ -137,13 +139,10 @@
         this.roomName = roomName;
 
         if (!this.roomId || !this.roomName) {
-            // Hide this panel if no room is selected:
-            //if (this.panelDiv) {
-            //    this.panelDiv.style.display = 'none';
-            //}
-
-            this.clientTable.clear(true);
-            this.clientTable.parse();
+            // Hide client table if no room is selected:
+            if (this.clientTable && this.clientTable.table.parentNode) {
+                this.clientTable.table.parentNode.style.display = 'none';
+            }
         }
 
         this.refreshClients();
@@ -220,9 +219,11 @@
         tableCell = document.createElement('td');
         tableRow.appendChild(tableCell);
         tableCell.style['border-right'] = '1px solid #ccc';
+        tableCell.style.display = 'none';
         tableCell.appendChild(this.roomTable.table);
 
         tableCell = document.createElement('td');
+        tableCell.style.display = 'none';
         tableRow.appendChild(tableCell);
         tableCell.appendChild(this.clientTable.table);
 
@@ -314,7 +315,7 @@
         buttonTable = document.createElement('table');
         this.bodyDiv.appendChild(buttonTable);
 
-        // Add buttons for disable right click/disable ESC/prompt on leave/waitscreen
+        // Add buttons for disable right click/ESC, prompt on leave, waitscreen
         setupOpts = {
             'Disable right-click': 'disableRightClick',
             'Disable Esc': 'noEscape',
@@ -362,11 +363,9 @@
 
 
         // Query server:
-        this.refresh();
+        this.refreshChannels();
 
         this.channelTable.parse();
-        this.roomTable.parse();
-        this.clientTable.parse();
     };
 
     ClientList.prototype.listeners = function() {
@@ -390,9 +389,6 @@
             // Update the contents:
             that.writeClients(msg.data);
             that.updateTitle();
-
-            // Show the panel:
-            //that.panelDiv.style.display = '';
         });
 
         // Listen for events from ChannelList saying to switch channels:
@@ -446,6 +442,9 @@
 
         that = this;
 
+        // Unhide table cell:
+        this.roomTable.table.parentNode.style.display = '';
+
         this.roomTable.clear(true);
 
         // Create a clickable row for each room:
@@ -473,6 +472,9 @@
         var i;
         var clientName, clientObj;
         var prevSel;
+
+        // Unhide table cell:
+        this.clientTable.table.parentNode.style.display = '';
 
         // Save previous state of selection:
         prevSel = {};
