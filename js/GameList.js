@@ -22,7 +22,7 @@
     GameList.version = '0.1.0';
     GameList.description = 'Visually display available games on the server.';
 
-    GameList.title = 'Games';
+    //GameList.title = 'Games';
     GameList.className = 'gamelist';
 
     // ## Dependencies
