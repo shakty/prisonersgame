@@ -113,11 +113,13 @@
             that.updateSelection(true);
         };
 
-        // Create header:
+        // Create header for client table:
         this.channelTable.setHeader(['Channel']);
         this.roomTable.setHeader(['Room']);
         this.clientTable.setHeader([this.selectAll, 'ID', 'Type', 'Stage',
                                    'Connection', 'SID']);
+
+        this.clientsField = null;
     }
 
     ClientList.prototype.setChannel = function(channelName) {
@@ -198,6 +200,7 @@
         var buttonDiv, button;
         var buttonTable, tableRow, tableCell;
         var setupOpts, btnLabel;
+        var selectionDiv, recipientSelector;
 
         that = this;
 
@@ -226,6 +229,18 @@
         tableCell.style.display = 'none';
         tableRow.appendChild(tableCell);
         tableCell.appendChild(this.clientTable.table);
+
+        // Add client selection field:
+        selectionDiv = document.createElement('div');
+        this.bodyDiv.appendChild(selectionDiv);
+        selectionDiv.appendChild(document.createTextNode('Selected IDs: '));
+        this.clientsField = W.getTextInput();
+        selectionDiv.appendChild(this.clientsField);
+        recipientSelector = W.getRecipientSelector();
+        recipientSelector.onchange = function() {
+            that.clientsField.value = recipientSelector.value;
+        };
+        selectionDiv.appendChild(recipientSelector);
 
         // Add row for buttons:
         buttonDiv = document.createElement('div');
@@ -529,19 +544,23 @@
         ol = document.createElement('ol');
         ol.className = 'breadcrumb';
 
-        li = document.createElement('li');
-        li.innerHTML = this.channelName;
-        li.className = 'active';
-        ol.appendChild(li);
+        if (this.channelName) {
+            li = document.createElement('li');
+            li.innerHTML = this.channelName;
+            li.className = 'active';
+            ol.appendChild(li);
+        }
 
-        li = document.createElement('li');
-        li.innerHTML = this.roomName;
-        li.className = 'active';
-        ol.appendChild(li);
+        if (this.roomName) {
+            li = document.createElement('li');
+            li.innerHTML = this.roomName;
+            li.className = 'active';
+            ol.appendChild(li);
 
-        li = document.createElement('li');
-        li.innerHTML = 'Clients';
-        ol.appendChild(li);
+            li = document.createElement('li');
+            li.innerHTML = 'Clients';
+            ol.appendChild(li);
+        }
 
         this.setTitle(ol);
     };
@@ -549,7 +568,7 @@
     ClientList.prototype.updateSelection = function(useSelectAll) {
         var i;
         var allSelected, noneSelected;
-        var recipientsElem, recipients;
+        var recipients;
 
         // Get state of selections:
         allSelected = true;
@@ -593,20 +612,17 @@
             this.selectAll.indeterminate = !noneSelected && !allSelected;
         }
 
-        // Apply selection to the MsgBar:
-        recipientsElem = document.getElementById('msgbar_to');
-        if (recipientsElem) {
-            recipients = [];
-            for (i in this.checkboxes) {
-                if (this.checkboxes.hasOwnProperty(i)) {
-                    if (this.checkboxes[i].checked)
-                    {
-                        recipients.push(i);
-                    }
+        // Update the selection field:
+        recipients = [];
+        for (i in this.checkboxes) {
+            if (this.checkboxes.hasOwnProperty(i)) {
+                if (this.checkboxes[i].checked)
+                {
+                    recipients.push(i);
                 }
             }
-            recipientsElem.value = JSON.stringify(recipients);
         }
+        this.clientsField.value = JSON.stringify(recipients);
     };
 
 })(node);
