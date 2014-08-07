@@ -523,18 +523,25 @@
 
     // Returns the array of client IDs that are selected with the checkboxes.
     ClientList.prototype.getSelectedClients = function() {
-        var result;
-        var id;
+        //var result;
+        //var id;
 
-        result = [];
-        for (id in this.checkboxes) {
-            if (this.checkboxes.hasOwnProperty(id)) {
-               if (this.checkboxes[id].checked) {
-                   result.push(id);
-               }
-            }
+        //result = [];
+        //for (id in this.checkboxes) {
+        //    if (this.checkboxes.hasOwnProperty(id)) {
+        //       if (this.checkboxes[id].checked) {
+        //           result.push(id);
+        //       }
+        //    }
+        //}
+        //return result;
+
+        try {
+            return JSUS.parse(this.clientsField.value);
         }
-        return result;
+        catch (ex) {
+            return this.clientsField.value;
+        }
     };
 
     ClientList.prototype.updateTitle = function() {
