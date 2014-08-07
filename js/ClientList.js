@@ -380,6 +380,9 @@
         // Add MsgBar:
         this.appendMsgBar();
 
+        // Add StateBar:
+        this.appendStateBar();
+
 
         // Query server:
         this.refreshChannels();
@@ -814,6 +817,40 @@
         advButton.onclick = function() {
             that.msgBar.tableAdvanced.table.style.display =
                 that.msgBar.tableAdvanced.table.style.display === '' ? 'none' : '';
+        };
+    };
+
+    ClientList.prototype.appendStateBar = function() {
+        var that;
+        var div;
+        var sendButton, stageField;
+
+        div = document.createElement('div');
+        this.bodyDiv.appendChild(div);
+
+        div.appendChild(document.createTextNode('Change stage to: '));
+        stageField = W.getTextInput();
+        div.appendChild(stageField);
+
+        sendButton = node.window.addButton(div);
+
+        that = this;
+
+        sendButton.onclick = function() {
+            var to;
+            var stage;
+
+            // Should be within the range of valid values
+            // but we should add a check
+            to = that.getSelectedClients();
+
+            try {
+                stage = new node.GameStage(stageField.value);
+                node.remoteCommand('goto_step', to, stage);
+            }
+            catch (e) {
+                node.err('Invalid stage, not sent: ' + e);
+            }
         };
     };
 

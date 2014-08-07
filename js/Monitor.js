@@ -58,7 +58,6 @@ function Monitor(node) {
         tmpElem.id = 'clients';
         tabContent.appendChild(tmpElem);
         clientList = node.widgets.append('ClientList', tmpElem);
-        node.widgets.append('StateBar', tmpElem);
 
         tmpElem = document.createElement('div');
         tmpElem.className = 'tab-pane';
