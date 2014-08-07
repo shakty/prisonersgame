@@ -71,10 +71,13 @@
         // Create header:
         this.table.setHeader(['Name', 'Rooms',
                               'Clients', 'Players', 'Admins']);
+
+        this.waitingForServer = false;
     }
 
     ChannelList.prototype.refresh = function() {
         // Ask server for channel list:
+        this.waitingForServer = true;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
             text:   'INFO',
@@ -101,7 +104,10 @@
 
         // Listen for server reply:
         node.on.data('INFO_CHANNELS', function(msg) {
-            that.writeChannels(msg.data);
+            if (that.waitingForServer) {
+                that.waitingForServer = false;
+                that.writeChannels(msg.data);
+            }
         });
     };
 

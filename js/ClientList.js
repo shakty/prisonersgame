@@ -101,6 +101,10 @@
             }
         });
 
+        this.waitingForChannels = false;
+        this.waitingForRooms = false;
+        this.waitingForClients = false;
+
         // Maps client IDs to the selection checkbox elements:
         this.checkboxes = {};
 
@@ -153,6 +157,7 @@
 
     ClientList.prototype.refreshChannels = function() {
         // Ask server for channel list:
+        this.waitingForChannels = true;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
             text:   'INFO',
@@ -165,6 +170,7 @@
 
     ClientList.prototype.refreshRooms = function() {
         // Ask server for room list:
+        this.waitingForRooms = true;
         if ('string' !== typeof this.channelName) return;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
@@ -178,6 +184,7 @@
 
     ClientList.prototype.refreshClients = function() {
         // Ask server for client list:
+        this.waitingForClients = true;
         if ('string' !== typeof this.roomId) return;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
@@ -397,20 +404,33 @@
 
         // Listen for server reply:
         node.on.data('INFO_CHANNELS', function(msg) {
-            that.writeChannels(msg.data);
-            that.updateTitle();
+            if (that.waitingForChannels) {
+                that.waitingForChannels = false;
+
+                // Update the contents:
+                that.writeChannels(msg.data);
+                that.updateTitle();
+            }
         });
 
         node.on.data('INFO_ROOMS', function(msg) {
-            // Update the contents:
-            that.writeRooms(msg.data);
-            that.updateTitle();
+            if (that.waitingForRooms) {
+                that.waitingForRooms = false;
+
+                // Update the contents:
+                that.writeRooms(msg.data);
+                that.updateTitle();
+            }
         });
 
         node.on.data('INFO_CLIENTS', function(msg) {
-            // Update the contents:
-            that.writeClients(msg.data);
-            that.updateTitle();
+            if (that.waitingForClients) {
+                that.waitingForClients = false;
+
+                // Update the contents:
+                that.writeClients(msg.data);
+                that.updateTitle();
+            }
         });
 
         // Listen for events from ChannelList saying to switch channels:
