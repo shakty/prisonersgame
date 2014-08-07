@@ -77,7 +77,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             var root;
 
             delete node.game.timer.options.timeup;
-            node.game.timer.startWaiting({milliseconds: 5000});
+            node.game.timer.startWaiting({milliseconds: 30000});
             
             W.getElementById('submitOffer').disabled = 'disabled';
             node.set('offer', offer);
@@ -310,7 +310,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
                 // Start the timer after an offer was received.
                 options = {
-                    milliseconds: 10000,
+                    milliseconds: 30000,
                     timeup: function() { 
                         node.emit('BID_DONE', Math.floor(1 +
                                                          Math.random()*100), other);
@@ -370,7 +370,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
             W.loadFrame('/ultimatum/html/resp.html', function() {
                 options = {
-                    milliseconds: 10000
+                    milliseconds: 30000
                 };
                 
                 node.game.timer.startWaiting(options);
@@ -536,7 +536,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         cb: instructions,
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
         // syncOnLoaded: true,
-        timer: 9000,
+        timer: 90000,
         done: clearFrame
     });
 
@@ -553,7 +553,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         //  - an object containing properties _milliseconds_, and _timeup_
         //     the latter being the name of the event to fire (default DONE)
         // - or a function returning the number of milliseconds.
-        timer: 1000,
+        timer: 60000,
         done: function() {
             var b, QUIZ, answers, isTimeup;
             QUIZ = W.getFrameWindow().QUIZ;
