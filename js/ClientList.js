@@ -3,7 +3,7 @@
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
- * Shows current, previous and next state.
+ * Shows list of clients and allows selection.
  *
  * www.nodegame.org
  * ---
@@ -33,7 +33,7 @@
         Table: {}
     };
 
-    function renderCell(o) {
+    function renderClientCell(o) {
         var content;
         var elem;
 
@@ -92,9 +92,11 @@
         this.channelName = options.channel || null;
         this.roomId = options.roomId || null;
         this.roomName = options.roomName || null;
-        this.table = new Table({
+        this.channelTable = new Table();
+        this.roomTable = new Table();
+        this.clientTable = new Table({
             render: {
-                pipeline: renderCell,
+                pipeline: renderClientCell,
                 returnAt: 'first'
             }
         });
@@ -112,16 +114,24 @@
         };
 
         // Create header:
-        this.table.setHeader([this.selectAll, 'ID', 'Type', 'Stage',
-                              'Connection', 'SID']);
+        this.channelTable.setHeader(['Channel']);
+        this.roomTable.setHeader(['Room']);
+        this.clientTable.setHeader([this.selectAll, 'ID', 'Type', 'Stage',
+                                   'Connection', 'SID']);
     }
 
     ClientList.prototype.setChannel = function(channelName) {
         if (!channelName || channelName !== this.channelName) {
+            // Hide room table if channel changed or no channel is selected:
+            if (this.roomTable && this.roomTable.table.parentNode) {
+                this.roomTable.table.parentNode.style.display = 'none';
+            }
             this.setRoom(null, null);
         }
 
         this.channelName = channelName;
+
+        this.refreshRooms();
     };
 
     ClientList.prototype.setRoom = function(roomId, roomName) {
@@ -129,17 +139,43 @@
         this.roomName = roomName;
 
         if (!this.roomId || !this.roomName) {
-            // Hide this panel if no room is selected:
-            if (this.panelDiv) {
-                this.panelDiv.style.display = 'none';
+            // Hide client table if no room is selected:
+            if (this.clientTable && this.clientTable.table.parentNode) {
+                this.clientTable.table.parentNode.style.display = 'none';
             }
         }
+
+        this.refreshClients();
     };
 
-    ClientList.prototype.refresh = function() {
-        if ('string' !== typeof this.roomId) return;
+    ClientList.prototype.refreshChannels = function() {
+        // Ask server for channel list:
+        node.socket.send(node.msg.create({
+            target: 'SERVERCOMMAND',
+            text:   'INFO',
+            data: {
+                type:      'CHANNELS',
+                extraInfo: true
+            }
+        }));
+    };
 
+    ClientList.prototype.refreshRooms = function() {
+        // Ask server for room list:
+        if ('string' !== typeof this.channelName) return;
+        node.socket.send(node.msg.create({
+            target: 'SERVERCOMMAND',
+            text:   'INFO',
+            data: {
+                type:    'ROOMS',
+                channel: this.channelName
+            }
+        }));
+    };
+
+    ClientList.prototype.refreshClients = function() {
         // Ask server for client list:
+        if ('string' !== typeof this.roomId) return;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
             text:   'INFO',
@@ -150,8 +186,15 @@
         }));
     };
 
+    ClientList.prototype.refresh = function() {
+        this.refreshChannels();
+        this.refreshRooms();
+        this.refreshClients();
+    };
+
     ClientList.prototype.append = function() {
         var that;
+        var tableStructure;
         var buttonDiv, button;
         var buttonTable, tableRow, tableCell;
         var setupOpts, btnLabel;
@@ -161,8 +204,28 @@
         // Hide the panel initially:
         this.setRoom(null, null);
 
-        // Add client table:
-        this.bodyDiv.appendChild(this.table.table);
+        // Add tables in a 3x1 table element:
+        tableStructure = document.createElement('table');
+        this.bodyDiv.appendChild(tableStructure);
+        tableRow = document.createElement('tr');
+        tableRow.style['vertical-align'] = 'top';
+        tableStructure.appendChild(tableRow);
+
+        tableCell = document.createElement('td');
+        tableCell.style['border-right'] = '1px solid #ccc';
+        tableRow.appendChild(tableCell);
+        tableCell.appendChild(this.channelTable.table);
+
+        tableCell = document.createElement('td');
+        tableRow.appendChild(tableCell);
+        tableCell.style['border-right'] = '1px solid #ccc';
+        tableCell.style.display = 'none';
+        tableCell.appendChild(this.roomTable.table);
+
+        tableCell = document.createElement('td');
+        tableCell.style.display = 'none';
+        tableRow.appendChild(tableCell);
+        tableCell.appendChild(this.clientTable.table);
 
         // Add row for buttons:
         buttonDiv = document.createElement('div');
@@ -252,7 +315,7 @@
         buttonTable = document.createElement('table');
         this.bodyDiv.appendChild(buttonTable);
 
-        // Add buttons for disable right click/disable ESC/prompt on leave/waitscreen
+        // Add buttons for disable right click/ESC, prompt on leave, waitscreen
         setupOpts = {
             'Disable right-click': 'disableRightClick',
             'Disable Esc': 'noEscape',
@@ -280,7 +343,8 @@
                         opts[optName] = true;
                         node.remoteSetup('window', that.getSelectedClients(),
                                          opts);
-                }}(setupOpts[btnLabel]);
+                    };
+                }(setupOpts[btnLabel]);
                 tableCell.appendChild(button);
 
                 button = document.createElement('button');
@@ -288,17 +352,20 @@
                 button.onclick = function(optName) {
                     return function() {
                         var opts = {};
-                        opts[optName] = false
+                        opts[optName] = false;
                         node.remoteSetup('window', that.getSelectedClients(),
                                          opts);
-                }}(setupOpts[btnLabel]);
+                    };
+                }(setupOpts[btnLabel]);
                 tableCell.appendChild(button);
             }
         }
 
 
         // Query server:
-        this.refresh();
+        this.refreshChannels();
+
+        this.channelTable.parse();
     };
 
     ClientList.prototype.listeners = function() {
@@ -307,33 +374,107 @@
         that = this;
 
         // Listen for server reply:
+        node.on.data('INFO_CHANNELS', function(msg) {
+            that.writeChannels(msg.data);
+            that.updateTitle();
+        });
+
+        node.on.data('INFO_ROOMS', function(msg) {
+            // Update the contents:
+            that.writeRooms(msg.data);
+            that.updateTitle();
+        });
+
         node.on.data('INFO_CLIENTS', function(msg) {
             // Update the contents:
             that.writeClients(msg.data);
             that.updateTitle();
-
-            // Show the panel:
-            that.panelDiv.style.display = '';
         });
 
         // Listen for events from ChannelList saying to switch channels:
-        node.on('USECHANNEL', function(channel) {
-            that.setChannel(channel);
-        });
+        //node.on('USECHANNEL', function(channel) {
+        //    that.setChannel(channel);
+        //});
 
         // Listen for events from RoomList saying to switch rooms:
-        node.on('USEROOM', function(roomInfo) {
-            that.setRoom(roomInfo.id, roomInfo.name);
+        //node.on('USEROOM', function(roomInfo) {
+        //    that.setRoom(roomInfo.id, roomInfo.name);
 
-            // Query server:
-            that.refresh();
-        });
+        //    // Query server:
+        //    that.refresh();
+        //});
+    };
+
+    ClientList.prototype.writeChannels = function(channels) {
+        var chanKey, chanObj;
+        var elem;
+        var that;
+
+        that = this;
+
+        this.channelTable.clear(true);
+
+        // Create a clickable row for each channel:
+        for (chanKey in channels) {
+            if (channels.hasOwnProperty(chanKey)) {
+                chanObj = channels[chanKey];
+
+                elem = document.createElement('a');
+                elem.className = 'ng_clickable';
+                elem.innerHTML = chanObj.name;
+                elem.onclick = function(o) {
+                    return function() {
+                        that.setChannel(o.name);
+                    };
+                }(chanObj);
+
+                this.channelTable.addRow(elem);
+            }
+        }
+
+        this.channelTable.parse();
+    };
+
+    ClientList.prototype.writeRooms = function(rooms) {
+        var roomName, roomObj;
+        var elem;
+        var that;
+
+        that = this;
+
+        // Unhide table cell:
+        this.roomTable.table.parentNode.style.display = '';
+
+        this.roomTable.clear(true);
+
+        // Create a clickable row for each room:
+        for (roomName in rooms) {
+            if (rooms.hasOwnProperty(roomName)) {
+                roomObj = rooms[roomName];
+
+                elem = document.createElement('a');
+                elem.className = 'ng_clickable';
+                elem.innerHTML = roomObj.name;
+                elem.onclick = function(o) {
+                    return function() {
+                        that.setRoom(o.id, o.name);
+                    };
+                }(roomObj);
+
+                this.roomTable.addRow(elem);
+            }
+        }
+
+        this.roomTable.parse();
     };
 
     ClientList.prototype.writeClients = function(clients) {
         var i;
         var clientName, clientObj;
         var prevSel;
+
+        // Unhide table cell:
+        this.clientTable.table.parentNode.style.display = '';
 
         // Save previous state of selection:
         prevSel = {};
@@ -344,14 +485,14 @@
         }
 
         this.checkboxes = {};
-        this.table.clear(true);
+        this.clientTable.clear(true);
 
         // Create a row for each client:
         for (clientName in clients) {
             if (clients.hasOwnProperty(clientName)) {
                 clientObj = clients[clientName];
 
-                this.table.addRow(
+                this.clientTable.addRow(
                     [{id: clientObj.id, prevSel: prevSel, that: this},
                      clientObj.id,
                      {id: clientObj.id, admin: clientObj.admin},
@@ -361,7 +502,7 @@
             }
         }
 
-        this.table.parse();
+        this.clientTable.parse();
         this.updateSelection(false);
     };
 

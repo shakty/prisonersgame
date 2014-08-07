@@ -3,7 +3,7 @@
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
- * Shows current, previous and next state.
+ * Shows list of rooms in a channel.
  *
  * www.nodegame.org
  * ---
@@ -42,10 +42,10 @@
 
             elem.onclick = function() {
                 // Signal the ClientList to switch rooms:
-                node.emit('USEROOM', {
-                    id: o.content.id,
-                    name: o.content.name
-                });
+                //node.emit('USEROOM', {
+                //    id: o.content.id,
+                //    name: o.content.name
+                //});
             };
         }
         else {
