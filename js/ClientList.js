@@ -529,20 +529,23 @@
     };
 
     // Returns the array of client IDs that are selected with the checkboxes.
+    ClientList.prototype.getSelectedCheckboxes = function() {
+        var result;
+        var id;
+
+        result = [];
+        for (id in this.checkboxes) {
+            if (this.checkboxes.hasOwnProperty(id)) {
+               if (this.checkboxes[id].checked) {
+                   result.push(id);
+               }
+            }
+        }
+        return result;
+    };
+
+    // Returns the array of client IDs that are selected using the text-field.
     ClientList.prototype.getSelectedClients = function() {
-        //var result;
-        //var id;
-
-        //result = [];
-        //for (id in this.checkboxes) {
-        //    if (this.checkboxes.hasOwnProperty(id)) {
-        //       if (this.checkboxes[id].checked) {
-        //           result.push(id);
-        //       }
-        //    }
-        //}
-        //return result;
-
         try {
             return JSUS.parse(this.clientsField.value);
         }
