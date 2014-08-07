@@ -101,6 +101,10 @@
             }
         });
 
+        this.waitingForChannels = false;
+        this.waitingForRooms = false;
+        this.waitingForClients = false;
+
         // Maps client IDs to the selection checkbox elements:
         this.checkboxes = {};
 
@@ -120,6 +124,7 @@
                                    'Connection', 'SID']);
 
         this.clientsField = null;
+        this.msgBar = {};
     }
 
     ClientList.prototype.setChannel = function(channelName) {
@@ -152,6 +157,7 @@
 
     ClientList.prototype.refreshChannels = function() {
         // Ask server for channel list:
+        this.waitingForChannels = true;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
             text:   'INFO',
@@ -164,6 +170,7 @@
 
     ClientList.prototype.refreshRooms = function() {
         // Ask server for room list:
+        this.waitingForRooms = true;
         if ('string' !== typeof this.channelName) return;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
@@ -177,6 +184,7 @@
 
     ClientList.prototype.refreshClients = function() {
         // Ask server for client list:
+        this.waitingForClients = true;
         if ('string' !== typeof this.roomId) return;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
@@ -376,6 +384,12 @@
             }
         }
 
+        // Add MsgBar:
+        this.appendMsgBar();
+
+        // Add StateBar:
+        this.appendStateBar();
+
 
         // Query server:
         this.refreshChannels();
@@ -390,20 +404,33 @@
 
         // Listen for server reply:
         node.on.data('INFO_CHANNELS', function(msg) {
-            that.writeChannels(msg.data);
-            that.updateTitle();
+            if (that.waitingForChannels) {
+                that.waitingForChannels = false;
+
+                // Update the contents:
+                that.writeChannels(msg.data);
+                that.updateTitle();
+            }
         });
 
         node.on.data('INFO_ROOMS', function(msg) {
-            // Update the contents:
-            that.writeRooms(msg.data);
-            that.updateTitle();
+            if (that.waitingForRooms) {
+                that.waitingForRooms = false;
+
+                // Update the contents:
+                that.writeRooms(msg.data);
+                that.updateTitle();
+            }
         });
 
         node.on.data('INFO_CLIENTS', function(msg) {
-            // Update the contents:
-            that.writeClients(msg.data);
-            that.updateTitle();
+            if (that.waitingForClients) {
+                that.waitingForClients = false;
+
+                // Update the contents:
+                that.writeClients(msg.data);
+                that.updateTitle();
+            }
         });
 
         // Listen for events from ChannelList saying to switch channels:
@@ -522,20 +549,23 @@
     };
 
     // Returns the array of client IDs that are selected with the checkboxes.
+    ClientList.prototype.getSelectedCheckboxes = function() {
+        var result;
+        var id;
+
+        result = [];
+        for (id in this.checkboxes) {
+            if (this.checkboxes.hasOwnProperty(id)) {
+               if (this.checkboxes[id].checked) {
+                   result.push(id);
+               }
+            }
+        }
+        return result;
+    };
+
+    // Returns the array of client IDs that are selected using the text-field.
     ClientList.prototype.getSelectedClients = function() {
-        //var result;
-        //var id;
-
-        //result = [];
-        //for (id in this.checkboxes) {
-        //    if (this.checkboxes.hasOwnProperty(id)) {
-        //       if (this.checkboxes[id].checked) {
-        //           result.push(id);
-        //       }
-        //    }
-        //}
-        //return result;
-
         try {
             return JSUS.parse(this.clientsField.value);
         }
@@ -551,12 +581,10 @@
         ol = document.createElement('ol');
         ol.className = 'breadcrumb';
 
-        if (this.channelName) {
-            li = document.createElement('li');
-            li.innerHTML = this.channelName;
-            li.className = 'active';
-            ol.appendChild(li);
-        }
+        li = document.createElement('li');
+        li.innerHTML = this.channelName || 'No channel selected';
+        li.className = 'active';
+        ol.appendChild(li);
 
         if (this.roomName) {
             li = document.createElement('li');
@@ -630,6 +658,223 @@
             }
         }
         this.clientsField.value = JSON.stringify(recipients);
+    };
+
+    ClientList.prototype.appendMsgBar = function() {
+        var that;
+        var fields, i, field;
+        var table;
+        var advButton;
+        var sendButton;
+        var validateTableMsg, parseFunction;
+
+        that = this;
+
+        this.msgBar.id = 'clientlist_msgbar';
+
+        this.msgBar.recipient = null;
+        this.msgBar.actionSel = null;
+        this.msgBar.targetSel = null;
+
+        this.msgBar.table = new Table();
+        this.msgBar.tableAdvanced = new Table();
+
+
+        // init
+
+        // Create fields.
+        fields = ['action', 'target', 'text', 'data', 'from', 'priority',
+                  'reliable', 'forward', 'session', 'stage', 'created', 'id'];
+
+        for (i = 0; i < fields.length; ++i) {
+            field = fields[i];
+
+            // Put ACTION, TARGET, TEXT, DATA in the first table which is
+            // always visible, the other fields in the "advanced" table which
+            // is hidden by default.
+            table = i < 4 ? this.msgBar.table : this.msgBar.tableAdvanced;
+
+            table.add(field, i, 0);
+            table.add(W.getTextInput(
+                        this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
+
+            if (field === 'action') {
+                this.msgBar.actionSel = W.getActionSelector(
+                        this.msgBar.id + '_actions');
+                W.addAttributes2Elem(this.msgBar.actionSel,
+                        {tabindex: fields.length+2});
+                table.add(this.msgBar.actionSel, i, 2);
+                this.msgBar.actionSel.onchange = function() {
+                    W.getElementById(that.msgBar.id + '_action').value =
+                        that.msgBar.actionSel.value;
+                };
+            }
+            else if (field === 'target') {
+                this.msgBar.targetSel = W.getTargetSelector(
+                        this.msgBar.id + '_targets');
+                W.addAttributes2Elem(this.msgBar.targetSel,
+                        {tabindex: fields.length+3});
+                table.add(this.msgBar.targetSel, i, 2);
+                this.msgBar.targetSel.onchange = function() {
+                    W.getElementById(that.msgBar.id + '_target').value =
+                        that.msgBar.targetSel.value;
+                };
+            }
+        }
+
+        this.msgBar.table.parse();
+        this.msgBar.tableAdvanced.parse();
+
+
+        // helper functions
+        validateTableMsg = function(e, msg) {
+            var key, value;
+
+            if (msg._invalid) return;
+
+            if (e.y === 2) return;
+
+            if (e.y === 0) {
+                // Saving the value of last key.
+                msg._lastKey = e.content;
+                return;
+            }
+
+            // Fetching the value of last key.
+            key = msg._lastKey;
+            value = e.content.value;
+
+            if (key === 'stage' || key === 'to' || key === 'data') {
+                try {
+                    value = JSUS.parse(e.content.value);
+                }
+                catch (ex) {
+                    value = e.content.value;
+                }
+            }
+
+            // Validate input.
+            if (key === 'action') {
+                if (value.trim() === '') {
+                    alert('Missing "action" field');
+                    msg._invalid = true;
+                }
+                else {
+                    value = value.toLowerCase();
+                }
+
+            }
+            else if (key === 'target') {
+                if (value.trim() === '') {
+                    alert('Missing "target" field');
+                    msg._invalid = true;
+                }
+                else {
+                    value = value.toUpperCase();
+                }
+            }
+
+            // Assigning the value.
+            msg[key] = value;
+        };
+        parseFunction = function() {
+            var msg, gameMsg;
+
+            msg = {};
+
+            that.msgBar.table.forEach(validateTableMsg, msg);
+            if (msg._invalid) return null;
+            that.msgBar.tableAdvanced.forEach(validateTableMsg, msg);
+
+            // validate 'to' field:
+            msg.to = that.getSelectedClients();
+            if ('number' === typeof msg.to) {
+                msg.to = '' + msg.to;
+            }
+            if ((!JSUS.isArray(msg.to) && 'string' !== typeof msg.to) ||
+                ('string' === typeof to && to.trim() === '')) {
+
+                alert('Invalid "to" field');
+                msg._invalid = true;
+            }
+
+            if (msg._invalid) return null;
+            delete msg._lastKey;
+            delete msg._invalid;
+            gameMsg = node.msg.create(msg);
+            node.info('MsgBar msg created. ' +  gameMsg.toSMS());
+            return gameMsg;
+        };
+
+
+
+        // append
+
+        // Create sub-panel for MsgBar
+        this.msgBar.panelDiv = W.addDiv(this.bodyDiv, undefined,
+                {className: ['panel', 'panel-default', 'msgbar']});
+        this.msgBar.headingDiv = W.addDiv(this.msgBar.panelDiv, undefined,
+                {className: ['panel-heading']});
+        this.msgBar.headingDiv.innerHTML = 'Custom Message';
+        this.msgBar.bodyDiv = W.addDiv(this.msgBar.panelDiv, undefined,
+                {className: ['panel-body', 'msgbar']});
+
+        // Show table of basic fields.
+        this.msgBar.bodyDiv.appendChild(this.msgBar.table.table);
+
+        this.msgBar.bodyDiv.appendChild(this.msgBar.tableAdvanced.table);
+        this.msgBar.tableAdvanced.table.style.display = 'none';
+
+        // Show 'Send' button.
+        sendButton = W.addButton(this.msgBar.bodyDiv);
+        sendButton.onclick = function() {
+            var msg = parseFunction();
+
+            if (msg) {
+                node.socket.send(msg);
+            }
+        };
+
+        // Show a button that expands the table of advanced fields.
+        advButton = W.addButton(this.msgBar.bodyDiv, undefined, 'Toggle advanced options');
+        advButton.onclick = function() {
+            that.msgBar.tableAdvanced.table.style.display =
+                that.msgBar.tableAdvanced.table.style.display === '' ? 'none' : '';
+        };
+    };
+
+    ClientList.prototype.appendStateBar = function() {
+        var that;
+        var div;
+        var sendButton, stageField;
+
+        div = document.createElement('div');
+        this.bodyDiv.appendChild(div);
+
+        div.appendChild(document.createTextNode('Change stage to: '));
+        stageField = W.getTextInput();
+        div.appendChild(stageField);
+
+        sendButton = node.window.addButton(div);
+
+        that = this;
+
+        sendButton.onclick = function() {
+            var to;
+            var stage;
+
+            // Should be within the range of valid values
+            // but we should add a check
+            to = that.getSelectedClients();
+
+            try {
+                stage = new node.GameStage(stageField.value);
+                node.remoteCommand('goto_step', to, stage);
+            }
+            catch (e) {
+                node.err('Invalid stage, not sent: ' + e);
+            }
+        };
     };
 
 })(node);
