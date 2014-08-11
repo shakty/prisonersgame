@@ -36,17 +36,19 @@
         var elem;
 
         if (o.y === 0) {
-            elem = document.createElement('span');
-            elem.innerHTML =
-                '<a class="ng_clickable">' + o.content.name + '</a>';
+            //elem = document.createElement('span');
+            //elem.innerHTML =
+            //    '<a class="ng_clickable">' + o.content.name + '</a>';
 
-            elem.onclick = function() {
-                // Signal the ClientList to switch rooms:
-                //node.emit('USEROOM', {
-                //    id: o.content.id,
-                //    name: o.content.name
-                //});
-            };
+            //elem.onclick = function() {
+            //    // Signal the ClientList to switch rooms:
+            //    node.emit('USEROOM', {
+            //        id: o.content.id,
+            //        name: o.content.name
+            //    });
+            //};
+
+            elem = document.createTextNode(o.content.name);
         }
         else {
             elem = document.createTextNode(o.content);
@@ -69,6 +71,8 @@
         // Create header:
         this.table.setHeader(['Name', 'ID',
                               'Clients', 'Players', 'Admins']);
+
+        this.waitingForServer = false;
     }
 
     RoomList.prototype.setChannel = function(channelName) {
@@ -79,6 +83,7 @@
         if ('string' !== typeof this.channelName) return;
 
         // Ask server for room list:
+        this.waitingForServer = true;
         node.socket.send(node.msg.create({
             target: 'SERVERCOMMAND',
             text:   'INFO',
@@ -108,12 +113,16 @@
 
         // Listen for server reply:
         node.on.data('INFO_ROOMS', function(msg) {
-            // Update the contents:
-            that.writeRooms(msg.data);
-            that.updateTitle();
+            if (that.waitingForServer) {
+                that.waitingForServer = false;
 
-            // Show the panel:
-            that.panelDiv.style.display = '';
+                // Update the contents:
+                that.writeRooms(msg.data);
+                that.updateTitle();
+
+                // Show the panel:
+                that.panelDiv.style.display = '';
+            }
         });
 
         // Listen for events from ChannelList saying to switch channels:

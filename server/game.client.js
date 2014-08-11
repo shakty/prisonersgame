@@ -75,11 +75,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
         node.on('BID_DONE', function(offer, to) {
             var root;
-            // TODO: check this timer obj.
-            node.game.timer.switchActiveBoxTo(node.game.timer.waitBox,{waitTime: 30000});
-            node.game.timer.waitBox.unhideBox();
-            node.game.timer.mainBox.setClassNameBody('strike');
-            node.game.timer.updateDisplay();
+
+            node.game.timer.clear();
+            node.game.timer.startWaiting({milliseconds: 30000});
             
             W.getElementById('submitOffer').disabled = 'disabled';
             node.set('offer', offer);
@@ -262,8 +260,6 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function ultimatum() {
 
-        node.game.timer.stop();
-
         //////////////////////////////////////////////
         // nodeGame hint:
         //
@@ -321,11 +317,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     }
                 };
                 
-                node.game.timer.restart(options);
-                node.game.timer.switchActiveBoxTo(node.game.timer.mainBox,-1);
-                node.game.timer.mainBox.unhideBox();
-                node.game.timer.mainBox.setClassNameBody('');
-                node.game.timer.waitBox.hideBox();
+                node.game.timer.startTiming(options);
 
                 b = W.getElementById('submitOffer');
 
@@ -381,10 +373,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     milliseconds: 30000
                 };
                 
-                node.game.timer.restart(options);
-                node.game.timer.switchActiveBoxTo(node.game.timer.waitBox);
+                node.game.timer.startWaiting(options);
                 node.game.timer.mainBox.hideBox();
-                node.game.timer.waitBox.unhideBox();
 
                 //////////////////////////////////////////////
                 // nodeGame hint:
@@ -412,7 +402,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                             that.randomAccept(msg.data, other);
                         }
                     };
-                    node.game.timer.restart(options);
+                    node.game.timer.startTiming(options);
                     
 
                     offered = W.getElementById('offered');
@@ -460,6 +450,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function endgame() {
         W.loadFrame('/ultimatum/html/ended.html', function() {
+            node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
+            node.game.timer.waitBox.hideBox();
             node.game.timer.setToZero();
             node.on.data('WIN', function(msg) {
                 var win, exitcode, codeErr;
