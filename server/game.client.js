@@ -57,8 +57,10 @@ module.exports = function(gameRoom, treatmentName, settings) {
         if (!W.getHeader()) {
             header = W.generateHeader();
             // Uncomment to visualize the name of the stages.
-            // node.game.visualState = node.widgets.append('VisualState', header);
+//            node.game.visualState = node.widgets.append('VisualState', header);
+            node.game.rounds = node.widgets.append('VisualRound', header);
             node.game.timer = node.widgets.append('VisualTimer', header);
+
         }
 
         if (!W.getFrame()) {
@@ -78,7 +80,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
             node.game.timer.clear();
             node.game.timer.startWaiting({milliseconds: 30000});
-            
+
             W.getElementById('submitOffer').disabled = 'disabled';
             node.set('offer', offer);
             node.say('OFFER', to, offer);
@@ -276,7 +278,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         var that = this;
 
         var root, b, options, other;
-        
+
         // Load the BIDDER interface.
         node.on.data('BIDDER', function(msg) {
             console.log('RECEIVED BIDDER!');
@@ -311,12 +313,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 // Start the timer after an offer was received.
                 options = {
                     milliseconds: 30000,
-                    timeup: function() { 
+                    timeup: function() {
                         node.emit('BID_DONE', Math.floor(1 +
                                                          Math.random()*100), other);
                     }
                 };
-                
+
                 node.game.timer.startTiming(options);
 
                 b = W.getElementById('submitOffer');
@@ -345,7 +347,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                     }
                     node.emit('BID_DONE', offer.value, other);
                 };
-                
+
                 root = W.getElementById('container');
 
                 node.on.data('ACCEPT', function(msg) {
@@ -372,7 +374,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                 options = {
                     milliseconds: 30000
                 };
-                
+
                 node.game.timer.startWaiting(options);
                 node.game.timer.mainBox.hideBox();
 
@@ -403,7 +405,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
                         }
                     };
                     node.game.timer.startTiming(options);
-                    
+
 
                     offered = W.getElementById('offered');
                     theofferSpan = W.getElementById('theoffer');
