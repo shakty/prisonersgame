@@ -280,7 +280,6 @@
         button = document.createElement('button');
         button.innerHTML = 'Start';
         button.onclick = function() {
-            //node.remoteCommand('start', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
@@ -299,15 +298,15 @@
         button = document.createElement('button');
         button.innerHTML = 'Stop';
         button.onclick = function() {
-            //node.remoteCommand('stop', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
-                    type:      'STOP',
-                    roomId:    that.roomId,
-                    doPlayers: true,
-                    force:     forceCheckbox.checked
+                    type:    'STOP',
+                    roomId:  that.roomId,
+                    doLogic: false,
+                    clients: that.getSelectedClients(),
+                    force:   forceCheckbox.checked
 
                 }
             }));
@@ -317,15 +316,15 @@
         button = document.createElement('button');
         button.innerHTML = 'Pause';
         button.onclick = function() {
-            //node.remoteCommand('pause', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
-                    type:      'PAUSE',
-                    roomId:    that.roomId,
-                    doPlayers: true,
-                    force:     forceCheckbox.checked
+                    type:    'PAUSE',
+                    roomId:  that.roomId,
+                    doLogic: false,
+                    clients: that.getSelectedClients(),
+                    force:   forceCheckbox.checked
 
                 }
             }));
@@ -335,15 +334,15 @@
         button = document.createElement('button');
         button.innerHTML = 'Resume';
         button.onclick = function() {
-            //node.remoteCommand('resume', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
-                    type:      'RESUME',
-                    roomId:    that.roomId,
-                    doPlayers: true,
-                    force:     forceCheckbox.checked
+                    type:    'RESUME',
+                    roomId:  that.roomId,
+                    doLogic: false,
+                    clients: that.getSelectedClients(),
+                    force:   forceCheckbox.checked
 
                 }
             }));
