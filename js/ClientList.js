@@ -271,6 +271,8 @@
                 data: {
                     type:   'SETUP',
                     roomId: that.roomId,
+                    doLogic: true,
+                    clients: that.getSelectedClients(),
                     force:  forceCheckbox.checked
                 }
             }));
