@@ -205,7 +205,7 @@
     ClientList.prototype.append = function() {
         var that;
         var tableStructure;
-        var buttonDiv, button;
+        var buttonDiv, button, forceCheckbox, label;
         var buttonTable, tableRow, tableCell;
         var setupOpts, btnLabel;
         var selectionDiv, recipientSelector;
@@ -255,6 +255,13 @@
         this.bodyDiv.appendChild(buttonDiv);
 
         // Add buttons for setup/start/stop/pause/resume:
+        label = document.createElement('label');
+        forceCheckbox = document.createElement('input');
+        forceCheckbox.type = 'checkbox';
+        label.appendChild(forceCheckbox);
+        label.appendChild(document.createTextNode('Force'));
+        buttonDiv.appendChild(label);
+
         button = document.createElement('button');
         button.innerHTML = 'Setup';
         button.onclick = function() {
@@ -263,7 +270,8 @@
                 text:   'ROOMCOMMAND',
                 data: {
                     type:   'SETUP',
-                    roomId: that.roomId
+                    roomId: that.roomId,
+                    force:  forceCheckbox.checked
                 }
             }));
         };
@@ -272,14 +280,16 @@
         button = document.createElement('button');
         button.innerHTML = 'Start';
         button.onclick = function() {
-            //node.remoteCommand('start', 'ROOM_' + that.roomId);
+            //node.remoteCommand('start', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
                     type:      'START',
                     roomId:    that.roomId,
-                    doPlayers: false
+                    doPlayers: false,
+                    force:     forceCheckbox.checked
+
                 }
             }));
         };
@@ -288,14 +298,16 @@
         button = document.createElement('button');
         button.innerHTML = 'Stop';
         button.onclick = function() {
-            //node.remoteCommand('stop', 'ROOM_' + that.roomId);
+            //node.remoteCommand('stop', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
                     type:      'STOP',
                     roomId:    that.roomId,
-                    doPlayers: true
+                    doPlayers: true,
+                    force:     forceCheckbox.checked
+
                 }
             }));
         };
@@ -304,14 +316,16 @@
         button = document.createElement('button');
         button.innerHTML = 'Pause';
         button.onclick = function() {
-            //node.remoteCommand('pause', 'ROOM_' + that.roomId);
+            //node.remoteCommand('pause', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
                     type:      'PAUSE',
                     roomId:    that.roomId,
-                    doPlayers: true
+                    doPlayers: true,
+                    force:     forceCheckbox.checked
+
                 }
             }));
         };
@@ -320,14 +334,16 @@
         button = document.createElement('button');
         button.innerHTML = 'Resume';
         button.onclick = function() {
-            //node.remoteCommand('resume', 'ROOM_' + that.roomId);
+            //node.remoteCommand('resume', that.getSelectedClients());
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
                     type:      'RESUME',
                     roomId:    that.roomId,
-                    doPlayers: true
+                    doPlayers: true,
+                    force:     forceCheckbox.checked
+
                 }
             }));
         };
