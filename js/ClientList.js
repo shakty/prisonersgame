@@ -285,10 +285,11 @@
                 target: 'SERVERCOMMAND',
                 text:   'ROOMCOMMAND',
                 data: {
-                    type:      'START',
-                    roomId:    that.roomId,
-                    doPlayers: false,
-                    force:     forceCheckbox.checked
+                    type:    'START',
+                    roomId:  that.roomId,
+                    doLogic: false,
+                    clients: that.getSelectedClients(),
+                    force:   forceCheckbox.checked
 
                 }
             }));
