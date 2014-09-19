@@ -61,11 +61,16 @@
 
             case 2:
                 elem = document.createElement('span');
-                elem.innerHTML = content.admin ? 'admin' : 'player';
-                // Highlight this monitor.
+
+                // Determine client type.
                 if (content.id === node.player.id) {
-                    elem.innerHTML += '*';
-                    elem.title = 'This is the monitor itself.';
+                    elem.innerHTML = 'monitor';
+                }
+                else if (content.admin) {
+                    elem.innerHTML = 'admin';
+                }
+                else {
+                    elem.innerHTML = 'player';
                 }
                 break;
 
