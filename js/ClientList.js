@@ -235,6 +235,8 @@
         this.bodyDiv.appendChild(selectionDiv);
         selectionDiv.appendChild(document.createTextNode('Selected IDs: '));
         this.clientsField = W.getTextArea();
+        this.clientsField.rows = 1;
+        this.clientsField.style['vertical-align'] = 'top';
         selectionDiv.appendChild(this.clientsField);
         recipientSelector = W.getRecipientSelector();
         recipientSelector.onchange = function() {
@@ -613,9 +615,8 @@
     ClientList.prototype.appendMsgBar = function() {
         var that;
         var fields, i, field;
-        var table;
-        var advButton;
-        var sendButton;
+        var table, tmpElem;
+        var advButton, sendButton;
         var validateTableMsg, parseFunction;
 
         that = this;
@@ -646,12 +647,14 @@
 
             table.add(field, i, 0);
             if (field === 'data') {
-                table.add(W.getTextArea(
-                            this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
+                tmpElem = W.getTextArea(
+                        this.msgBar.id + '_' + field, {tabindex: i+1});
+                tmpElem.rows = 1;
+                table.add(tmpElem, i, 1);
             }
             else {
                 table.add(W.getTextInput(
-                            this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
+                        this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
             }
 
             if (field === 'action') {

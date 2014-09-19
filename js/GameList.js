@@ -79,7 +79,8 @@
         this.gamesTableDiv.appendChild(this.gamesTable.table);
 
         this.detailTable = new Table();
-        this.detailTable.setLeft(['Name', 'Aliases', 'Description', 'Treatments']);
+        this.detailTable.setLeft(
+                ['Name', 'Aliases', 'Description', 'Treatments']);
 
         this.gameDetailDiv = document.createElement('div');
         JSUS.style(this.gameDetailDiv, {float: 'left'});
