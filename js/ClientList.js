@@ -241,6 +241,10 @@
             that.clientsField.value = recipientSelector.value;
         };
         selectionDiv.appendChild(recipientSelector);
+        selectionDiv.style['padding'] = '10px 0px';
+        selectionDiv.style['border-top'] = '1px solid #ddd';
+        selectionDiv.style['border-bottom'] = '1px solid #ddd';
+        selectionDiv.style['margin'] = '10px 0px';
 
         // Add row for buttons:
         buttonDiv = document.createElement('div');
