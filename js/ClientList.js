@@ -59,21 +59,6 @@
                 content.that.checkboxes[content.id] = elem;
                 break;
 
-            case 2:
-                elem = document.createElement('span');
-
-                // Determine client type.
-                if (content.id === node.player.id) {
-                    elem.innerHTML = 'monitor';
-                }
-                else if (content.admin) {
-                    elem.innerHTML = 'admin';
-                }
-                else {
-                    elem.innerHTML = 'player';
-                }
-                break;
-
             default:
                 elem = document.createElement('span');
                 elem.innerHTML = 'N/A';
@@ -533,9 +518,9 @@
         this.roomTable.parse();
     };
 
-    ClientList.prototype.writeClients = function(clients) {
+    ClientList.prototype.writeClients = function(msg) {
         var i;
-        var clientName, clientObj;
+        var clientName, clientObj, clientType;
         var prevSel;
 
         // Unhide table cell:
@@ -553,14 +538,28 @@
         this.clientTable.clear(true);
 
         // Create a row for each client:
-        for (clientName in clients) {
-            if (clients.hasOwnProperty(clientName)) {
-                clientObj = clients[clientName];
+        for (clientName in msg.clients) {
+            if (msg.clients.hasOwnProperty(clientName)) {
+                clientObj = msg.clients[clientName];
+
+                // Determine client type.
+                if (clientObj.id === node.player.id) {
+                    clientType = 'monitor';
+                }
+                else if (clientObj.id === msg.logicId) {
+                    clientType = 'logic';
+                }
+                else if (clientObj.admin) {
+                    clientType = 'admin';
+                }
+                else {
+                    clientType = 'player';
+                }
 
                 this.clientTable.addRow(
                     [{id: clientObj.id, prevSel: prevSel, that: this},
                      clientObj.id,
-                     {id: clientObj.id, admin: clientObj.admin},
+                     clientType,
                      GameStage.toHash(clientObj.stage, 'S.s.r'),
                      clientObj.disconnected ? 'disconnected' : 'connected',
                      clientObj.sid]);
