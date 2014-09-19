@@ -197,6 +197,7 @@
     ClientList.prototype.append = function() {
         var that;
         var tableStructure;
+        var commandPanel, commandPanelHeading, commandPanelBody;
         var buttonDiv, button, forceCheckbox, label;
         var buttonTable, tableRow, tableCell;
         var setupOpts, btnLabel;
@@ -248,18 +249,19 @@
         selectionDiv.style['border-bottom'] = '1px solid #ddd';
         selectionDiv.style['margin'] = '10px 0px';
 
+        commandPanel = W.addDiv(this.bodyDiv, undefined,
+                {className: ['panel', 'panel-default', 'commandbuttons']});
+        commandPanelHeading = W.addDiv(commandPanel, undefined,
+                {className: ['panel-heading']});
+        commandPanelHeading.innerHTML = 'Commands';
+        commandPanelBody = W.addDiv(commandPanel, undefined,
+                {className: ['panel-body', 'commandbuttons']});
+
         // Add row for buttons:
         buttonDiv = document.createElement('div');
-        this.bodyDiv.appendChild(buttonDiv);
+        commandPanelBody.appendChild(buttonDiv);
 
         // Add buttons for setup/start/stop/pause/resume:
-        label = document.createElement('label');
-        forceCheckbox = document.createElement('input');
-        forceCheckbox.type = 'checkbox';
-        label.appendChild(forceCheckbox);
-        label.appendChild(document.createTextNode('Force'));
-        buttonDiv.appendChild(label);
-
         buttonDiv.appendChild(this.createRoomCommandButton(
                     'SETUP',  'Setup', forceCheckbox));
         buttonDiv.appendChild(this.createRoomCommandButton(
@@ -271,12 +273,20 @@
         buttonDiv.appendChild(this.createRoomCommandButton(
                     'RESUME', 'Resume', forceCheckbox));
 
+        label = document.createElement('label');
+        forceCheckbox = document.createElement('input');
+        forceCheckbox.type = 'checkbox';
+        forceCheckbox.style['margin-left'] = '5px';
+        label.appendChild(forceCheckbox);
+        label.appendChild(document.createTextNode(' Force'));
+        buttonDiv.appendChild(label);
+
         // Add StateBar:
-        this.appendStateBar();
+        this.appendStateBar(commandPanelBody);
 
         // Add a table for buttons:
         buttonTable = document.createElement('table');
-        this.bodyDiv.appendChild(buttonTable);
+        commandPanelBody.appendChild(buttonTable);
 
         // Add buttons for disable right click/ESC, prompt on leave, waitscreen.
         setupOpts = {
@@ -804,13 +814,13 @@
         };
     };
 
-    ClientList.prototype.appendStateBar = function() {
+    ClientList.prototype.appendStateBar = function(root) {
         var that;
         var div;
         var sendButton, stageField;
 
         div = document.createElement('div');
-        this.bodyDiv.appendChild(div);
+        root.appendChild(div);
 
         div.appendChild(document.createTextNode('Change stage to: '));
         stageField = W.getTextInput();
