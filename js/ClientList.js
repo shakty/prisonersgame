@@ -269,6 +269,9 @@
         buttonDiv.appendChild(this.createRoomCommandButton(
                     'RESUME', 'Resume', forceCheckbox));
 
+        // Add StateBar:
+        this.appendStateBar();
+
         // Add a table for buttons:
         buttonTable = document.createElement('table');
         this.bodyDiv.appendChild(buttonTable);
@@ -321,9 +324,6 @@
 
         // Add MsgBar:
         this.appendMsgBar();
-
-        // Add StateBar:
-        this.appendStateBar();
 
 
         // Query server:
