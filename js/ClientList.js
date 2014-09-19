@@ -234,7 +234,7 @@
         selectionDiv = document.createElement('div');
         this.bodyDiv.appendChild(selectionDiv);
         selectionDiv.appendChild(document.createTextNode('Selected IDs: '));
-        this.clientsField = W.getTextInput();
+        this.clientsField = W.getTextArea();
         selectionDiv.appendChild(this.clientsField);
         recipientSelector = W.getRecipientSelector();
         recipientSelector.onchange = function() {
@@ -641,8 +641,14 @@
             table = i < 4 ? this.msgBar.table : this.msgBar.tableAdvanced;
 
             table.add(field, i, 0);
-            table.add(W.getTextInput(
-                        this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
+            if (field === 'data') {
+                table.add(W.getTextArea(
+                            this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
+            }
+            else {
+                table.add(W.getTextInput(
+                            this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
+            }
 
             if (field === 'action') {
                 this.msgBar.actionSel = W.getActionSelector(
