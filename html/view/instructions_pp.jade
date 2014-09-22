@@ -1,0 +1,27 @@
+title=title
+link(rel='stylesheet', href='/ultimatum/html/css/bootstrap.min.css')
+link(rel='stylesheet', type='text/css', href='css/style.css')
+body
+    div(id='container')
+        h1=instructionsOfTheUltimatumGame
+        div(id='instructions)
+            =thisGameIsPlayed
+            br
+            br
+            !=inEachRound
+            br
+            br
+            =theRespondent
+            br
+            br
+            =theGameIsRepeated
+            br
+            br
+            p(id='pp', class='important')
+                =important
+                br
+                =inSuchACase
+        =ifYouUnderstood
+        br
+        br
+        input(type='button', id='read', value=proceed, class='btn btn-lg btn-primary')

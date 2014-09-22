@@ -1,0 +1,22 @@
+doctype html
+title=title
+link(rel='stylesheet', href='/ultimatum/html/css/bootstrap.min.css')
+link(rel='stylesheet', type='text/css', href='css/style.css')
+body
+    div(id='container')
+        h1=pleaseReport
+        h3=Q+'1'
+        p.question=didTheGameProceed
+        textarea(rows='10', cols='20', id='comment')
+
+        h3=Q+'2'
+        p.question=ifTheGame
+
+        form(id='disconnect_form', name='disconnect_form')
+            - for (x = 0; x < 5; ++x)
+                input(type='radio', name='disconnect',value=x+'')
+                =reason[x]
+                br
+        br
+        br
+        button(id='comment_done', onclick='javascript:parent.node.done();',class='btn btn-lg btn-primary')=clickHere

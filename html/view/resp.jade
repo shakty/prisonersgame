@@ -1,0 +1,14 @@
+doctype html
+title=title
+link(rel='stylesheet', href='/ultimatum/html/css/bootstrap.min.css')
+link(rel='stylesheet', type='text/css', href='css/style.css')
+body
+    div(id='container', style='font-size: 20px')
+        h2=youAreTheRespondant
+        h3=waitingForAnOffer
+        div(id='offered', style='display:none;')
+            =youReceivedAnOffer
+            span(id='theoffer')
+            |.</br>
+            input(type='button', value=accept, id='accept', class='btn')
+            input(type='button', value=reject, id='reject', class='btn')

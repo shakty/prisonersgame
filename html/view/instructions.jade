@@ -1,0 +1,24 @@
+doctype html
+title=title
+link(rel='stylesheet', href='/ultimatum/html/css/bootstrap.min.css')
+link(rel='stylesheet', type='text/css', href='css/style.css')
+body
+    div(id='container')
+    h1=instructions
+    div(id='instructions')
+        =thisGame
+        br
+        br
+        =inEachRround
+        br
+        br
+        =theRespondant
+        br
+        br
+        =theGame
+        br
+        br
+    =ifYouUnderstood
+    br
+    br
+    input(type='button', id='read', value=proceed, class='btn btn-lg btn-primary')
