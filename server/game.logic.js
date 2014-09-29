@@ -254,7 +254,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
             // It is not added automatically.
             // TODO: add it automatically if we return TRUE? It must be done
-            // both in the alias and the real event handler
+            // both in the alias and the real event handler.
             node.game.pl.add(p);
 
             // Will send all the players to current stage
