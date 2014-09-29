@@ -59,16 +59,6 @@
                 content.that.checkboxes[content.id] = elem;
                 break;
 
-            case 2:
-                elem = document.createElement('span');
-                elem.innerHTML = content.admin ? 'admin' : 'player';
-                // Highlight this monitor.
-                if (content.id === node.player.id) {
-                    elem.innerHTML += '*';
-                    elem.title = 'This is the monitor itself.';
-                }
-                break;
-
             default:
                 elem = document.createElement('span');
                 elem.innerHTML = 'N/A';
@@ -92,6 +82,7 @@
         this.channelName = options.channel || null;
         this.roomId = options.roomId || null;
         this.roomName = options.roomName || null;
+        this.roomLogicId = null;
         this.channelTable = new Table();
         this.roomTable = new Table();
         this.clientTable = new Table({
@@ -144,6 +135,7 @@
     ClientList.prototype.setRoom = function(roomId, roomName) {
         this.roomId = roomId;
         this.roomName = roomName;
+        this.roomLogicId = null;
 
         if (!this.roomId || !this.roomName) {
             // Hide client table if no room is selected:
@@ -205,7 +197,8 @@
     ClientList.prototype.append = function() {
         var that;
         var tableStructure;
-        var buttonDiv, button;
+        var commandPanel, commandPanelHeading, commandPanelBody;
+        var buttonDiv, button, forceCheckbox, label;
         var buttonTable, tableRow, tableCell;
         var setupOpts, btnLabel;
         var selectionDiv, recipientSelector;
@@ -242,103 +235,60 @@
         selectionDiv = document.createElement('div');
         this.bodyDiv.appendChild(selectionDiv);
         selectionDiv.appendChild(document.createTextNode('Selected IDs: '));
-        this.clientsField = W.getTextInput();
+        this.clientsField = W.getTextArea();
+        this.clientsField.rows = 1;
+        this.clientsField.style['vertical-align'] = 'top';
         selectionDiv.appendChild(this.clientsField);
         recipientSelector = W.getRecipientSelector();
         recipientSelector.onchange = function() {
             that.clientsField.value = recipientSelector.value;
         };
         selectionDiv.appendChild(recipientSelector);
+        selectionDiv.style['padding'] = '10px 0px';
+        selectionDiv.style['border-top'] = '1px solid #ddd';
+        selectionDiv.style['border-bottom'] = '1px solid #ddd';
+        selectionDiv.style['margin'] = '10px 0px';
+
+        commandPanel = W.addDiv(this.bodyDiv, undefined,
+                {className: ['panel', 'panel-default', 'commandbuttons']});
+        commandPanelHeading = W.addDiv(commandPanel, undefined,
+                {className: ['panel-heading']});
+        commandPanelHeading.innerHTML = 'Commands';
+        commandPanelBody = W.addDiv(commandPanel, undefined,
+                {className: ['panel-body', 'commandbuttons']});
 
         // Add row for buttons:
         buttonDiv = document.createElement('div');
-        this.bodyDiv.appendChild(buttonDiv);
+        commandPanelBody.appendChild(buttonDiv);
 
         // Add buttons for setup/start/stop/pause/resume:
-        button = document.createElement('button');
-        button.innerHTML = 'Setup';
-        button.onclick = function() {
-            node.socket.send(node.msg.create({
-                target: 'SERVERCOMMAND',
-                text:   'ROOMCOMMAND',
-                data: {
-                    type:   'SETUP',
-                    roomId: that.roomId
-                }
-            }));
-        };
-        buttonDiv.appendChild(button);
+        buttonDiv.appendChild(this.createRoomCommandButton(
+                    'SETUP',  'Setup', forceCheckbox));
+        buttonDiv.appendChild(this.createRoomCommandButton(
+                    'START',  'Start', forceCheckbox));
+        buttonDiv.appendChild(this.createRoomCommandButton(
+                    'STOP',   'Stop', forceCheckbox));
+        buttonDiv.appendChild(this.createRoomCommandButton(
+                    'PAUSE',  'Pause', forceCheckbox));
+        buttonDiv.appendChild(this.createRoomCommandButton(
+                    'RESUME', 'Resume', forceCheckbox));
 
-        button = document.createElement('button');
-        button.innerHTML = 'Start';
-        button.onclick = function() {
-            //node.remoteCommand('start', 'ROOM_' + that.roomId);
-            node.socket.send(node.msg.create({
-                target: 'SERVERCOMMAND',
-                text:   'ROOMCOMMAND',
-                data: {
-                    type:      'START',
-                    roomId:    that.roomId,
-                    doPlayers: false
-                }
-            }));
-        };
-        buttonDiv.appendChild(button);
+        label = document.createElement('label');
+        forceCheckbox = document.createElement('input');
+        forceCheckbox.type = 'checkbox';
+        forceCheckbox.style['margin-left'] = '5px';
+        label.appendChild(forceCheckbox);
+        label.appendChild(document.createTextNode(' Force'));
+        buttonDiv.appendChild(label);
 
-        button = document.createElement('button');
-        button.innerHTML = 'Stop';
-        button.onclick = function() {
-            //node.remoteCommand('stop', 'ROOM_' + that.roomId);
-            node.socket.send(node.msg.create({
-                target: 'SERVERCOMMAND',
-                text:   'ROOMCOMMAND',
-                data: {
-                    type:      'STOP',
-                    roomId:    that.roomId,
-                    doPlayers: true
-                }
-            }));
-        };
-        buttonDiv.appendChild(button);
-
-        button = document.createElement('button');
-        button.innerHTML = 'Pause';
-        button.onclick = function() {
-            //node.remoteCommand('pause', 'ROOM_' + that.roomId);
-            node.socket.send(node.msg.create({
-                target: 'SERVERCOMMAND',
-                text:   'ROOMCOMMAND',
-                data: {
-                    type:      'PAUSE',
-                    roomId:    that.roomId,
-                    doPlayers: true
-                }
-            }));
-        };
-        buttonDiv.appendChild(button);
-
-        button = document.createElement('button');
-        button.innerHTML = 'Resume';
-        button.onclick = function() {
-            //node.remoteCommand('resume', 'ROOM_' + that.roomId);
-            node.socket.send(node.msg.create({
-                target: 'SERVERCOMMAND',
-                text:   'ROOMCOMMAND',
-                data: {
-                    type:      'RESUME',
-                    roomId:    that.roomId,
-                    doPlayers: true
-                }
-            }));
-        };
-        buttonDiv.appendChild(button);
-
+        // Add StateBar:
+        this.appendStateBar(commandPanelBody);
 
         // Add a table for buttons:
         buttonTable = document.createElement('table');
-        this.bodyDiv.appendChild(buttonTable);
+        commandPanelBody.appendChild(buttonTable);
 
-        // Add buttons for disable right click/ESC, prompt on leave, waitscreen
+        // Add buttons for disable right click/ESC, prompt on leave, waitscreen.
         setupOpts = {
             'Disable right-click': 'disableRightClick',
             'Disable Esc': 'noEscape',
@@ -387,9 +337,6 @@
         // Add MsgBar:
         this.appendMsgBar();
 
-        // Add StateBar:
-        this.appendStateBar();
-
 
         // Query server:
         this.refreshChannels();
@@ -428,6 +375,7 @@
                 that.waitingForClients = false;
 
                 // Update the contents:
+                that.roomLogicId = msg.data.logicId;
                 that.writeClients(msg.data);
                 that.updateTitle();
             }
@@ -510,9 +458,9 @@
         this.roomTable.parse();
     };
 
-    ClientList.prototype.writeClients = function(clients) {
+    ClientList.prototype.writeClients = function(msg) {
         var i;
-        var clientName, clientObj;
+        var clientName, clientObj, clientType;
         var prevSel;
 
         // Unhide table cell:
@@ -530,14 +478,28 @@
         this.clientTable.clear(true);
 
         // Create a row for each client:
-        for (clientName in clients) {
-            if (clients.hasOwnProperty(clientName)) {
-                clientObj = clients[clientName];
+        for (clientName in msg.clients) {
+            if (msg.clients.hasOwnProperty(clientName)) {
+                clientObj = msg.clients[clientName];
+
+                // Determine client type.
+                if (clientObj.id === node.player.id) {
+                    clientType = 'monitor';
+                }
+                else if (clientObj.id === this.roomLogicId) {
+                    clientType = 'logic';
+                }
+                else if (clientObj.admin) {
+                    clientType = 'admin';
+                }
+                else {
+                    clientType = 'player';
+                }
 
                 this.clientTable.addRow(
                     [{id: clientObj.id, prevSel: prevSel, that: this},
                      clientObj.id,
-                     {id: clientObj.id, admin: clientObj.admin},
+                     clientType,
                      GameStage.toHash(clientObj.stage, 'S.s.r'),
                      clientObj.disconnected ? 'disconnected' : 'connected',
                      clientObj.sid]);
@@ -663,9 +625,8 @@
     ClientList.prototype.appendMsgBar = function() {
         var that;
         var fields, i, field;
-        var table;
-        var advButton;
-        var sendButton;
+        var table, tmpElem;
+        var advButton, sendButton;
         var validateTableMsg, parseFunction;
 
         that = this;
@@ -695,8 +656,16 @@
             table = i < 4 ? this.msgBar.table : this.msgBar.tableAdvanced;
 
             table.add(field, i, 0);
-            table.add(W.getTextInput(
+            if (field === 'data') {
+                tmpElem = W.getTextArea(
+                        this.msgBar.id + '_' + field, {tabindex: i+1});
+                tmpElem.rows = 1;
+                table.add(tmpElem, i, 1);
+            }
+            else {
+                table.add(W.getTextInput(
                         this.msgBar.id + '_' + field, {tabindex: i+1}), i, 1);
+            }
 
             if (field === 'action') {
                 this.msgBar.actionSel = W.getActionSelector(
@@ -836,20 +805,22 @@
         };
 
         // Show a button that expands the table of advanced fields.
-        advButton = W.addButton(this.msgBar.bodyDiv, undefined, 'Toggle advanced options');
+        advButton = W.addButton(this.msgBar.bodyDiv, undefined,
+                'Toggle advanced options');
         advButton.onclick = function() {
             that.msgBar.tableAdvanced.table.style.display =
-                that.msgBar.tableAdvanced.table.style.display === '' ? 'none' : '';
+                that.msgBar.tableAdvanced.table.style.display === '' ?
+                'none' : '';
         };
     };
 
-    ClientList.prototype.appendStateBar = function() {
+    ClientList.prototype.appendStateBar = function(root) {
         var that;
         var div;
         var sendButton, stageField;
 
         div = document.createElement('div');
-        this.bodyDiv.appendChild(div);
+        root.appendChild(div);
 
         div.appendChild(document.createTextNode('Change stage to: '));
         stageField = W.getTextInput();
@@ -875,6 +846,45 @@
                 node.err('Invalid stage, not sent: ' + e);
             }
         };
+    };
+
+    /**
+     * Make a button that sends a given ROOMCOMMAND.
+     */
+    ClientList.prototype.createRoomCommandButton =
+        function(command, label, forceCheckbox) {
+
+        var that;
+        var button;
+
+        that = this;
+
+        button = document.createElement('button');
+        button.innerHTML = label;
+        button.onclick = function() {
+            var clients;
+            var doLogic;
+
+            // Get selected clients.
+            clients = that.getSelectedClients();
+            if (!clients || clients.length === 0) return;
+            // If the room's logic client is selected, handle it specially.
+            doLogic = !!JSUS.removeElement(that.roomLogicId, clients);
+
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'ROOMCOMMAND',
+                data: {
+                    type:    command,
+                    roomId:  that.roomId,
+                    doLogic: doLogic,
+                    clients: clients,
+                    force:   forceCheckbox.checked
+                }
+            }));
+        };
+
+        return button;
     };
 
 })(node);

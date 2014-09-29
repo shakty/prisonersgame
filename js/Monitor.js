@@ -24,12 +24,12 @@ function Monitor(node) {
         document.body.appendChild(tabList);
 
         tmpElem = document.createElement('li');
-        tmpElem.className = 'active';
         tmpElem.innerHTML =
             '<a href="#channels" role="tab" data-toggle="tab">Channels</a>';
         tabList.appendChild(tmpElem);
 
         tmpElem = document.createElement('li');
+        tmpElem.className = 'active';
         tmpElem.innerHTML =
             '<a href="#clients" role="tab" data-toggle="tab">Clients</a>';
         tabList.appendChild(tmpElem);
@@ -46,7 +46,7 @@ function Monitor(node) {
 
         // Channel and room list:
         tmpElem = document.createElement('div');
-        tmpElem.className = 'tab-pane active';
+        tmpElem.className = 'tab-pane';
         tmpElem.id = 'channels';
         tabContent.appendChild(tmpElem);
         channelList = node.widgets.append('ChannelList', tmpElem);
@@ -54,7 +54,7 @@ function Monitor(node) {
 
         // Client list and controls:
         tmpElem = document.createElement('div');
-        tmpElem.className = 'tab-pane';
+        tmpElem.className = 'tab-pane active';
         tmpElem.id = 'clients';
         tabContent.appendChild(tmpElem);
         clientList = node.widgets.append('ClientList', tmpElem);
