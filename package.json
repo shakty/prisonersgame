@@ -1,39 +1,60 @@
 {
-  "name": "ultimatum",
-  "description": "Plays an ultimatum game with nodegame",
-  "version": "0.0.1",
-  "alias": ["u1", "u2"],
-  "author": {
-    "name": "Stefano Balietti",
-    "email": "sbalietti@ethz.ch",
-    "url": "http://www.nodegame.org"
-  }
+      "name": "ultimatum",
+      "description": "Plays an ultimatum game with nodegame",
+      "version": "0.0.1",
+      "alias": ["u1", "u2"],
+      "author": {
+        "name": "Stefano Balietti",
+        "email": "sbalietti@ethz.ch",
+        "url": "http://www.nodegame.org"
+      }
 ,
-  "main": "./index.html"
+    "main": "./index.html"
 ,
-  "keywords": [
-    "ultimatum",
-    "game theory"
-  ]
+      "keywords": [
+        "ultimatum",
+        "game theory"
+      ]
 ,
-  "repository": {
-    "type": "git",
-     "url": "git://github.com/nodegame/ultimatum.git"
-  },
-  "license": "MIT/X11"
+      "repository": {
+        "type": "git",
+         "url": "git://github.com/nodegame/ultimatum.git"
+      },
+      "license": "MIT/X11"
 ,
-  "engines": {
-    "node": "*",
-    "nodegame": ">= 0.6.0"
-  }
+      "engines": {
+        "node": "*",
+        "nodegame": ">= 0.6.0"
+      }
 ,
-	"nodegame": {
-	   "logic": "./server/logic.js",
-	   "dependencies": {
-	     "not_used": "for now"
-	   },
-	   "widgets": {
-	     "moneytalk": "0.1.0"
-	   }
-	}
+    "nodegame": {
+       "logic": "./server/logic.js",
+       "dependencies": {
+         "not_used": "for now"
+       },
+       "widgets": {
+         "moneytalk": "0.1.0"
+       }
+    }
+,
+    "languages":[
+    {
+        "name": "English",
+        "nativeName": "English",
+        "shortName": "en",
+        "flag": ""
+    },
+    {
+        "name": "German",
+        "nativeName": "Deutsch",
+        "shortName": "de",
+        "flag": ""
+    },
+    {
+        "name": "French",
+        "nativeName": "Français",
+        "shortName": "fr",
+        "flag": ""
+    }
+]
 }
