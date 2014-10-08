@@ -261,6 +261,14 @@
         buttonDiv = document.createElement('div');
         commandPanelBody.appendChild(buttonDiv);
 
+        // Force checkbox:
+        label = document.createElement('label');
+        forceCheckbox = document.createElement('input');
+        forceCheckbox.type = 'checkbox';
+        forceCheckbox.style['margin-left'] = '5px';
+        label.appendChild(forceCheckbox);
+        label.appendChild(document.createTextNode(' Force'));
+
         // Add buttons for setup/start/stop/pause/resume:
         buttonDiv.appendChild(this.createRoomCommandButton(
                     'SETUP',  'Setup', forceCheckbox));
@@ -273,12 +281,6 @@
         buttonDiv.appendChild(this.createRoomCommandButton(
                     'RESUME', 'Resume', forceCheckbox));
 
-        label = document.createElement('label');
-        forceCheckbox = document.createElement('input');
-        forceCheckbox.type = 'checkbox';
-        forceCheckbox.style['margin-left'] = '5px';
-        label.appendChild(forceCheckbox);
-        label.appendChild(document.createTextNode(' Force'));
         buttonDiv.appendChild(label);
 
         // Add StateBar:
