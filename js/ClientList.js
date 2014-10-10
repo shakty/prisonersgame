@@ -336,6 +336,17 @@
             }
         }
 
+        // Add bot-start button:
+        button = document.createElement('button');
+        button.innerHTML = 'Start bot';
+        button.onclick = function() {
+            node.socket.send(node.msg.create({
+                target: 'SERVERCOMMAND',
+                text:   'STARTBOT',
+            }));
+        };
+        commandPanelBody.appendChild(button);
+
         // Add MsgBar:
         this.appendMsgBar();
 
