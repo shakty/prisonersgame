@@ -200,10 +200,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
     function selectLanguage() {
         if (!node.game.lang.languagesLoaded) {
             W.lockScreen('Loading languages...');
-            node.game.lang.onLangCallbackExtension = function(msg) {
-                W.unlockScreen();
-            };
-            node.game.lang.updateAvalaibleLanguages();
+
+            node.game.lang.updateAvalaibleLanguages({
+                callback: function(msg) {
+                    W.unlockScreen();
+                }
+            });
         }
         W.loadFrame('/ultimatum/html/languageSelection.html', function() {
             var b = W.getElementById('done');
