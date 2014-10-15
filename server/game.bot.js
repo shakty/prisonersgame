@@ -17,7 +17,7 @@ var constants = ngc.constants;
 
 // Export the game-creating function. It needs the name of the treatment and
 // its options.
-module.exports = function(gameRoom, treatmentName, settings) {
+module.exports = function(node, gameRoom, treatmentName, settings) {
     var stager;
     var game;
     var MIN_PLAYERS;
@@ -171,12 +171,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function clearFrame() {
+        /*
         node.emit('INPUT_DISABLE');
         // We save also the time to complete the step.
         node.set('timestep', {
             time: node.timer.getTimeSince('step'),
             timeup: node.game.timer.gameTimer.timeLeft <= 0
         });
+        */
         return true;
     }
 

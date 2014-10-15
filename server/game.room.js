@@ -216,17 +216,21 @@ module.exports = function(node, channel, room) {
             nPlayers = wRoom.size();
 
             // Send the client the waiting stage.
-            node.remoteSetup('game_metadata',  p.id, clientWait.metadata);
-            node.remoteSetup('plot', p.id, clientWait.plot);
-            node.remoteCommand('start', p.id);
+            // DEBUG
+            if (!(p.sid[0] === 'D' && p.sid[1] === 'P')) {
+                node.remoteSetup('game_metadata',  p.id, clientWait.metadata);
+                node.remoteSetup('plot', p.id, clientWait.plot);
+                node.remoteCommand('start', p.id);
 
-            node.say('waitingRoom', 'ROOM', {
-                poolSize: POOL_SIZE,
-                nPlayers: nPlayers
-            });
+                node.say('waitingRoom', 'ROOM', {
+                    poolSize: POOL_SIZE,
+                    nPlayers: nPlayers
+                });
+            }
 
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
+                // DEBUG
                 setTimeout(function() { channel.connectBot(room, 'server/game.bot.js'); }, 1000);
                 return;
             }
