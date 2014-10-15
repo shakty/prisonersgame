@@ -227,6 +227,7 @@ module.exports = function(node, channel, room) {
 
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
+                setTimeout(function() { channel.connectBot(room, 'server/game.bot.js'); }, 1000);
                 return;
             }
 

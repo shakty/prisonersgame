@@ -13,6 +13,7 @@ module.exports = {
 
     logicPath: "game.logic.js",
     clientPath: "game.client.js",
+    botPath: "game.bot.js",
 
     // Group settings.
 
