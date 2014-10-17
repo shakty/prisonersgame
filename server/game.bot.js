@@ -32,13 +32,15 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
 
     // INIT and GAMEOVER
 
+    console.log('REQUIRING BOT!', node.nodename);
     stager.setOnInit(function() {
         var that = this;
         var waitingForPlayers;
         var treatment;
         var header;
 
-        console.log('INIT PLAYER GC!');
+        debugger;
+        console.log('INIT BOT GC!', node.nodename);
 
         this.other = null;
 
@@ -94,30 +96,10 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
         };
 
         treatment = node.env('treatment');
-    });
 
-    ///// STAGES and STEPS
 
-    function precache() {
-        node.done();
-    }
 
-    function instructions() {
-        console.log('Instructions');
-        node.done();
-    }
-
-    function quiz() {
-        console.log('Quiz');
-        node.timer.randomExec(function() {
-            node.game.timer.doTimeUp();
-        });
-    }
-
-    function ultimatum() {
-        var that = this;
-
-        var other;
+        //node.alias('data', ['in.say.DATA', 'in.set.DATA'], function(text, cb) { return function(msg) { if (msg.text === text) {cb.call(that.game, msg)}};});
 
         // Load the BIDDER interface.
         node.on.data('BIDDER', function(msg) {
@@ -154,6 +136,68 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
                 }, 3000);
             });
         });
+    });
+
+    ///// STAGES and STEPS
+
+    function precache() {
+        console.log('Precache');
+        node.timer.randomEmit('DONE');
+        //node.done();
+    }
+
+    function instructions() {
+        console.log('Instructions');
+        node.timer.randomEmit('DONE');
+        //node.done();
+    }
+
+    function quiz() {
+        console.log('Quiz');
+        node.timer.randomEmit('DONE');
+        //node.done();
+    }
+
+    function ultimatum() {
+        var that = this;
+
+        var other;
+
+//        // Load the BIDDER interface.
+//        node.on.data('BIDDER', function(msg) {
+//            console.log('RECEIVED BIDDER!');
+//            other = msg.data.other;
+//            node.set('ROLE', 'BIDDER');
+//
+//            node.timer.randomExec(function() {
+//                node.emit('BID_DONE',
+//                          Math.floor(1+Math.random()*100),
+//                          other);
+//            }, 4000);
+//
+//            node.on.data('ACCEPT', function(msg) {
+//                console.log(' Your offer was accepted.');
+//                node.timer.randomEmit('DONE', 3000);
+//            });
+//
+//            node.on.data('REJECT', function(msg) {
+//                console.log(' Your offer was rejected.');
+//                node.timer.randomEmit('DONE', 3000);
+//            });
+//        });
+//
+//        // Load the respondent interface.
+//        node.on.data('RESPONDENT', function(msg) {
+//            console.log('RECEIVED RESPONDENT!');
+//            other = msg.data.other;
+//            node.set('ROLE', 'RESPONDENT');
+//
+//            node.on.data('OFFER', function(msg) {
+//                node.timer.randomExec(function() {
+//                    that.randomAccept(msg.data, other);
+//                }, 3000);
+//            });
+//        });
 
         console.log('Ultimatum');
     }
@@ -305,6 +349,8 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
     game.verbosity = 100;
 
     game.debug = settings.DEBUG;
+
+    game.nodename = 'bot2000';
 
     return game;
 };

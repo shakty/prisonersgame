@@ -231,7 +231,8 @@ module.exports = function(node, channel, room) {
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
                 // DEBUG
-                setTimeout(function() { channel.connectBot(room, 'server/game.bot.js'); }, 1000);
+                //channel.connectBot(room, 'server/game.bot.js');
+                channel.connectBot(room, 'server/includes/wait.bot.js');
                 return;
             }
 
@@ -260,7 +261,7 @@ module.exports = function(node, channel, room) {
                 });
 
                 gameRoom.setupGame();
-                gameRoom.startGame();
+                gameRoom.startGame(true, []);
             }
 
             // TODO: node.game.pl.size() is unchanged.
