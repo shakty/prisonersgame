@@ -59,7 +59,6 @@ function waiting2start() {
 
         root = W.getElementById('waitingForPlayers')
         W.writeln('Game version: ' + data.version, root);
-        node.game.availableLanguages = data.languages;
 
     }, function() {
         console.log('getJSON finished');
