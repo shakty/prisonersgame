@@ -457,11 +457,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
             node.game.timer.setToZero();
             node.on.data('WIN', function(msg) {
                 var win, exitcode, codeErr;
+                var container;
+                container = W.getElementById('container');
                 codeErr = 'ERROR (code not found)';
                 win = msg.data && msg.data.win || 0;
                 exitcode = msg.data && msg.data.exitcode || codeErr;
-                W.writeln('Your bonus in this game is: ' + win);
-                W.writeln('Your exitcode is: ' + exitcode);
+                W.writeln('Your bonus in this game is: ' + win, container);
+                W.writeln('Your exitcode is: ' + exitcode, container);
             });
         });
 

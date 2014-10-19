@@ -1,11 +1,10 @@
 /**
- * # Client code for Ultimatum Game
+ * # Bot code for Ultimatum Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
- * Handles bidding, and responds between two players.
- * Extensively documented tutorial.
- *
+ * Code for a bot playing the ultimatum game randomly.
+ * 
  * http://www.nodegame.org
  * ---
  */
@@ -39,9 +38,6 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
         var treatment;
         var header;
 
-        debugger;
-        console.log('INIT BOT GC!', node.nodename);
-
         this.other = null;
 
         node.on('BID_DONE', function(offer, to) {
@@ -58,21 +54,6 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
             });
             node.say(response, from, response);
 
-            //////////////////////////////////////////////
-            // nodeGame hint:
-            //
-            // node.done() communicates to the server that
-            // the player has completed the current state.
-            //
-            // What happens next depends on the game.
-            // In this game the player will have to wait
-            // until all the other players are also "done".
-            //
-            // This command is a shorthand for:
-            //
-            // node.emit('DONE');
-            //
-            /////////////////////////////////////////////
             node.done();
         });
 
@@ -89,38 +70,74 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
             }
         };
 
-        this.isValidBid = function(n) {
-            if (!n) return false;
-            n = parseInt(n, 10);
-            return !isNaN(n) && isFinite(n) && n >= 0 && n <= 100;
-        };
-
         treatment = node.env('treatment');
+    });
 
+    ///// STAGES and STEPS
 
+    function precache() {
+        console.log('Precache');
+        // node.timer.randomEmit('DONE');
+        node.done();
+    }
 
-        //node.alias('data', ['in.say.DATA', 'in.set.DATA'], function(text, cb) { return function(msg) { if (msg.text === text) {cb.call(that.game, msg)}};});
+    function instructions() {
+        console.log('Instructions');
+//         var WatchJS = require("watchjs")
+//         var watch = WatchJS.watch;
+//         debugger
+//         watch(node.player, 'stageLevel', function() { 
+//             if (node.player.stageLevel === 100) debugger; 
+//         });
+
+        // node.timer.randomEmit('DONE');
+
+        // node.timer.randomExec(function() {
+        //     debugger;
+        //     node.done();
+        // });
+
+        node.done();
+    }
+
+    function quiz() {
+        console.log('Quiz');
+        node.done();
+    }
+
+    function ultimatum() {
+        var that = this;
+
+        var other;
 
         // Load the BIDDER interface.
         node.on.data('BIDDER', function(msg) {
             console.log('RECEIVED BIDDER!');
             other = msg.data.other;
             node.set('ROLE', 'BIDDER');
-
-            node.timer.randomExec(function() {
+            
+            setTimeout(function() {
                 node.emit('BID_DONE',
                           Math.floor(1+Math.random()*100),
                           other);
-            }, 4000);
+            }, 2000);
+
+//             node.timer.randomExec(function() {
+//                 node.emit('BID_DONE',
+//                           Math.floor(1+Math.random()*100),
+//                           other);
+//             }, 4000);
 
             node.on.data('ACCEPT', function(msg) {
                 console.log(' Your offer was accepted.');
-                node.timer.randomEmit('DONE', 3000);
+                // node.timer.randomEmit('DONE', 3000);
+                node.done();
             });
 
             node.on.data('REJECT', function(msg) {
                 console.log(' Your offer was rejected.');
-                node.timer.randomEmit('DONE', 3000);
+                // node.timer.randomEmit('DONE', 3000);
+                node.done();
             });
         });
 
@@ -131,104 +148,30 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
             node.set('ROLE', 'RESPONDENT');
 
             node.on.data('OFFER', function(msg) {
-                node.timer.randomExec(function() {
-                    that.randomAccept(msg.data, other);
-                }, 3000);
+
+                that.randomAccept(msg.data, other);
+
+//                 node.timer.randomExec(function() {
+//                     that.randomAccept(msg.data, other);
+//                 }, 3000);
             });
         });
-    });
-
-    ///// STAGES and STEPS
-
-    function precache() {
-        console.log('Precache');
-        node.timer.randomEmit('DONE');
-        //node.done();
-    }
-
-    function instructions() {
-        console.log('Instructions');
-        node.timer.randomEmit('DONE');
-        //node.done();
-    }
-
-    function quiz() {
-        console.log('Quiz');
-        node.timer.randomEmit('DONE');
-        //node.done();
-    }
-
-    function ultimatum() {
-        var that = this;
-
-        var other;
-
-//        // Load the BIDDER interface.
-//        node.on.data('BIDDER', function(msg) {
-//            console.log('RECEIVED BIDDER!');
-//            other = msg.data.other;
-//            node.set('ROLE', 'BIDDER');
-//
-//            node.timer.randomExec(function() {
-//                node.emit('BID_DONE',
-//                          Math.floor(1+Math.random()*100),
-//                          other);
-//            }, 4000);
-//
-//            node.on.data('ACCEPT', function(msg) {
-//                console.log(' Your offer was accepted.');
-//                node.timer.randomEmit('DONE', 3000);
-//            });
-//
-//            node.on.data('REJECT', function(msg) {
-//                console.log(' Your offer was rejected.');
-//                node.timer.randomEmit('DONE', 3000);
-//            });
-//        });
-//
-//        // Load the respondent interface.
-//        node.on.data('RESPONDENT', function(msg) {
-//            console.log('RECEIVED RESPONDENT!');
-//            other = msg.data.other;
-//            node.set('ROLE', 'RESPONDENT');
-//
-//            node.on.data('OFFER', function(msg) {
-//                node.timer.randomExec(function() {
-//                    that.randomAccept(msg.data, other);
-//                }, 3000);
-//            });
-//        });
 
         console.log('Ultimatum');
     }
 
     function postgame() {
-        node.timer.randomExec(function() {
-            node.game.timer.doTimeUp();
-        });
+        node.done();
+//         node.timer.randomExec(function() {
+//             node.game.timer.doTimeUp();
+//         });
 
         console.log('Postgame');
     }
 
     function endgame() {
+        node.done();
         console.log('Game ended');
-    }
-
-    function clearFrame() {
-        /*
-        node.emit('INPUT_DISABLE');
-        // We save also the time to complete the step.
-        node.set('timestep', {
-            time: node.timer.getTimeSince('step'),
-            timeup: node.game.timer.gameTimer.timeLeft <= 0
-        });
-        */
-        return true;
-    }
-
-    function notEnoughPlayers() {
-        console.log('Not enough players');
-        node.game.pause();
     }
 
     // Add all the stages into the stager.
@@ -236,84 +179,32 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
 
     stager.addStage({
         id: 'precache',
-        cb: precache,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-        done: clearFrame
+        cb: precache
     });
 
     stager.addStage({
         id: 'instructions',
-        cb: instructions,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-        timer: 90000,
-        done: clearFrame
+        cb: instructions
     });
 
     stager.addStage({
         id: 'quiz',
-        cb: quiz,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-        timer: 60000,
-        done: function() {
-            /*
-            var b, QUIZ, answers, isTimeup;
-            QUIZ = W.getFrameWindow().QUIZ;
-            b = W.getElementById('submitQuiz');
-
-            answers = QUIZ.checkAnswers(b);
-            isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
-
-            if (!answers.__correct__ && !isTimeUp) {
-                return false;
-            }
-
-            answers.timeUp = isTimeUp;
-
-            // On TimeUp there are no answers
-            node.set('QUIZ', answers);
-            node.emit('INPUT_DISABLE');
-            // We save also the time to complete the step.
-            node.set('timestep', {
-                time: node.timer.getTimeSince('step'),
-                timeup: isTimeUp
-            });
-            return true;
-            */
-        }
+        cb: quiz
     });
 
     stager.addStage({
         id: 'ultimatum',
-        cb: ultimatum,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
-        done: clearFrame
+        cb: ultimatum
     });
 
     stager.addStage({
         id: 'endgame',
-        cb: endgame,
-        done: clearFrame
+        cb: endgame
     });
 
     stager.addStage({
         id: 'questionnaire',
-        cb: postgame,
-        timer: 90000,
-        done: function() {
-            /*
-            node.set('questionnaire', {
-                q1: '',
-                q2: 0
-            });
-
-            node.emit('INPUT_DISABLE');
-            node.set('timestep', {
-                time: node.timer.getTimeSince('step'),
-                timeup: isTimeUp
-            });
-            return true;
-            */
-        }
+        cb: postgame
     });
 
     // Now that all the stages have been added,
@@ -333,23 +224,23 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
 
     // Let's add the metadata information.
     game.metadata = {
-        name: 'ultimatum',
-        version: '0.1.0',
-        description: 'no descr'
+        name: 'ultimatum_bot',
+        version: '0.2.0',
+        description: 'Bot randomly playing the ultimatum game'
     };
 
     // Other settings, optional.
     game.settings = {
         publishLevel: 2
     };
+
     game.env = {
         auto: settings.AUTO,
         treatment: treatmentName
     };
-    game.verbosity = 100;
 
+    game.verbosity = 0;
     game.debug = settings.DEBUG;
-
     game.nodename = 'bot2000';
 
     return game;
