@@ -58,16 +58,19 @@ module.exports = function(gameRoom, treatmentName, settings) {
             header = W.generateHeader();
             // Uncomment to visualize the name of the stages.
 //            node.game.visualState = node.widgets.append('VisualState', header);
-            node.game.rounds = node.widgets.append('VisualRound', header);
+            node.game.rounds = node.widgets.append('VisualRound', header, {
+                displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
+                stageOffset: 1
+            });
+
             node.game.timer = node.widgets.append('VisualTimer', header);
-            node.game.lang = node.widgets.append('LanguageSelector', header);
         }
 
         if (!W.getFrame()) {
             W.generateFrame();
         }
 
-        // Add default CSS.
+        // Add default CSS.rounds
         if (node.conf.host) {
             W.addCSS(W.getFrameRoot(), node.conf.host +
                                        '/stylesheets/nodegame.css');
@@ -198,21 +201,20 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function selectLanguage() {
-        if (!node.game.lang.languagesLoaded) {
-            W.lockScreen('Loading languages...');
-
-            node.game.lang.updateAvalaibleLanguages({
-                callback: function(msg) {
-                    W.unlockScreen();
-                }
-            });
-        }
         W.loadFrame('/ultimatum/html/languageSelection.html', function() {
-            var b = W.getElementById('done');
+            var b = W.getElement('input', 'done', {
+                type: "button", value: "Choice Made",
+                className: "btn btn-lg btn-primary"
+            });
+
+            node.game.lang = node.widgets.append('LanguageSelector',
+                W.getFrameDocument().body);
+            W.getFrameDocument().body.appendChild(b);
             b.onclick = function() {
                 node.done();
             };
         });
+
 
         return;
     }
@@ -300,6 +302,9 @@ module.exports = function(gameRoom, treatmentName, settings) {
         var langPath = node.player.lang.path;
 
         var root, b, options, other;
+
+        node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
+                'COUNT_UP_ROUNDS_TO_TOTAL']);
 
         // Load the BIDDER interface.
         node.on.data('BIDDER', function(msg) {
@@ -462,6 +467,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function postgame() {
+        node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
+
         W.loadFrame('/ultimatum/html/' + node.player.lang.path +
             'postgame.html', function() {
                 node.env('auto', function() {
@@ -549,6 +556,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     stager.addStage({
         id: 'selectLanguage',
         cb: selectLanguage,
+        timer: 100000,
         done: clearFrame
     });
 
@@ -680,8 +688,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
     // we can build the game plot
 
     stager.init()
-        .next('selectLanguage')
         .next('precache')
+        .next('selectLanguage')
         .next('instructions')
         .next('quiz')
         .repeat('ultimatum', settings.REPEAT)
