@@ -77,27 +77,25 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
 
     function precache() {
         console.log('Precache');
-        // node.timer.randomEmit('DONE');
-        node.done();
+        node.timer.randomEmit('DONE');
+        //node.done();
     }
 
     function instructions() {
         console.log('Instructions');
 //         var WatchJS = require("watchjs")
 //         var watch = WatchJS.watch;
-//         debugger
 //         watch(node.player, 'stageLevel', function() { 
 //             if (node.player.stageLevel === 100) debugger; 
 //         });
 
-        // node.timer.randomEmit('DONE');
+        node.timer.randomEmit('DONE');
 
         // node.timer.randomExec(function() {
-        //     debugger;
         //     node.done();
         // });
 
-        node.done();
+        //node.done();
     }
 
     function quiz() {
