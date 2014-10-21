@@ -232,7 +232,8 @@ module.exports = function(node, channel, room) {
             if (nPlayers < POOL_SIZE) {
                 // DEBUG
                 //channel.connectBot(room, 'server/game.bot.js');
-                channel.connectBot(room, 'server/includes/wait.bot.js');
+                //channel.connectBot(room, 'server/includes/wait.bot.js');
+                channel.connectBot(room);
                 return;
             }
 
