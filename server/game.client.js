@@ -187,12 +187,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
         return;
         // preCache is broken.
         W.preCache([
-            '/ultimatum/html/' + langPath + node.game.instructionsPage,
-            '/ultimatum/html/' + langPath + 'quiz.html',
-            //'/ultimatum/html/' + langPath + 'bidder.html',  // these two are cached by following
-            //'/ultimatum/html/' + langPath + 'resp.html',    // loadFrame calls (for demonstration)
-            '/ultimatum/html/' + langPath + 'postgame.html',
-            '/ultimatum/html/' + langPath + 'ended.html'
+            '/ultimatum/' + langPath + node.game.instructionsPage,
+            '/ultimatum/' + langPath + 'quiz.html',
+            //'/ultimatum/' + langPath + 'bidder.html',  // these two are cached by following
+            //'/ultimatum/' + langPath + 'resp.html',    // loadFrame calls (for demonstration)
+            '/ultimatum/' + langPath + 'postgame.html',
+            '/ultimatum/' + langPath + 'ended.html'
         ], function() {
             console.log('Precache done.');
             // Pre-Caching done; proceed to the next stage.
@@ -201,7 +201,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function selectLanguage() {
-        W.loadFrame('/ultimatum/html/languageSelection.html', function() {
+        W.loadFrame('/ultimatum/languageSelection.html', function() {
             var b = W.getElement('input', 'done', {
                 type: "button", value: "Choice Made",
                 className: "btn btn-lg btn-primary"
@@ -235,7 +235,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // passed as second parameter.
         //
         /////////////////////////////////////////////
-        W.loadFrame('/ultimatum/html/' + node.player.lang.path +
+        W.loadFrame('/ultimatum/' + node.player.lang.path +
             node.game.instructionsPage, function() {
                 var b = W.getElementById('read');
                 b.onclick = function() {
@@ -270,7 +270,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function quiz() {
         var that = this;
-        W.loadFrame('/ultimatum/html/' + node.player.lang.path + 'quiz.html',
+        W.loadFrame('/ultimatum/' + node.player.lang.path + 'quiz.html',
             function() {
                 var b, QUIZ;
                 node.env('auto', function() {
@@ -335,7 +335,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // all the changes done while the frame was open.
             //
             /////////////////////////////////////////////
-            W.loadFrame('/ultimatum/html/' + langPath + 'bidder.html', function() {
+            W.loadFrame('/ultimatum/' + langPath + 'bidder.html', function() {
 
                 // Start the timer after an offer was received.
                 options = {
@@ -397,7 +397,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             other = msg.data.other;
             node.set('ROLE', 'RESPONDENT');
 
-            W.loadFrame('/ultimatum/html/' + langPath + 'resp.html', function() {
+            W.loadFrame('/ultimatum/' + langPath + 'resp.html', function() {
                 options = {
                     milliseconds: 30000
                 };
@@ -469,7 +469,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     function postgame() {
         node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
 
-        W.loadFrame('/ultimatum/html/' + node.player.lang.path +
+        W.loadFrame('/ultimatum/' + node.player.lang.path +
             'postgame.html', function() {
                 node.env('auto', function() {
                     node.timer.randomExec(function() {
@@ -481,7 +481,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function endgame() {
-        W.loadFrame('/ultimatum/html/' + node.player.lang.path + 'ended.html',
+        W.loadFrame('/ultimatum/' + node.player.lang.path + 'ended.html',
             function() {
                 node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
                 node.game.timer.waitBox.hideBox();
