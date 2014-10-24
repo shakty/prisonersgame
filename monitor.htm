@@ -36,7 +36,8 @@
    
     //node.socket.setSocketType('SocketIo');
     
-    node.connect(conf.url);
+    //node.connect(conf.url);
+    node.connect(conf.url, undefined, { query: 'clientType=mymonitor' });
     node.once('PLAYER_CREATED', function(player) {
       node.game.start();
     });
