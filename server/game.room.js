@@ -231,9 +231,16 @@ module.exports = function(node, channel, room) {
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
                 // DEBUG
-                //channel.connectBot(room, 'server/game.bot.js');
-                //channel.connectBot(room, 'server/includes/wait.bot.js');
-                channel.connectBot(room);
+                //channel.connectBot({
+                //    room: room,
+                //    clientType: 'bot',
+                //    botPath: 'server/includes/wait.bot.js'
+                //});
+                channel.connectBot({
+                    room: room,
+                    clientType: 'bot',
+                    loadGame: false
+                });
                 return;
             }
 
