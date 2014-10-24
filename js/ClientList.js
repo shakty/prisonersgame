@@ -125,8 +125,8 @@
         // Create header for client table:
         this.channelTable.setHeader(['Channel']);
         this.roomTable.setHeader(['Room']);
-        this.clientTable.setHeader([this.selectAll, 'ID', 'Type', 'Stage',
-                                   'Connection', 'SID']);
+        this.clientTable.setHeader([this.selectAll, 'ID', 'Type', 'Admin',
+                                   'Stage', 'Connection', 'SID']);
 
         this.clientsField = null;
         this.msgBar = {};
@@ -516,6 +516,7 @@
                          type:        clientObj.clientType,
                          thisMonitor: (clientObj.id === node.player.id)
                      },
+                     clientObj.admin,
                      GameStage.toHash(clientObj.stage, 'S.s.r'),
                      clientObj.disconnected ? 'disconnected' : 'connected',
                      clientObj.sid]);
