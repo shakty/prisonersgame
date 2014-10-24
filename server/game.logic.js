@@ -63,7 +63,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // the treatment options, and it returns a game object.
     // TODO: Only pass the options from the current treatment; at
     // the moment, the entire game.settings structure is passed.
-    var client = require(gameRoom.clientPath)(gameRoom, treatmentName, settings);
+    var client = require(gameRoom.gamePaths.player)(
+            gameRoom, treatmentName, settings);
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
