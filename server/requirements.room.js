@@ -8,6 +8,8 @@
  * ---
  */
 module.exports = function(node, channel, room) {
+    'use strict';
+    var game;
 
     var path = require('path');
 
