@@ -15,6 +15,12 @@ module.exports = {
     clientPath: "game.client.js",
     botPath: "game.bot.js",
 
+    //gamePaths: {
+    //    logic:  "game.logic.js",
+    //    player: "game.client.js",
+    //    bot:    "game.bot.js"
+    //},
+
     // Group settings.
 
     // How many players have to connect before a random subset is drawn.

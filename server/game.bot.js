@@ -31,7 +31,6 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
 
     // INIT and GAMEOVER
 
-    console.log('REQUIRING BOT!', node.nodename);
     stager.setOnInit(function() {
         var that = this;
         var waitingForPlayers;
@@ -76,18 +75,13 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
     ///// STAGES and STEPS
 
     function precache() {
-        console.log('Precache');
+        console.log('Precache (bot)');
         node.timer.randomEmit('DONE');
         //node.done();
     }
 
     function instructions() {
-        console.log('Instructions');
-//         var WatchJS = require("watchjs")
-//         var watch = WatchJS.watch;
-//         watch(node.player, 'stageLevel', function() { 
-//             if (node.player.stageLevel === 100) debugger; 
-//         });
+        console.log('Instructions (bot)');
 
         node.timer.randomEmit('DONE');
 
@@ -99,7 +93,7 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
     }
 
     function quiz() {
-        console.log('Quiz');
+        console.log('Quiz (bot)');
         node.done();
     }
 
@@ -155,7 +149,7 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
             });
         });
 
-        console.log('Ultimatum');
+        console.log('Ultimatum (bot)');
     }
 
     function postgame() {
@@ -164,12 +158,12 @@ module.exports = function(node, gameRoom, treatmentName, settings) {
 //             node.game.timer.doTimeUp();
 //         });
 
-        console.log('Postgame');
+        console.log('Postgame (bot)');
     }
 
     function endgame() {
         node.done();
-        console.log('Game ended');
+        console.log('Game ended (bot)');
     }
 
     // Add all the stages into the stager.
