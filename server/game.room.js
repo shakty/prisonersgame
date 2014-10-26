@@ -142,7 +142,7 @@ module.exports = function(node, channel, room) {
 //             console.log('not existing token: ', token);
 //             return false;
 //         }
-// 
+//
 //         // Code in use.
 //         //  usage is for LOCAL check, IsUsed for MTURK
 //         if (code.usage || code.IsUsed) {
@@ -154,14 +154,14 @@ module.exports = function(node, channel, room) {
 //                 return false;
 //             }
 //         }
-// 
+//
 //         // Mark the code as in use.
 //         dk.incrementUsage(token);
-// 
+//
 //         if (settings.AUTH === 'MTURK') {
 //             dk.checkIn(token);
 //         }
-// 
+//
 //         // Client Authorized
 //         return true;
     });
@@ -173,7 +173,7 @@ module.exports = function(node, channel, room) {
 
         if (settings.AUTH === 'NO') {
             cid = channel.registry.generateClientId();
-            
+
             // If no auth, add the new code to the db.
             dk.codes.insert({
                 AccessCode: cid,
@@ -311,7 +311,7 @@ module.exports = function(node, channel, room) {
 
         // This callback is executed when a player disconnects from the channel.
         node.on.pdisconnect(function(p) {
-          
+
             // Client really disconnected (not moved into another game room).
             if (channel.registry.clients.disconnected.get(p.id)) {
                 // Free up the code.

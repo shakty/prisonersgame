@@ -6,11 +6,11 @@ function QUIZ(answers) {
     var results = {
         __correct__: false
     };
-    
+
     function checkAnswer(a) {
         if (!a || !answers) return;
-        
-        var checked = getCheckedValue(a);  
+
+        var checked = getCheckedValue(a);
         return checked != answers[a.name];
     }
 
@@ -19,22 +19,22 @@ function QUIZ(answers) {
         J.each(document.forms, function(a) {
             if (!results[a.name]) results[a.name] = [];
             correct = checkAnswer(a);
-            
+
             if (correct) {
                 W.highlight(a, 'ERR');
                 document.getElementById(a.id + '_result').innerHTML = 'Wrong, try again';
-                results[a.name].push(0);	 
+                results[a.name].push(0);
             }
-            else {  
+            else {
                 W.highlight(a, 'OK');
                 document.getElementById(a.id + '_result').innerHTML = 'Correct!';
                 results[a.name].push(1);
                 counter++;
             }
         });
-        
+
         document.getElementById('answers_counter').innerHTML = counter + ' / ' + document.forms.length;
-        
+
         if (counter === document.forms.length) {
             submitButton.disabled = true;
             results.__correct__ = true;
@@ -44,7 +44,7 @@ function QUIZ(answers) {
 
     function getCheckedValue(radioObj) {
         if (!radioObj) return;
-        
+
         if (radioObj.length) {
             for (var i = 0; i < radioObj.length; i++) {
 	        if (radioObj[i].checked) {
@@ -52,7 +52,7 @@ function QUIZ(answers) {
 	        }
 	    }
         }
-        
+
         return radioObj.checked;
     }
 
