@@ -2,8 +2,9 @@
 <title>Ultimatum</title>
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <!-- Loading  nodeGame libraries and CSS -->
-<script src="/socket.io/socket.io.js"></script> 
+<script src="/socket.io/socket.io.js"></script>
 <script src="/javascripts/nodegame-full.js" charset="utf-8"></script>
+<script src="js/RandomOrderExecutor.js"></script>
 <link rel="stylesheet" href="html/css/bootstrap.min.css" />
 <link rel='stylesheet' href='/stylesheets/nodegame.css'></link>
 <link rel='stylesheet' href='/stylesheets/fullheight.css'></link>
@@ -23,12 +24,12 @@
 <!-- <iframe id="mainframe" name="mainframe"></iframe> -->
 <script>
   window.onload = function () {
-      
+
       // Configuring nodegame.
       node.setup('nodegame', {
-	  // HOST needs to be specified only 
+	  // HOST needs to be specified only
 	  // if this file is located in another server
-	  // host: http://myserver.com,	  
+	  // host: http://myserver.com,
           verbosity: 10,
 	  window: {
 	      promptOnleave: false,
@@ -47,7 +48,7 @@
 	      reconnect: false
 	  }
       });
-      
+
       // Connecting to waiting room.
       node.connect("/ultimatum");
   }

@@ -221,6 +221,74 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     function instructions() {
         var that = this;
+        var count = 0;
+
+        // TODO: REMOVE: TESTING RandomOrderExecutor for CIS
+        var randomBlockExecutor;
+        var blockA, blockB, blockC;
+        function makePageLoad(block, page) {
+            return function(executor) {
+                console.log(block + page);
+                W.loadFrame('/ultimatum/questionnaire/'+ block + '/' +
+                    page + '.html', function() {
+                        W.getElementById('done').onclick = function() {
+                            count++; executor.next();
+                        };
+                });
+            };
+        }
+
+        function makeBlockArray(block, pages) {
+            var i, result = [];
+            for (i = 0; i < pages.length; ++i) {
+                result.push(makePageLoad(block,pages[i]));
+            }
+            return result;
+        }
+
+        randomBlockExecutor = new RandomOrderExecutor();
+
+        blockA = function(randomBlockExecutor) {
+            var randomPageExecutor = new RandomOrderExecutor();
+            randomPageExecutor.setCallbacks(
+                makeBlockArray('A', ['1','2','3'])
+            );
+            randomPageExecutor.setOnDone(function() {
+                console.log('A-Block done');
+                randomBlockExecutor.next();
+            });
+            randomPageExecutor.execute();
+        };
+        blockB = function(randomBlockExecutor) {
+            var randomPageExecutor = new RandomOrderExecutor();
+            randomPageExecutor.setCallbacks(
+                makeBlockArray('B', ['1','2','3'])
+            );
+            randomPageExecutor.setOnDone(function() {
+                console.log('B-Block done');
+                randomBlockExecutor.next();
+            });
+            randomPageExecutor.execute();
+        };
+        blockC = function(randomBlockExecutor) {
+            var randomPageExecutor = new RandomOrderExecutor();
+            randomPageExecutor.setCallbacks(
+                makeBlockArray('C', ['1','2','3'])
+            );
+            randomPageExecutor.setOnDone(function() {
+                console.log('C-Block done');
+                randomBlockExecutor.next();
+            });
+            randomPageExecutor.execute();
+        };
+
+        randomBlockExecutor.execute([blockA,blockB,blockC], function() {
+            node.done();
+        });
+
+        return;
+
+        // TODO: REMOVE ABOVE
 
         //////////////////////////////////////////////
         // nodeGame hint:
