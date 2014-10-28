@@ -16,7 +16,7 @@ var constants = ngc.constants;
 
 // Export the game-creating function. It needs the name of the treatment and
 // its options.
-module.exports = function(gameRoom, treatmentName, settings, node_old) {
+module.exports = function(gameRoom, treatmentName, settings, node) {
     var stager;
     var game;
     var MIN_PLAYERS;
@@ -36,10 +36,8 @@ module.exports = function(gameRoom, treatmentName, settings, node_old) {
         var waitingForPlayers;
         var treatment;
         var header;
-        var node = this.node;
 
         this.other = null;
-        //console.log(gameRoom, treatmentName, settings);
 
         node.on('BID_DONE', function(offer, to) {
             node.set('offer', offer);
@@ -77,16 +75,12 @@ module.exports = function(gameRoom, treatmentName, settings, node_old) {
     ///// STAGES and STEPS
 
     function precache() {
-        var node = this.node;
-
         console.log('Precache (bot)');
         node.timer.randomEmit('DONE');
         //node.done();
     }
 
     function instructions() {
-        var node = this.node;
-
         console.log('Instructions (bot)');
 
         node.timer.randomEmit('DONE');
@@ -99,15 +93,11 @@ module.exports = function(gameRoom, treatmentName, settings, node_old) {
     }
 
     function quiz() {
-        var node = this.node;
-
         console.log('Quiz (bot)');
         node.done();
     }
 
     function ultimatum() {
-        var node = this.node;
-
         var that = this;
 
         var other;
@@ -163,8 +153,6 @@ module.exports = function(gameRoom, treatmentName, settings, node_old) {
     }
 
     function postgame() {
-        var node = this.node;
-
         node.done();
 //         node.timer.randomExec(function() {
 //             node.game.timer.doTimeUp();
@@ -174,8 +162,6 @@ module.exports = function(gameRoom, treatmentName, settings, node_old) {
     }
 
     function endgame() {
-        var node = this.node;
-
         node.done();
         console.log('Game ended (bot)');
         // TODO: disconnect

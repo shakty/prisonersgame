@@ -268,11 +268,8 @@ module.exports = function(node, channel, room) {
                     treatmentName: treatment
                 });
 
-                // Asynchronous because connectBot above
-                setTimeout(function() {
-                    gameRoom.setupGame();
-                    gameRoom.startGame(true, []);
-                }, 0);
+                gameRoom.setupGame();
+                gameRoom.startGame(true, []);
             }
 
             // TODO: node.game.pl.size() is unchanged.
