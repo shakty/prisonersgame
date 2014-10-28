@@ -225,7 +225,7 @@ console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS
             node.game.pl.each(function(player) {
                 node.socket.send(node.msg.create({
                     target: 'PCONNECT',
-                    data: p,
+                    data: {id: p.id},
                     to: player.id
                 }));
             });
@@ -233,7 +233,7 @@ console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS
             // Send currently connected players to reconnecting.
             node.socket.send(node.msg.create({
                 target: 'PLIST',
-                data: node.game.pl.db,
+                data: node.game.pl.fetchSubObj('id'),
                 to: p.id
             }));
 
@@ -241,15 +241,13 @@ console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS
             // however here we resend all the stages, and move their game plot.
             console.log('** Player reconnected: ' + p.id + ' **');
             // Setting metadata, settings, and plot.
-            if (!(p.sid[0] === 'D' && p.sid[1] === 'P')) {   // DEBUG
-                node.remoteSetup('game_metadata',  p.id, client.metadata);
-                node.remoteSetup('game_settings', p.id, client.settings);
-                node.remoteSetup('plot', p.id, client.plot);
-                node.remoteSetup('env', p.id, client.env);
-                node.remoteSetup('env', p.id, {
-                    treatment: node.env('treatment')
-                });
-            }
+            node.remoteSetup('game_metadata',  p.id, client.metadata);
+            node.remoteSetup('game_settings', p.id, client.settings);
+            node.remoteSetup('plot', p.id, client.plot);
+            node.remoteSetup('env', p.id, client.env);
+            node.remoteSetup('env', p.id, {
+                treatment: node.env('treatment')
+            });
 
             // Start the game on the reconnecting client.
             node.remoteCommand('start', p.id);

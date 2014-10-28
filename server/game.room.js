@@ -215,9 +215,8 @@ module.exports = function(node, channel, room) {
             wRoom = room.clients.player;
             nPlayers = wRoom.size();
 
-            // Send the client the waiting stage.
-            // DEBUG
-            if (!(p.sid[0] === 'D' && p.sid[1] === 'P')) {
+            // Send players the waiting stage.
+            if (p.clientType === 'player') {
                 node.remoteSetup('game_metadata',  p.id, clientWait.metadata);
                 node.remoteSetup('plot', p.id, clientWait.plot);
                 node.remoteCommand('start', p.id);
@@ -230,7 +229,7 @@ module.exports = function(node, channel, room) {
 
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
-                // DEBUG
+                // Start a bot.
                 //channel.connectBot({
                 //    room: room,
                 //    clientType: 'bot',
@@ -301,14 +300,14 @@ module.exports = function(node, channel, room) {
             node.game.pl.each(function(player) {
                 node.socket.send(node.msg.create({
                     target: 'PCONNECT',
-                    data: p,
+                    data: {id: p.id},
                     to: player.id
                 }));
             });
 
             node.socket.send(node.msg.create({
                 target: 'PLIST',
-                data: node.game.pl.db,
+                data: node.game.pl.fetchSubObj('id'),
                 to: p.id
             }));
 
