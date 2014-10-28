@@ -94,13 +94,13 @@ module.exports = function(node, channel, room) {
 
         // Weird thing.
         if ('string' !== typeof playerId) {
-            console.log('no player: ', player)
+            console.log('no player: ', player);
             return false;
         }
 
         // Weird thing.
         if ('string' !== typeof token) {
-            console.log('no token: ', token)
+            console.log('no token: ', token);
             return false;
         }
 
@@ -246,7 +246,8 @@ module.exports = function(node, channel, room) {
 
             console.log('-----------We have enough players: ' + wRoom.size());
 
-            i = -1, len = Math.floor(nPlayers / GROUP_SIZE);
+            i = -1;
+            len = Math.floor(nPlayers / GROUP_SIZE);
             for ( ; ++i < len ; ) {
 
                 // Doing the random matching.
