@@ -45,7 +45,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
         });
 
         node.on('RESPONSE_DONE', function(response, offer, from) {
-            console.log(response, offer, from);
+            node.info(response + ' ' + offer + ' ' + from);
             node.set('response', {
                 response: response,
                 value: offer,
@@ -59,8 +59,8 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
         this.randomAccept = function(offer, other) {
             var accepted;
             accepted = Math.round(Math.random());
-            console.log('randomaccept');
-            console.log(offer + ' ' + other);
+            node.info('randomaccept');
+            node.info(offer + ' ' + other);
             if (accepted) {
                 node.emit('RESPONSE_DONE', 'ACCEPT', offer, other);
             }
@@ -75,13 +75,13 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
     ///// STAGES and STEPS
 
     function precache() {
-        console.log('Precache (bot)');
+        node.info('Precache');
         node.timer.randomEmit('DONE');
         //node.done();
     }
 
     function instructions() {
-        console.log('Instructions (bot)');
+        node.info('Instructions');
 
         node.timer.randomEmit('DONE');
 
@@ -93,7 +93,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
     }
 
     function quiz() {
-        console.log('Quiz (bot)');
+        node.info('Quiz');
         node.done();
     }
 
@@ -104,7 +104,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
 
         // Load the BIDDER interface.
         node.on.data('BIDDER', function(msg) {
-            console.log('RECEIVED BIDDER!');
+            node.info('RECEIVED BIDDER!');
             other = msg.data.other;
             node.set('ROLE', 'BIDDER');
             
@@ -121,13 +121,13 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
 //             }, 4000);
 
             node.on.data('ACCEPT', function(msg) {
-                console.log(' Your offer was accepted.');
+                node.info(' Your offer was accepted.');
                 // node.timer.randomEmit('DONE', 3000);
                 node.done();
             });
 
             node.on.data('REJECT', function(msg) {
-                console.log(' Your offer was rejected.');
+                node.info(' Your offer was rejected.');
                 // node.timer.randomEmit('DONE', 3000);
                 node.done();
             });
@@ -135,7 +135,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
 
         // Load the respondent interface.
         node.on.data('RESPONDENT', function(msg) {
-            console.log('RECEIVED RESPONDENT!');
+            node.info('RECEIVED RESPONDENT!');
             other = msg.data.other;
             node.set('ROLE', 'RESPONDENT');
 
@@ -149,7 +149,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
             });
         });
 
-        console.log('Ultimatum (bot)');
+        node.info('Ultimatum');
     }
 
     function postgame() {
@@ -158,12 +158,12 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
 //             node.game.timer.doTimeUp();
 //         });
 
-        console.log('Postgame (bot)');
+        node.info('Postgame');
     }
 
     function endgame() {
         node.done();
-        console.log('Game ended (bot)');
+        node.info('Game ended');
         // TODO: disconnect
     }
 
