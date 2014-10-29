@@ -110,7 +110,7 @@ module.exports = function(node, channel, room) {
         console.log("-------------------");
 
         // Code not existing.
-	if (!code) {
+        if (!code) {
             console.log('not existing token: ', token);
             return false;
         }
@@ -122,7 +122,7 @@ module.exports = function(node, channel, room) {
 
         // Code in use.
         //  usage is for LOCAL check, IsUsed for MTURK
-	if (code.valid === false) {
+        if (code.valid === false) {
             if (code.disconnected) {
                 return true;
             }
@@ -130,7 +130,7 @@ module.exports = function(node, channel, room) {
                 console.log('token already in use: ', token);
                 return false;
             }
-	}
+        }
 
         // Client Authorized
         return true;
