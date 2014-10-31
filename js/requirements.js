@@ -40,7 +40,7 @@ function Requirements() {
             return { token: token };
         }
     });
-    
+
     req.onFail = function() {
         var str, args;
         console.log('failed');
@@ -70,7 +70,7 @@ function Requirements() {
         W.sprintf(str, args, div);
         node.store.cookie('token', token);
 
-        div.appendChild(document.createElement('br'));        
+        div.appendChild(document.createElement('br'));
         div.appendChild(document.createElement('br'));
 
         link = document.createElement('a');
@@ -98,7 +98,7 @@ function Requirements() {
     // the _result_ callback with the results of the validation
     // to be displayed on screen.
     function checkToken(result) {
-        
+
         node.connect("/requirements", function() {
             // Timeout is necessary because SERVER needs to send the player id
             setTimeout(function() {
@@ -148,13 +148,13 @@ function Requirements() {
 
             // Setting the property in game.
 
-            game.plot = stager.getState();  
+            game.plot = stager.getState();
 
             // Configuring nodegame.
             node.setup('nodegame', {
-	        // HOST needs to be specified only 
+	        // HOST needs to be specified only
 	        // if this file is located in another server
-	        // host: http://myserver.com,	  
+	        // host: http://myserver.com,
 	        window: {
 	            promptOnleave: false,
                     noEscape: true // Defaults TRUE
@@ -179,7 +179,7 @@ function Requirements() {
             errors.push(e);
         }
 
-        return errors;            
+        return errors;
     }
 
     // Skipped at the moment

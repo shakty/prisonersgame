@@ -139,7 +139,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
                 return;
             }
             // Update last stage reference.
-            node.game.lastStage = currentStage;           
+            node.game.lastStage = currentStage;
 
             for (p in node.game.lastBids) {
                 if (node.game.lastBids.hasOwnProperty(p)) {
@@ -183,7 +183,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         node.on.pdisconnect(function(p) {
 
             delete node.game.memory.stage[node.game.getCurrentGameStage()];
-            
+
             dk.updateCode(p.id, {
                 disconnected: true,
                 stage: p.stage
