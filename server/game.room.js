@@ -217,8 +217,7 @@ module.exports = function(node, channel, room) {
 
             // Send players the waiting stage.
             if (p.clientType === 'player') {
-                node.remoteSetup('game_metadata',  p.id, clientWait.metadata);
-                node.remoteSetup('plot', p.id, clientWait.plot);
+                node.remoteSetup('nodegame', p.id, clientWait);
                 node.remoteCommand('start', p.id);
 
                 node.say('waitingRoom', 'ROOM', {
@@ -230,11 +229,6 @@ module.exports = function(node, channel, room) {
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
                 // Start a bot.
-                //channel.connectBot({
-                //    room: room,
-                //    clientType: 'bot',
-                //    botPath: 'server/includes/wait.bot.js'
-                //});
                 channel.connectBot({
                     room: room,
                     clientType: 'bot',

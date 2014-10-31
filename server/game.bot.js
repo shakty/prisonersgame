@@ -234,7 +234,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
 
     game.verbosity = 0;
     game.debug = settings.DEBUG;
-    game.nodename = 'bot2000';
+    game.nodename = 'bot';
 
     return game;
 };

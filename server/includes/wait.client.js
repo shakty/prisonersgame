@@ -85,3 +85,5 @@ game.metadata = {
     description: 'Presents a simple interface while the client waits to start a game.',
     version: '0.1'
 };
+
+game.nodename = 'player_wait';
