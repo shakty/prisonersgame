@@ -1,0 +1,13 @@
+div#container {
+    max-width: 650px;
+    margin: 0 auto;
+}
+
+.important {
+    color: red;
+    font-weight: bold;
+}
+
+.question {
+    font-weight: bold;
+}
