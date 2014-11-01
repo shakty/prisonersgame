@@ -1,7 +1,7 @@
 {
       "name": "ultimatum",
       "description": "Plays an ultimatum game with nodegame",
-      "version": "0.0.1",
+      "version": "0.5.0",
       "alias": ["u1", "u2"],
       "author": {
         "name": "Stefano Balietti",

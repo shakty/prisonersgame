@@ -162,10 +162,6 @@ return true;
 
             console.log('-----------Player connected ' + p.id);
 
-//            node.remoteAlert('Your code has been marked as in use. Do not ' +
-//                             'leave this page, otherwise you might not be ' +
-//                             'able to join the experiment again.', p.id);
-
             // PlayerList object of waiting players.
             wRoom = room.clients.player;
             nPlayers = wRoom.size();
