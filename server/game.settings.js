@@ -33,7 +33,7 @@ module.exports = {
     CHOSEN_TREATMENT: 'pp',
 
     // Number or rounds to repeat the bidding. *
-    REPEAT: 20,
+    REPEAT: 2,
 
     // Number of coins to split. *
     COINS: 100,
@@ -47,7 +47,7 @@ module.exports = {
     DEBUG: true,
 
     // AUTO-PLAY.
-    AUTO: false,
+    AUTO: true,
 
     // AUTHORIZATION.
     AUTH: 'NO', // MTURK, LOCAL, NO.
@@ -63,5 +63,6 @@ module.exports = {
         }
     }
 
-    // * =  If you change this, you need to update the instructions and quiz
+    // * =  If you change this, you need to update 
+    // the instructions and quiz static files in public/
 };

@@ -58,7 +58,7 @@ module.exports = function(node, channel, room) {
             node.remoteCommand('start', player.id);
         });
 
-        node.on('MTID', function(msg) {
+        node.on('get.MTID', function(msg) {
             var mtid, errUri, code;
 
             console.log('MTID');
