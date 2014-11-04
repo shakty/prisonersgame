@@ -41,6 +41,8 @@ module.exports = {
     // Divider ECU / DOLLARS *
     EXCHANGE_RATE: 2000,
 
+    EXCHANGE_RATE_INSTRUCTIONS: 0.01,
+
     // DEBUG.
     DEBUG: true,
 
@@ -56,7 +58,8 @@ module.exports = {
         pp: {
             name: "pp",
             fullName: "Peer Pressure",
-            description: "Introduces peer pressure to players to not disconnect."
+            description: "Introduces peer pressure to players to not disconnect.",
+            WAIT_TIME: 30
         }
     }
 

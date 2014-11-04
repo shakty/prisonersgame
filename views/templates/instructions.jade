@@ -1,0 +1,22 @@
+extends iframe-layout
+
+block mainContent
+    div(id='container')
+        h1=instructions
+        div(id='instructions')
+            =thisGame
+            br
+            br
+            =inEachRround
+            br
+            br
+            =theRespondant
+            br
+            br
+            =theGame
+            br
+            br
+    =ifYouUnderstood
+    br
+    br
+    input(type='button', id='read', value=proceed, class='btn btn-lg btn-primary')

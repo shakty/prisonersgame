@@ -58,16 +58,19 @@ module.exports = function(gameRoom, treatmentName, settings) {
             header = W.generateHeader();
             // Uncomment to visualize the name of the stages.
 //            node.game.visualState = node.widgets.append('VisualState', header);
-            node.game.rounds = node.widgets.append('VisualRound', header);
-            node.game.timer = node.widgets.append('VisualTimer', header);
+            node.game.rounds = node.widgets.append('VisualRound', header, {
+                displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
+                stageOffset: 1
+            });
 
+            node.game.timer = node.widgets.append('VisualTimer', header);
         }
 
         if (!W.getFrame()) {
             W.generateFrame();
         }
 
-        // Add default CSS.
+        // Add default CSS.rounds
         if (node.conf.host) {
             W.addCSS(W.getFrameRoot(), node.conf.host +
                                        '/stylesheets/nodegame.css');
@@ -148,14 +151,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
         treatment = node.env('treatment');
 
         // Adapting the game to the treatment.
-        node.game.instructionsPage = '/ultimatum/html/';
         if (treatment === 'pp') {
-            node.game.instructionsPage += 'instructions_pp.html';
+            node.game.instructionsPage = 'instructions_pp.html';
         }
         else {
-            node.game.instructionsPage += 'instructions.html';
+            node.game.instructionsPage = 'instructions.html';
         }
-
     });
 
     stager.setOnGameOver(function() {
@@ -180,17 +181,18 @@ module.exports = function(gameRoom, treatmentName, settings) {
     //
     /////////////////////////////////////////////
     function precache() {
+        var langPath = node.player.lang.path;
         W.lockScreen('Loading...');
         node.done();
         return;
         // preCache is broken.
         W.preCache([
-            node.game.instructionsPage,
-            '/ultimatum/html/quiz.html',
-            //'/ultimatum/html/bidder.html',  // these two are cached by following
-            //'/ultimatum/html/resp.html',    // loadFrame calls (for demonstration)
-            '/ultimatum/html/postgame.html',
-            '/ultimatum/html/ended.html'
+            '/ultimatum/' + langPath + node.game.instructionsPage,
+            '/ultimatum/' + langPath + 'quiz.html',
+            //'/ultimatum/' + langPath + 'bidder.html',  // these two are cached by following
+            //'/ultimatum/' + langPath + 'resp.html',    // loadFrame calls (for demonstration)
+            '/ultimatum/' + langPath + 'postgame.html',
+            '/ultimatum/' + langPath + 'ended.html'
         ], function() {
             console.log('Precache done.');
             // Pre-Caching done; proceed to the next stage.
@@ -198,8 +200,95 @@ module.exports = function(gameRoom, treatmentName, settings) {
         });
     }
 
+    function selectLanguage() {
+        W.loadFrame('/ultimatum/languageSelection.html', function() {
+            var b = W.getElement('input', 'done', {
+                type: "button", value: "Choice Made",
+                className: "btn btn-lg btn-primary"
+            });
+
+            node.game.lang = node.widgets.append('LanguageSelector',
+                W.getFrameDocument().body);
+            W.getFrameDocument().body.appendChild(b);
+            b.onclick = function() {
+                node.done();
+            };
+        });
+
+
+        return;
+    }
+
     function instructions() {
         var that = this;
+        var count = 0;
+
+//         // TODO: REMOVE: TESTING RandomOrderExecutor for CIS
+//         var randomBlockExecutor;
+//         var blockA, blockB, blockC;
+//         function makePageLoad(block, page) {
+//             return function(executor) {
+//                 console.log(block + page);
+//                 W.loadFrame('/ultimatum/questionnaire/'+ block + '/' +
+//                     page + '.html', function() {
+//                         W.getElementById('done').onclick = function() {
+//                             count++; executor.next();
+//                         };
+//                 });
+//             };
+//         }
+// 
+//         function makeBlockArray(block, pages) {
+//             var i, result = [];
+//             for (i = 0; i < pages.length; ++i) {
+//                 result.push(makePageLoad(block,pages[i]));
+//             }
+//             return result;
+//         }
+// 
+//         randomBlockExecutor = new RandomOrderExecutor();
+// 
+//         blockA = function(randomBlockExecutor) {
+//             var randomPageExecutor = new RandomOrderExecutor();
+//             randomPageExecutor.setCallbacks(
+//                 makeBlockArray('A', ['1','2','3'])
+//             );
+//             randomPageExecutor.setOnDone(function() {
+//                 console.log('A-Block done');
+//                 randomBlockExecutor.next();
+//             });
+//             randomPageExecutor.execute();
+//         };
+//         blockB = function(randomBlockExecutor) {
+//             var randomPageExecutor = new RandomOrderExecutor();
+//             randomPageExecutor.setCallbacks(
+//                 makeBlockArray('B', ['1','2','3'])
+//             );
+//             randomPageExecutor.setOnDone(function() {
+//                 console.log('B-Block done');
+//                 randomBlockExecutor.next();
+//             });
+//             randomPageExecutor.execute();
+//         };
+//         blockC = function(randomBlockExecutor) {
+//             var randomPageExecutor = new RandomOrderExecutor();
+//             randomPageExecutor.setCallbacks(
+//                 makeBlockArray('C', ['1','2','3'])
+//             );
+//             randomPageExecutor.setOnDone(function() {
+//                 console.log('C-Block done');
+//                 randomBlockExecutor.next();
+//             });
+//             randomPageExecutor.execute();
+//         };
+// 
+//         randomBlockExecutor.execute([blockA,blockB,blockC], function() {
+//             node.done();
+//         });
+// 
+//         return;
+
+        // TODO: REMOVE ABOVE
 
         //////////////////////////////////////////////
         // nodeGame hint:
@@ -214,47 +303,48 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // passed as second parameter.
         //
         /////////////////////////////////////////////
-        W.loadFrame(node.game.instructionsPage, function() {
-            var b = W.getElementById('read');
-            b.onclick = function() {
-                node.done();
-            };
+        W.loadFrame('/ultimatum/' + node.player.lang.path +
+            node.game.instructionsPage, function() {
+                var b = W.getElementById('read');
+                b.onclick = function() {
+                    node.done();
+                };
 
-            ////////////////////////////////////////////////
-            // nodeGame hint:
-            //
-            // node.env executes a function conditionally to
-            // the environments defined in the configuration
-            // options.
-            //
-            // If the 'auto' environment was set to TRUE,
-            // then the function will be executed
-            //
-            ////////////////////////////////////////////////
-            node.env('auto', function() {
-
-                //////////////////////////////////////////////
+                ////////////////////////////////////////////////
                 // nodeGame hint:
                 //
-                // Emit an event randomly in a time interval
-                // from 0 to 2000 milliseconds
+                // node.env executes a function conditionally to
+                // the environments defined in the configuration
+                // options.
                 //
-                //////////////////////////////////////////////
-                node.timer.randomEmit('DONE', 2000);
-            });
+                // If the 'auto' environment was set to TRUE,
+                // then the function will be executed
+                //
+                ////////////////////////////////////////////////
+                node.env('auto', function() {
 
+                    //////////////////////////////////////////////
+                    // nodeGame hint:
+                    //
+                    // Emit an event randomly in a time interval
+                    // from 0 to 2000 milliseconds
+                    //
+                    //////////////////////////////////////////////
+                    node.timer.randomEmit('DONE', 2000);
+            });
         });
         console.log('Instructions');
     }
 
     function quiz() {
         var that = this;
-        W.loadFrame('/ultimatum/html/quiz.html', function() {
-            var b, QUIZ;
-            node.env('auto', function() {
-                node.timer.randomExec(function() {
-                    node.game.timer.doTimeUp();
-                });
+        W.loadFrame('/ultimatum/' + node.player.lang.path + 'quiz.html',
+            function() {
+                var b, QUIZ;
+                node.env('auto', function() {
+                    node.timer.randomExec(function() {
+                        node.game.timer.doTimeUp();
+                    });
             });
         });
         console.log('Quiz');
@@ -277,7 +367,12 @@ module.exports = function(gameRoom, treatmentName, settings) {
         /////////////////////////////////////////////
         var that = this;
 
+        var langPath = node.player.lang.path;
+
         var root, b, options, other;
+
+        node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
+                'COUNT_UP_ROUNDS_TO_TOTAL']);
 
         // Load the BIDDER interface.
         node.on.data('BIDDER', function(msg) {
@@ -308,7 +403,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             // all the changes done while the frame was open.
             //
             /////////////////////////////////////////////
-            W.loadFrame('/ultimatum/html/bidder.html', function() {
+            W.loadFrame('/ultimatum/' + langPath + 'bidder.html', function() {
 
                 // Start the timer after an offer was received.
                 options = {
@@ -370,7 +465,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
             other = msg.data.other;
             node.set('ROLE', 'RESPONDENT');
 
-            W.loadFrame('/ultimatum/html/resp.html', function() {
+            W.loadFrame('/ultimatum/' + langPath + 'resp.html', function() {
                 options = {
                     milliseconds: 30000
                 };
@@ -440,28 +535,32 @@ module.exports = function(gameRoom, treatmentName, settings) {
     }
 
     function postgame() {
-        W.loadFrame('/ultimatum/html/postgame.html', function() {
-            node.env('auto', function() {
-                node.timer.randomExec(function() {
-                    node.game.timer.doTimeUp();
-                });
-            });
+        node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
+
+        W.loadFrame('/ultimatum/' + node.player.lang.path +
+            'postgame.html', function() {
+                node.env('auto', function() {
+                    node.timer.randomExec(function() {
+                        node.game.timer.doTimeUp();
+                    });
+             });
         });
         console.log('Postgame');
     }
 
     function endgame() {
-        W.loadFrame('/ultimatum/html/ended.html', function() {
-            node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
-            node.game.timer.waitBox.hideBox();
-            node.game.timer.setToZero();
-            node.on.data('WIN', function(msg) {
-                var win, exitcode, codeErr;
-                codeErr = 'ERROR (code not found)';
-                win = msg.data && msg.data.win || 0;
-                exitcode = msg.data && msg.data.exitcode || codeErr;
-                W.writeln('Your bonus in this game is: ' + win);
-                W.writeln('Your exitcode is: ' + exitcode);
+        W.loadFrame('/ultimatum/' + node.player.lang.path + 'ended.html',
+            function() {
+                node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
+                node.game.timer.waitBox.hideBox();
+                node.game.timer.setToZero();
+                node.on.data('WIN', function(msg) {
+                    var win, exitcode, codeErr;
+                    codeErr = 'ERROR (code not found)';
+                    win = msg.data && msg.data.win || 0;
+                    exitcode = msg.data && msg.data.exitcode || codeErr;
+                    W.writeln('Your bonus in this game is: ' + win);
+                    W.writeln('Your exitcode is: ' + exitcode);
             });
         });
 
@@ -521,6 +620,13 @@ module.exports = function(gameRoom, treatmentName, settings) {
     // Other stepRules are: SOLO, SYNC_STAGE, SYNC_STEP, OTHERS_SYNC_STEP.
     // In this case the client will wait for command from the server.
     stager.setDefaultStepRule(stepRules.WAIT);
+
+    stager.addStage({
+        id: 'selectLanguage',
+        cb: selectLanguage,
+        timer: 100000,
+        done: clearFrame
+    });
 
     stager.addStage({
         id: 'precache',
@@ -651,6 +757,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     stager.init()
         .next('precache')
+        .next('selectLanguage')
         .next('instructions')
         .next('quiz')
         .repeat('ultimatum', settings.REPEAT)

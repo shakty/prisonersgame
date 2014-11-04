@@ -321,6 +321,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         console.log('Pre-Cache');
     }
 
+    function selectLanguage() {
+        console.log('Select Language');
+    }
+
     function instructions() {
         console.log('Instructions');
     }
@@ -335,14 +339,14 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     }
 
     function questionnaire() {
-        console.log('questionnaire');
+        console.log('Questionnaire');
     }
 
     function endgame() {
         var code, exitcode, accesscode;
         var bonusFile, bonus;
 
-        console.log('endgame');
+        console.log('Endgame');
 
         bonusFile = DUMP_DIR + 'bonus.csv';
 
@@ -422,6 +426,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     });
 
     stager.addStage({
+        id: 'selectLanguage',
+        cb: selectLanguage,
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
+    });
+
+    stager.addStage({
         id: 'instructions',
         cb: instructions,
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
@@ -455,6 +465,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager
         .init()
         .next('precache')
+        .next('selectLanguage')
         .next('instructions')
         .next('quiz')
         .repeat('ultimatum', REPEAT)

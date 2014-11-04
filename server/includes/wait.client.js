@@ -54,11 +54,12 @@ function waiting2start() {
     // acquired.
     //
     /////////////////////////////////////////////
-    node.getJSON(['/ultimatum/package.json'], function(data) {
+    node.getJSON(['/ultimatum/data_example.json'], function(data) {
         var root;
 
         root = W.getElementById('waitingForPlayers')
         W.writeln('Game version: ' + data.version, root);
+
     }, function() {
         console.log('getJSON finished');
     } );
@@ -82,6 +83,6 @@ game.plot = stager.getState();
 
 game.metadata = {
     name: 'Waiting 2 Start - Client',
-    description: 'Presents a simple interface while the client waits to start a game.',
+    description: 'Creates a basic interface while waiting to start a game.',
     version: '0.1'
 };
