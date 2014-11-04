@@ -25,7 +25,8 @@ function Requirements() {
 
 
     if ('undefined' === token || token === '') {
-        alert('You came to this page following a wrong link. Please report the error in a trouble ticket.');
+        alert('You came to this page following a wrong link. ' +
+              'Please report the error in a trouble ticket.');
     }
 
     // Requirements Box.
@@ -99,23 +100,22 @@ function Requirements() {
     // to be displayed on screen.
     function checkToken(result) {
 
-        node.connect("/requirements", function() {
-            // Timeout is necessary because SERVER needs to send the player id
-            setTimeout(function() {
-                node.get('MTID', function(authorized) {
-                    var msg;
-                    if (authorized.success) {
-                        gameLink = authorized.gameLink;
-                        // No errors.
-                        result([]);
-                    }
-                    else {
-                        msg = 'Token authorization failed: ' + authorized.msg;
-                        result([msg]);
-                    }
-                }, 'SERVER', token);
-            });
-        }, 500);
+        node.connect("/requirements");
+        node.on('PLAYER_CREATED', function() {
+            
+            node.get('MTID', function(authorized) {
+                var msg;
+                if (authorized.success) {
+                    gameLink = authorized.gameLink;
+                    // No errors.
+                    result([]);
+                }
+                else {
+                    msg = 'Token authorization failed: ' + authorized.msg;
+                    result([msg]);
+                }
+            }, 'SERVER', token);
+        });
     }
 
     function nodeGameSetup() {
