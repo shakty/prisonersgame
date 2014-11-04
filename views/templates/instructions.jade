@@ -1,23 +1,21 @@
-doctype html
-title=title
-link(rel='stylesheet', href='/ultimatum/html/css/bootstrap.min.css')
-link(rel='stylesheet', type='text/css', href='../css/style.css')
-body
+extends iframe-layout
+
+block mainContent
     div(id='container')
-    h1=instructions
-    div(id='instructions')
-        =thisGame
-        br
-        br
-        =inEachRround
-        br
-        br
-        =theRespondant
-        br
-        br
-        =theGame
-        br
-        br
+        h1=instructions
+        div(id='instructions')
+            =thisGame
+            br
+            br
+            =inEachRround
+            br
+            br
+            =theRespondant
+            br
+            br
+            =theGame
+            br
+            br
     =ifYouUnderstood
     br
     br

@@ -1,9 +1,9 @@
-doctype html
-title=title
-link(rel='stylesheet', href='/ultimatum/html/css/bootstrap.min.css')
-link(rel='stylesheet', type='text/css', href='../css/quiz.css')
-link(rel='stylesheet', type='text/css', href='../css/style.css')
-body
+extends iframe-layout
+
+block extraHead
+    link(rel='stylesheet', type='text/css', href='/ultimatum/css/quiz.css')
+
+block mainContent
     div(id='container_quiz')
         h1=beforeStarting
 
@@ -47,11 +47,11 @@ body
                 button(onclick='javascript:parent.node.done();', id='submitQuiz', class='btn btn-lg btn-primary')!=clickHere+'<br>'
                     =' '+correctAnswers+' '
                     span(id='answers_counter') 0 / 3
-script(src='/ultimatum/js/quiz.js')
-script(type='text/javascript').
- var treatment = parent.node.env('treatment');
-    QUIZ = QUIZ({
-        howMuch: 100,
-        reject: 3,
-        disconnect:  treatment == 'pp' ? 1 : 3
-    });
+    script(src='/ultimatum/js/quiz.js')
+    script(type='text/javascript').
+        var treatment = parent.node.env('treatment');
+            QUIZ = QUIZ({
+                howMuch: 100,
+                reject: 3,
+                disconnect:  treatment == 'pp' ? 1 : 3
+            });

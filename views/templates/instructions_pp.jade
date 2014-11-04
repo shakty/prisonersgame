@@ -1,8 +1,7 @@
-title=title
-link(rel='stylesheet', href='/ultimatum/html/css/bootstrap.min.css')
-link(rel='stylesheet', type='text/css', href='/ultimatum/html/css/style.css')
-body
-    div(id='container')
+extends iframe-layout
+
+block mainContent
+   div(id='container')
         h1=instructionsOfTheUltimatumGame
         div(id='instructions)
             =thisGameIsPlayed
