@@ -37,12 +37,18 @@ module.exports = function(auth) {
     }
 
     // Creating an authorization function for the players.
-    // This is executed before the client the PCONNECT listener.
+    // This is executed before the PCONNECT listener.
     // Here direct messages to the client can be sent only using
     // his socketId property, since no clientId has been created yet.
-    function authPlayers(header, cookies, room) {
+    function authPlayers(channel, info) {
 
         var code, player, token;
+        var header, cookies, room, clientType;
+
+        header = info.headers;
+        cookies = info.cookies;
+        room = info.startingRoom;
+        clientType = info.clientType;
 
         if (settings.AUTH === 'NO') {
             return true;
@@ -98,7 +104,7 @@ module.exports = function(auth) {
     }
 
     // Assigns Player Ids based on cookie token.
-    function idGen(headers, cookies, validCookie, ids, info) {
+    function idGen(channel, info) {
         var cid;
 
         if (settings.AUTH === 'NO') {
@@ -111,6 +117,9 @@ module.exports = function(auth) {
             });
             return cid;
         }
+
+        cookies = info.cookies;
+        validCookie = info.validSessionCookie;
 
         // Return the id only if token was validated.
         // More checks could be done here to ensure that token is unique in ids.
