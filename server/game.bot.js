@@ -84,12 +84,6 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
         node.info('Instructions');
 
         node.timer.randomEmit('DONE');
-
-        // node.timer.randomExec(function() {
-        //     node.done();
-        // });
-
-        //node.done();
     }
 
     function quiz() {
@@ -114,12 +108,6 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
                           other);
             }, 2000);
 
-//             node.timer.randomExec(function() {
-//                 node.emit('BID_DONE',
-//                           Math.floor(1+Math.random()*100),
-//                           other);
-//             }, 4000);
-
             node.on.data('ACCEPT', function(msg) {
                 node.info(' Your offer was accepted.');
                 // node.timer.randomEmit('DONE', 3000);
@@ -140,12 +128,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
             node.set('ROLE', 'RESPONDENT');
 
             node.on.data('OFFER', function(msg) {
-
                 that.randomAccept(msg.data, other);
-
-//                 node.timer.randomExec(function() {
-//                     that.randomAccept(msg.data, other);
-//                 }, 3000);
             });
         });
 
@@ -166,38 +149,31 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
     // Add all the stages into the stager.
     stager.setDefaultStepRule(stepRules.WAIT);
 
-    stager.addStage({
-        id: 'precache',
+    stager.extendStage('precache', {
         cb: precache
     });
 
-    stager.addStage({
-        id: 'instructions',
+    stager.extendStage('instructions', {
         cb: instructions
     });
 
-    stager.addStage({
-        id: 'quiz',
+    stager.extendStage('quiz', {
         cb: quiz
     });
 
-    stager.addStage({
-        id: 'ultimatum',
+    stager.extendStage('ultimatum', {
         cb: ultimatum
     });
 
-    stager.addStage({
-        id: 'endgame',
+    stager.extendStage('endgame', {
         cb: endgame
     });
 
-    stager.addStage({
-        id: 'questionnaire',
+    stager.extendStage('questionnaire', {
         cb: postgame
     });
 
-    stager.addStage({
-        id: 'selectLanguage',
+    stager.extendStage('selectLanguage', {
         cb: function() { 
             console.log('selectLanguage');
             node.done();

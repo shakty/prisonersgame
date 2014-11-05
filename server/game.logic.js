@@ -97,7 +97,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
             // Send a message to each player with their role
             // and the id of the other player.
-console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS', respondent.id);
+            console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS', respondent.id);
             node.say('BIDDER', bidder.id, data_b);
             node.say('RESPONDENT', respondent.id, data_r);
         }
@@ -309,31 +309,6 @@ console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS
 
     // Functions
 
-    function precache() {
-        console.log('Pre-Cache');
-    }
-
-    function selectLanguage() {
-        console.log('Select Language');
-    }
-
-    function instructions() {
-        console.log('Instructions');
-    }
-
-    function quiz() {
-        console.log('Quiz');
-    }
-
-    function ultimatum() {
-        console.log('Ultimatum');
-        doMatch();
-    }
-
-    function questionnaire() {
-        console.log('Questionnaire');
-    }
-
     function endgame() {
         var code, exitcode, accesscode;
         var bonusFile, bonus;
@@ -406,55 +381,40 @@ console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS
         }, 30000);
     }
 
+    // Extending default stages.
+
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
-    // Adding the stages. We can later on define the rules and order that
-    // will determine their execution.
-    stager.addStage({
-        id: 'precache',
-        cb: precache,
+    stager.extendStage('precache', {
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
+        cb: function() {}
+    });
+
+    stager.extendStage('selectLanguage', {
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
+        cb: function() {}
+    });
+
+    stager.extendStage('instructions', {
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
+        cb: function() {}
+    });
+
+    stager.extendStage('quiz', {
+        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
+        cb: function() {}
+    });
+
+    stager.extendStage('ultimatum', {
+        cb: function() {
+            this.node.log('Ultimatum');
+            doMatch();
+        },
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
-    stager.addStage({
-        id: 'selectLanguage',
-        cb: selectLanguage,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
-    });
-
-    stager.addStage({
-        id: 'instructions',
-        cb: instructions,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
-    });
-
-    stager.addStage({
-        id: 'quiz',
-        cb: quiz,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
-    });
-
-    stager.addStage({
-        id: 'ultimatum',
-        cb: ultimatum,
-        minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
-    });
-
-    stager.addStage({
-        id: 'questionnaire',
-        cb: questionnaire
-    });
-
-    stager.addStage({
-        id: 'selectLanguage',
-        cb: function() { 
-            console.log('selectLanguage');
-        }
-    });
-
-    stager.addStage({
-        id: 'endgame',
+    stager.extendStage('endgame', {
         cb: endgame
     });
 
