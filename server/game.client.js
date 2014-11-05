@@ -26,6 +26,11 @@ module.exports = function(gameRoom, treatmentName, settings) {
     game = {};
     MIN_PLAYERS = settings.MIN_PLAYERS;
 
+
+    // Import the stager.
+    // var gameSequence = require(__dirname + '/game.stages.js')(settings);
+    // var stager = ngc.getStager(gameSequence);
+
     // GLOBALS
 
     game.globals = {};

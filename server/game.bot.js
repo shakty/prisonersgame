@@ -200,11 +200,20 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
         cb: postgame
     });
 
+    stager.addStage({
+        id: 'selectLanguage',
+        cb: function() { 
+            console.log('selectLanguage');
+            node.done();
+        }
+    });
+
     // Now that all the stages have been added,
     // we can build the game plot
 
     stager.init()
         .next('precache')
+        .next('selectLanguage')
         .next('instructions')
         .next('quiz')
         .repeat('ultimatum', settings.REPEAT)

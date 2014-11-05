@@ -16,8 +16,11 @@ module.exports = function(node, channel, room) {
     // Load settings.
     var settings = require(__dirname + '/game.settings.js');
 
+    var basedir = channel.resolveGameDir('ultimatum');
+
     // Reads in descil-mturk configuration.
-    var confPath = path.resolve(__dirname, 'descil.conf.js');
+    var confPath = basedir + '/auth/descil.conf.js';
+
     var dk = require('descil-mturk')(confPath);
 
     // Creates a stager object to define the game stages.

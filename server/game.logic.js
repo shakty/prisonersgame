@@ -67,21 +67,9 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             gameRoom, treatmentName, settings);
 
     // Reads in descil-mturk configuration.
-    var confPath = path.resolve(__dirname, 'descil.conf.js');
+    var basedir = channel.resolveGameDir('ultimatum');
+    var confPath = basedir + '/auth/descil.conf.js';
     var dk = require('descil-mturk')(confPath);
-
-    function codesNotFound() {
-        if (!dk.codes.size()) {
-            throw new Error('game.logic: no codes found.');
-        }
-    }
-
-    if (settings.AUTH === 'MTURK') {
-        dk.getCodes(codesNotFound);
-    }
-    else if (settings.AUTH === 'LOCAL') {
-        dk.readCodes(codesNotFound);
-    }
 
     function doMatch() {
         var g, bidder, respondent, data_b, data_r;
@@ -454,6 +442,13 @@ console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS
     stager.addStage({
         id: 'questionnaire',
         cb: questionnaire
+    });
+
+    stager.addStage({
+        id: 'selectLanguage',
+        cb: function() { 
+            console.log('selectLanguage');
+        }
     });
 
     stager.addStage({

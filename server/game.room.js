@@ -16,6 +16,11 @@ module.exports = function(node, channel, room) {
     // Load settings.
     var settings = require(__dirname + '/game.settings.js');
 
+    var basedir = channel.resolveGameDir('ultimatum');
+
+    // Reads in descil-mturk configuration.
+    var confPath = basedir + '/auth/descil.conf.js';
+
     // Load the code database.
     var dk = require('descil-mturk')(confPath);
 
@@ -132,6 +137,7 @@ module.exports = function(node, channel, room) {
                     treatmentName: treatment
                 });
 
+                debugger
                 gameRoom.setupGame();
                 gameRoom.startGame(true, []);
             }
