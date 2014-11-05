@@ -63,7 +63,8 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // the treatment options, and it returns a game object.
     // TODO: Only pass the options from the current treatment; at
     // the moment, the entire game.settings structure is passed.
-    var client = require(gameRoom.clientPath)(gameRoom, treatmentName, settings);
+    var client = require(gameRoom.gamePaths.player)(
+            gameRoom, treatmentName, settings);
 
     // Reads in descil-mturk configuration.
     var confPath = path.resolve(__dirname, 'descil.conf.js');
@@ -106,6 +107,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
             // Send a message to each player with their role
             // and the id of the other player.
+console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS', respondent.id);
             node.say('BIDDER', bidder.id, data_b);
             node.say('RESPONDENT', respondent.id, data_r);
         }
@@ -223,7 +225,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             node.game.pl.each(function(player) {
                 node.socket.send(node.msg.create({
                     target: 'PCONNECT',
-                    data: p,
+                    data: {id: p.id},
                     to: player.id
                 }));
             });
@@ -231,7 +233,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
             // Send currently connected players to reconnecting.
             node.socket.send(node.msg.create({
                 target: 'PLIST',
-                data: node.game.pl.db,
+                data: node.game.pl.fetchSubObj('id'),
                 to: p.id
             }));
 

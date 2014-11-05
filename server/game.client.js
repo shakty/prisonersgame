@@ -792,6 +792,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     game.verbosity = 100;
 
     game.debug = settings.DEBUG;
+    game.nodename = 'player';
 
     return game;
 };

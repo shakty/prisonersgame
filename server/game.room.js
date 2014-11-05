@@ -16,25 +16,8 @@ module.exports = function(node, channel, room) {
     // Load settings.
     var settings = require(__dirname + '/game.settings.js');
 
-    // Reads in descil-mturk configuration.
-    var confPath = path.resolve(__dirname, 'descil.conf.js');
-
     // Load the code database.
     var dk = require('descil-mturk')(confPath);
-    function codesNotFound() {
-        if (!dk.codes.size()) {
-            throw new Error('game.room: no codes found.');
-        }
-        // Add a ref to the node obj.
-        node.dk = dk;
-    }
-
-    if (settings.AUTH === 'MTURK') {
-        dk.getCodes(codesNotFound);
-    }
-    else if (settings.AUTH === 'LOCAL') {
-        dk.readCodes(codesNotFound);
-    }
 
     // Loads the database layer. If you do not use an external database
     // you do not need these lines.
@@ -76,119 +59,6 @@ module.exports = function(node, channel, room) {
         return treatment;
     }
 
-    // Creating an authorization function for the players.
-    // This is executed before the client the PCONNECT listener.
-    // Here direct messages to the client can be sent only using
-    // his socketId property, since no clientId has been created yet.
-    channel.player.authorization(function(header, cookies, room) {
-        var code, player, token;
-
-        if (settings.AUTH === 'NO') {
-            return true;
-        }
-
-        playerId = cookies.player;
-        token = cookies.token;
-
-        console.log('game.room: checking auth.');
-
-        // Weird thing.
-        if ('string' !== typeof playerId) {
-            console.log('no player: ', player)
-            return false;
-        }
-
-        // Weird thing.
-        if ('string' !== typeof token) {
-            console.log('no token: ', token)
-            return false;
-        }
-
-        code = dk.codeExists(token);
-
-        console.log(code);
-        console.log("-------------------");
-
-        // Code not existing.
-	if (!code) {
-            console.log('not existing token: ', token);
-            return false;
-        }
-
-        if (code.checkedOut) {
-            console.log('token was already checked out: ', token);
-            return false;
-        }
-
-        // Code in use.
-        //  usage is for LOCAL check, IsUsed for MTURK
-	if (code.valid === false) {
-            if (code.disconnected) {
-                return true;
-            }
-            else {
-                console.log('token already in use: ', token);
-                return false;
-            }
-	}
-
-        // Client Authorized
-        return true;
-
-// Old code.
-
-//         // Code not existing.
-//         if (!code) {
-//             console.log('not existing token: ', token);
-//             return false;
-//         }
-//
-//         // Code in use.
-//         //  usage is for LOCAL check, IsUsed for MTURK
-//         if (code.usage || code.IsUsed) {
-//             if (code.disconnected) {
-//                 return true;
-//             }
-//             else {
-//                 console.log('token already in use: ', token);
-//                 return false;
-//             }
-//         }
-//
-//         // Mark the code as in use.
-//         dk.incrementUsage(token);
-//
-//         if (settings.AUTH === 'MTURK') {
-//             dk.checkIn(token);
-//         }
-//
-//         // Client Authorized
-//         return true;
-    });
-
-    // Assigns Player Ids based on cookie token.
-    channel.player.clientIdGenerator(function(headers, cookies, validCookie,
-                                              ids, info) {
-        var cid;
-
-        if (settings.AUTH === 'NO') {
-            cid = channel.registry.generateClientId();
-
-            // If no auth, add the new code to the db.
-            dk.codes.insert({
-                AccessCode: cid,
-                ExitCode: cid + '_exit'
-            });
-            return cid;
-        }
-
-        // Return the id only if token was validated.
-        // More checks could be done here to ensure that token is unique in ids.
-        if (cookies.token && validCookie) {
-            return cookies.token;
-        }
-    });
-
     // Creating an init function.
     // Event listeners registered here are valid for all the stages of the game.
     stager.setOnInit(function() {
@@ -215,24 +85,32 @@ module.exports = function(node, channel, room) {
             wRoom = room.clients.player;
             nPlayers = wRoom.size();
 
-            // Send the client the waiting stage.
-            node.remoteSetup('game_metadata',  p.id, clientWait.metadata);
-            node.remoteSetup('plot', p.id, clientWait.plot);
-            node.remoteCommand('start', p.id);
+            // Send players the waiting stage.
+            if (p.clientType === 'player') {
+                node.remoteSetup('nodegame', p.id, clientWait);
+                node.remoteCommand('start', p.id);
 
-            node.say('waitingRoom', 'ROOM', {
-                poolSize: POOL_SIZE,
-                nPlayers: nPlayers
-            });
+                node.say('waitingRoom', 'ROOM', {
+                    poolSize: POOL_SIZE,
+                    nPlayers: nPlayers
+                });
+            }
 
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
+                // Start a bot.
+                channel.connectBot({
+                    room: room,
+                    clientType: 'bot',
+                    loadGame: false
+                });
                 return;
             }
 
             console.log('-----------We have enough players: ' + wRoom.size());
 
-            i = -1, len = Math.floor(nPlayers / GROUP_SIZE);
+            i = -1;
+            len = Math.floor(nPlayers / GROUP_SIZE);
             for ( ; ++i < len ; ) {
 
                 // Doing the random matching.
@@ -255,7 +133,7 @@ module.exports = function(node, channel, room) {
                 });
 
                 gameRoom.setupGame();
-                gameRoom.startGame();
+                gameRoom.startGame(true, []);
             }
 
             // TODO: node.game.pl.size() is unchanged.
@@ -286,14 +164,14 @@ module.exports = function(node, channel, room) {
             node.game.pl.each(function(player) {
                 node.socket.send(node.msg.create({
                     target: 'PCONNECT',
-                    data: p,
+                    data: {id: p.id},
                     to: player.id
                 }));
             });
 
             node.socket.send(node.msg.create({
                 target: 'PLIST',
-                data: node.game.pl.db,
+                data: node.game.pl.fetchSubObj('id'),
                 to: p.id
             }));
 

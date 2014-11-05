@@ -28,29 +28,31 @@
       // Configuring nodegame.
       // All these properties can get overwritten by remoteSetup from server.
       node.setup('nodegame', {
+<<<<<<< HEAD:public/index.htm
 	  // HOST needs to be specified only
 	  // if this file is located in another server
 	  // host: http://myserver.com,
           verbosity: 10,
-	  window: {
-	      promptOnleave: false,
+          window: {
+              promptOnleave: false,
               noEscape: true // Defaults TRUE
-	  },
-	  env: {
-	      auto: false,
-	      debug: false
-	  },
-	  events: {
-	      dumpEvents: false, // output to console all fired events
+          },
+          env: {
+              auto: false,
+              debug: false
+          },
+          events: {
+              dumpEvents: false, // output to console all fired events
               history: false // keep a record of all fired events
-	  },
-	  socket: {
-	      type: 'SocketIo', // for remote connections
-	      reconnect: false
-	  }
+          },
+          socket: {
+              type: 'SocketIo', // for remote connections
+              reconnect: false
+          }
       });
 
       // Connecting to waiting room.
+      //node.connect("/ultimatum", undefined, { query: 'clientType=autoplay' });
       node.connect("/ultimatum");
   }
 </script>
