@@ -37,131 +37,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     // Specify init function, and extend default stages.
 
     // Init callback.
-    stager.setOnInit(function() {
-        var that = this;
-        var waitingForPlayers;
-        var treatment;
-        var header;
-
-        this.node.log('Init.');
-
-        // Hide the waiting for other players message.
-        waitingForPlayers = W.getElementById('waitingForPlayers');
-        waitingForPlayers.innerHTML = '';
-        waitingForPlayers.style.display = 'none';
-
-        // Setup the header (by default on the left side).
-        if (!W.getHeader()) {
-
-            header = W.generateHeader();
-
-            // Uncomment to visualize the name of the stages.
-            // node.game.visualState = node.widgets.append('VisualState', header);
-
-            node.game.rounds = node.widgets.append('VisualRound', header, {
-                displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
-                stageOffset: 1
-            });
-
-            node.game.timer = node.widgets.append('VisualTimer', header);
-        }
-
-        // Add the main frame where the pages will be loaded.
-        if (!W.getFrame()) {
-            W.generateFrame();
-        }
-
-        // Add default CSS.
-        if (node.conf.host) {
-            W.addCSS(W.getFrameRoot(), node.conf.host +
-                                       '/stylesheets/nodegame.css');
-        }
-
-        // Add event listeners valid for the whole game.
-
-        node.on('BID_DONE', function(offer, to) {
-            var root;
-
-            node.game.timer.clear();
-            node.game.timer.startWaiting({milliseconds: 30000});
-
-            W.getElementById('submitOffer').disabled = 'disabled';
-            node.set('offer', offer);
-            node.say('OFFER', to, offer);
-            root = W.getElementById('container');
-            W.write(' Your offer: ' +  offer +
-                    '. Waiting for the respondent... ', root);
-        });
-
-        node.on('RESPONSE_DONE', function(response, offer, from) {
-            console.log(response, offer, from);
-            node.set('response', {
-                response: response,
-                value: offer,
-                from: from
-            });
-            node.say(response, from, response);
-
-            //////////////////////////////////////////////
-            // nodeGame hint:
-            //
-            // node.done() communicates to the server that
-            // the player has completed the current state.
-            //
-            // What happens next depends on the game.
-            // In this game the player will have to wait
-            // until all the other players are also "done".
-            //
-            // This command is a shorthand for:
-            //
-            // node.emit('DONE');
-            //
-            /////////////////////////////////////////////
-            node.done();
-        });
-
-
-        // Clean up stage upon stepping into the next one.
-        node.on('STEPPING', function() {
-            W.clearFrame();
-        });
-
-        // Add other functions are variables used during the game.
-
-        this.other = null;
-
-        this.randomAccept = function(offer, other) {
-            var root, accepted;
-            accepted = Math.round(Math.random());
-            console.log('randomaccept');
-            console.log(offer + ' ' + other);
-            root = W.getElementById('container');
-            if (accepted) {
-                node.emit('RESPONSE_DONE', 'ACCEPT', offer, other);
-                W.write(' You accepted the offer.', root);
-            }
-            else {
-                node.emit('RESPONSE_DONE', 'REJECT', offer, other);
-                W.write(' You rejected the offer.', root);
-            }
-        };
-
-        this.isValidBid = function(n) {
-            if (!n) return false;
-            n = parseInt(n, 10);
-            return !isNaN(n) && isFinite(n) && n >= 0 && n <= 100;
-        };
-
-        treatment = node.env('treatment');
-
-        // Adapting the game to the treatment.
-        if (treatment === 'pp') {
-            node.game.instructionsPage = 'instructions_pp.html';
-        }
-        else {
-            node.game.instructionsPage = 'instructions.html';
-        }
-    });
+    stager.setOnInit(cbs.init);
 
     stager.setOnGameOver(function() {
         // Do something if you like!
@@ -204,33 +80,32 @@ module.exports = function(gameRoom, treatmentName, settings) {
     // In this case the client will wait for command from the server.
     stager.setDefaultStepRule(stepRules.WAIT);
 
+    // stager.setDefaultProperty('done', cbs.clearFrame);
+
     MIN_PLAYERS = [ settings.MIN_PLAYERS, cbs.notEnoughPlayers ];
 
-    stager.extendStage('selectLanguage', {
+    stager.extendStep('selectLanguage', {
         cb: cbs.selectLanguage,
-        timer: 100000,
-        done: cbs.clearFrame
+        timer: 100000
     });
 
-    stager.extendStage('precache', {
+    stager.extendStep('precache', {
         cb: cbs.precache,
         // `minPlayers` triggers the execution of a callback in the case
         // the number of players (including this client) falls the below
         // the chosen threshold. Related: `maxPlayers`, and `exactPlayers`.
         minPlayers: MIN_PLAYERS,
         // syncOnLoaded: true,
-        done: cbs.clearFrame
     });
 
-    stager.extendStage('instructions', {
+    stager.extendStep('instructions', {
         cb: cbs.instructions,
         minPlayers: MIN_PLAYERS,
         // syncOnLoaded: true,
-        timer: 90000,
-        done: cbs.clearFrame
+        timer: 90000
     });
 
-    stager.extendStage('quiz', {
+    stager.extendStep('quiz', {
         cb: cbs.quiz,
         minPlayers: MIN_PLAYERS,
         // syncOnLoaded: true,
@@ -269,7 +144,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         }
     });
 
-    stager.extendStage('ultimatum', {
+    stager.extendStep('ultimatum', {
         cb: cbs.ultimatum,
         minPlayers: MIN_PLAYERS,
         // `syncOnLoaded` forces the clients to wait for all the others to be
@@ -277,16 +152,14 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // players.  This options introduces a little overhead in
         // communications and delay in the execution of a stage. It is probably
         // not necessary in local networks, and it is FALSE by default.
-        // syncOnLoaded: true,
-        done: cbs.clearFrame
+        // syncOnLoaded: true
     });
 
-    stager.extendStage('endgame', {
-        cb: cbs.endgame,
-        done: cbs.clearFrame
+    stager.extendStep('endgame', {
+        cb: cbs.endgame
     });
 
-    stager.extendStage('questionnaire', {
+    stager.extendStep('questionnaire', {
         cb: cbs.postgame,
         timer: 90000,
         // `done` is a callback function that is executed as soon as a

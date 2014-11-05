@@ -386,27 +386,27 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
-    stager.extendStage('precache', {
+    stager.extendStep('precache', {
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
         cb: function() {}
     });
 
-    stager.extendStage('selectLanguage', {
+    stager.extendStep('selectLanguage', {
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
         cb: function() {}
     });
 
-    stager.extendStage('instructions', {
+    stager.extendStep('instructions', {
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
         cb: function() {}
     });
 
-    stager.extendStage('quiz', {
+    stager.extendStep('quiz', {
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ],
         cb: function() {}
     });
 
-    stager.extendStage('ultimatum', {
+    stager.extendStep('ultimatum', {
         cb: function() {
             this.node.log('Ultimatum');
             doMatch();
@@ -414,7 +414,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         minPlayers: [ MIN_PLAYERS, notEnoughPlayers ]
     });
 
-    stager.extendStage('endgame', {
+    stager.extendStep('endgame', {
         cb: endgame
     });
 

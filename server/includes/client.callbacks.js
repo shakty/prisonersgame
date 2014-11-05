@@ -10,6 +10,7 @@
 
 module.exports = {
 
+    init: init,
     precache: precache,
     selectLanguage: selectLanguage,
     instructions: instructions,
@@ -22,6 +23,131 @@ module.exports = {
 
 };
 
+
+function init() {
+    var that, waitingForPlayers, treatment, header;
+
+    that = this;
+
+    this.node.log('Init.');
+
+    // Hide the waiting for other players message.
+    waitingForPlayers = W.getElementById('waitingForPlayers');
+    waitingForPlayers.innerHTML = '';
+    waitingForPlayers.style.display = 'none';
+
+    // Setup the header (by default on the left side).
+    if (!W.getHeader()) {
+
+        header = W.generateHeader();
+
+        // Uncomment to visualize the name of the stages.
+        // node.game.visualState = node.widgets.append('VisualState', header);
+
+        node.game.rounds = node.widgets.append('VisualRound', header, {
+            displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
+            stageOffset: 1
+        });
+
+        node.game.timer = node.widgets.append('VisualTimer', header);
+    }
+
+    // Add the main frame where the pages will be loaded.
+    if (!W.getFrame()) {
+        W.generateFrame();
+    }
+
+    // Add default CSS.
+    if (node.conf.host) {
+        W.addCSS(W.getFrameRoot(), node.conf.host +
+                 '/stylesheets/nodegame.css');
+    }
+
+    // Add event listeners valid for the whole game.
+
+    node.on('BID_DONE', function(offer, to) {
+        var root;
+
+        node.game.timer.clear();
+        node.game.timer.startWaiting({milliseconds: 30000});
+
+        W.getElementById('submitOffer').disabled = 'disabled';
+        node.set('offer', offer);
+        node.say('OFFER', to, offer);
+        root = W.getElementById('container');
+        W.write(' Your offer: ' +  offer +
+                '. Waiting for the respondent... ', root);
+    });
+
+    node.on('RESPONSE_DONE', function(response, offer, from) {
+        console.log(response, offer, from);
+        node.set('response', {
+            response: response,
+            value: offer,
+            from: from
+        });
+        node.say(response, from, response);
+
+        //////////////////////////////////////////////
+        // nodeGame hint:
+        //
+        // node.done() communicates to the server that
+        // the player has completed the current state.
+        //
+        // What happens next depends on the game.
+        // In this game the player will have to wait
+        // until all the other players are also "done".
+        //
+        // This command is a shorthand for:
+        //
+        // node.emit('DONE');
+        //
+        /////////////////////////////////////////////
+        node.done();
+    });
+
+
+    // Clean up stage upon stepping into the next one.
+    node.on('STEPPING', function() {
+        W.clearFrame();
+    });
+
+    // Add other functions are variables used during the game.
+
+    this.other = null;
+
+    this.randomAccept = function(offer, other) {
+        var root, accepted;
+        accepted = Math.round(Math.random());
+        console.log('randomaccept');
+        console.log(offer + ' ' + other);
+        root = W.getElementById('container');
+        if (accepted) {
+            node.emit('RESPONSE_DONE', 'ACCEPT', offer, other);
+            W.write(' You accepted the offer.', root);
+        }
+        else {
+            node.emit('RESPONSE_DONE', 'REJECT', offer, other);
+            W.write(' You rejected the offer.', root);
+        }
+    };
+
+    this.isValidBid = function(n) {
+        if (!n) return false;
+        n = parseInt(n, 10);
+        return !isNaN(n) && isFinite(n) && n >= 0 && n <= 100;
+    };
+
+    treatment = node.env('treatment');
+
+    // Adapting the game to the treatment.
+    if (treatment === 'pp') {
+        node.game.instructionsPage = 'instructions_pp.html';
+    }
+    else {
+        node.game.instructionsPage = 'instructions.html';
+    }
+}
 
 //////////////////////////////////////////////
 // nodeGame hint:
