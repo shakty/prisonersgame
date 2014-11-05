@@ -137,7 +137,6 @@ module.exports = function(node, channel, room) {
                     treatmentName: treatment
                 });
 
-                debugger
                 gameRoom.setupGame();
                 gameRoom.startGame(true, []);
             }

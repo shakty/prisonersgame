@@ -17,7 +17,7 @@ var constants = ngc.constants;
 // Export the game-creating function. It needs the name of the treatment and
 // its options.
 module.exports = function(gameRoom, treatmentName, settings, node) {
-    var stager;
+
     var game;
     var MIN_PLAYERS;
 
@@ -25,9 +25,9 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
     game = {};
     MIN_PLAYERS = settings.MIN_PLAYERS;
 
-    // GLOBALS
-
-    game.globals = {};
+    // Import the stager.
+    var gameSequence = require(__dirname + '/game.stages.js')(settings);
+    var stager = ngc.getStager(gameSequence);
 
     // INIT and GAMEOVER
 
@@ -153,12 +153,8 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
     }
 
     function postgame() {
-        node.done();
-//         node.timer.randomExec(function() {
-//             node.game.timer.doTimeUp();
-//         });
-
         node.info('Postgame');
+        node.done();
     }
 
     function endgame() {
@@ -208,26 +204,13 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
         }
     });
 
-    // Now that all the stages have been added,
-    // we can build the game plot
-
-    stager.init()
-        .next('precache')
-        .next('selectLanguage')
-        .next('instructions')
-        .next('quiz')
-        .repeat('ultimatum', settings.REPEAT)
-        .next('questionnaire')
-        .next('endgame')
-        .gameover();
-
     // We serialize the game sequence before sending it.
     game.plot = stager.getState();
 
     // Let's add the metadata information.
     game.metadata = {
         name: 'ultimatum_bot',
-        version: '0.2.0',
+        version: '0.3.0',
         description: 'Bot randomly playing the ultimatum game'
     };
 

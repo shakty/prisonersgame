@@ -33,8 +33,6 @@ var stepRules = ngc.stepRules;
 var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
 
-var stager = new Stager();
-
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
 // - channel: the ServerChannel object in which this logic will be running.
@@ -70,6 +68,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var basedir = channel.resolveGameDir('ultimatum');
     var confPath = basedir + '/auth/descil.conf.js';
     var dk = require('descil-mturk')(confPath);
+
+    // Import the stager.
+    var gameSequence = require(__dirname + '/game.stages.js')(settings);
+    var stager = ngc.getStager(gameSequence);
 
     function doMatch() {
         var g, bidder, respondent, data_b, data_r;
@@ -455,20 +457,6 @@ console.log('==================== LOGIC: BIDDER is', bidder.id, '; RESPONDENT IS
         id: 'endgame',
         cb: endgame
     });
-
-    // Building the game plot.
-
-    // Here we define the sequence of stages of the game (game plot).
-    stager
-        .init()
-        .next('precache')
-        .next('selectLanguage')
-        .next('instructions')
-        .next('quiz')
-        .repeat('ultimatum', REPEAT)
-        .next('questionnaire')
-        .next('endgame')
-        .gameover();
 
     // Here we group together the definition of the game logic.
     return {
