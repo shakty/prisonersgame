@@ -18,167 +18,34 @@ var constants = ngc.constants;
 // its options.
 module.exports = function(gameRoom, treatmentName, settings, node) {
 
-    var game;
-    var MIN_PLAYERS;
-
-    stager = new Stager();
-    game = {};
-    MIN_PLAYERS = settings.MIN_PLAYERS;
+    var game, gameSequence, stager;
 
     // Import the stager.
-    var gameSequence = require(__dirname + '/game.stages.js')(settings);
-    var stager = ngc.getStager(gameSequence);
+    /////////////////////
+    gameSequence = require(__dirname + '/game.stages.js')(settings);
+    stager = ngc.getStager(gameSequence);
 
-    // INIT and GAMEOVER
+    // Import other functions used in the game.
+    ///////////////////////////////////////////
 
-    stager.setOnInit(function() {
-        var that = this;
-        var waitingForPlayers;
-        var treatment;
-        var header;
+    cbs = require(__dirname + '/includes/bot.callbacks.js')
 
-        this.other = null;
+    // Specify init function, and extend default stages.
+    ////////////////////////////////////////////////////
 
-        node.on('BID_DONE', function(offer, to) {
-            node.set('offer', offer);
-            node.say('OFFER', to, offer);
-        });
+    stager.setOnInit(cbs.init);
 
-        node.on('RESPONSE_DONE', function(response, offer, from) {
-            node.info(response + ' ' + offer + ' ' + from);
-            node.set('response', {
-                response: response,
-                value: offer,
-                from: from
-            });
-            node.say(response, from, response);
-
-            node.done();
-        });
-
-        this.randomAccept = function(offer, other) {
-            var accepted;
-            accepted = Math.round(Math.random());
-            node.info('randomaccept');
-            node.info(offer + ' ' + other);
-            if (accepted) {
-                node.emit('RESPONSE_DONE', 'ACCEPT', offer, other);
-            }
-            else {
-                node.emit('RESPONSE_DONE', 'REJECT', offer, other);
-            }
-        };
-
-        treatment = node.env('treatment');
-    });
-
-    ///// STAGES and STEPS
-
-    function precache() {
-        node.info('Precache');
-        node.timer.randomEmit('DONE');
-        //node.done();
-    }
-
-    function instructions() {
-        node.info('Instructions');
-
-        node.timer.randomEmit('DONE');
-    }
-
-    function quiz() {
-        node.info('Quiz');
-        node.done();
-    }
-
-    function ultimatum() {
-        var that = this;
-
-        var other;
-
-        // Load the BIDDER interface.
-        node.on.data('BIDDER', function(msg) {
-            node.info('RECEIVED BIDDER!');
-            other = msg.data.other;
-            node.set('ROLE', 'BIDDER');
-            
-            setTimeout(function() {
-                node.emit('BID_DONE',
-                          Math.floor(1+Math.random()*100),
-                          other);
-            }, 2000);
-
-            node.on.data('ACCEPT', function(msg) {
-                node.info(' Your offer was accepted.');
-                // node.timer.randomEmit('DONE', 3000);
-                node.done();
-            });
-
-            node.on.data('REJECT', function(msg) {
-                node.info(' Your offer was rejected.');
-                // node.timer.randomEmit('DONE', 3000);
-                node.done();
-            });
-        });
-
-        // Load the respondent interface.
-        node.on.data('RESPONDENT', function(msg) {
-            node.info('RECEIVED RESPONDENT!');
-            other = msg.data.other;
-            node.set('ROLE', 'RESPONDENT');
-
-            node.on.data('OFFER', function(msg) {
-                that.randomAccept(msg.data, other);
-            });
-        });
-
-        node.info('Ultimatum');
-    }
-
-    function postgame() {
-        node.info('Postgame');
-        node.done();
-    }
-
-    function endgame() {
-        node.done();
-        node.info('Game ended');
-        // TODO: disconnect
-    }
-
-    // Add all the stages into the stager.
+    // Set the default step rule for all the stages.
     stager.setDefaultStepRule(stepRules.WAIT);
 
-    stager.extendStage('precache', {
-        cb: precache
-    });
-
-    stager.extendStage('instructions', {
-        cb: instructions
-    });
-
-    stager.extendStage('quiz', {
-        cb: quiz
-    });
-
     stager.extendStage('ultimatum', {
-        cb: ultimatum
+        cb: cbs.ultimatum
     });
 
-    stager.extendStage('endgame', {
-        cb: endgame
-    });
+    // Prepare the game object to return.
+    /////////////////////////////////////
 
-    stager.extendStage('questionnaire', {
-        cb: postgame
-    });
-
-    stager.extendStage('selectLanguage', {
-        cb: function() { 
-            console.log('selectLanguage');
-            node.done();
-        }
-    });
+    game = {};
 
     // We serialize the game sequence before sending it.
     game.plot = stager.getState();
@@ -186,7 +53,7 @@ module.exports = function(gameRoom, treatmentName, settings, node) {
     // Let's add the metadata information.
     game.metadata = {
         name: 'ultimatum_bot',
-        version: '0.3.0',
+        version: '0.4.0',
         description: 'Bot randomly playing the ultimatum game'
     };
 
