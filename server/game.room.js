@@ -103,12 +103,15 @@ module.exports = function(node, channel, room) {
 
             // Wait to have enough clients connected.
             if (nPlayers < POOL_SIZE) {
-                // Start a bot.
-                channel.connectBot({
-                    room: room,
-                    clientType: 'bot',
-                    loadGame: false
-                });
+
+                // Uncomment to connect a bot 
+                // and start playing immediately
+
+                //channel.connectBot({
+                //    room: room,
+                //    clientType: 'bot',
+                //    loadGame: false
+                //});
                 return;
             }
 

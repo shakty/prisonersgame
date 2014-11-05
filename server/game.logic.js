@@ -107,6 +107,11 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         cb: function() {}
     });
 
+    stager.extendStep('questionnaire', {
+        cb: function() {},
+        minPlayers: undefined
+    });
+
     stager.extendStep('ultimatum', {
         cb: function() {
             this.node.log('Ultimatum');
