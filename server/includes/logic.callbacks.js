@@ -9,6 +9,10 @@
 
 var ngc = require('nodegame-client');
 var GameStage = ngc.GameStage;
+var J = ngc.JSUS;
+var path = require('path');
+
+var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
 
 module.exports = {
 
@@ -20,7 +24,15 @@ module.exports = {
 
 };
 
-function init(node, dk, settings, counter, DUMP_DIR) {
+function init(node, dk, settings, counter) {
+    DUMP_DIR = path.resolve(__dirname, 'data') + '/' + counter + '/';
+    DUMP_DIR_JSON = DUMP_DIR + 'json/';
+    DUMP_DIR_CSV = DUMP_DIR + 'csv/';
+
+    // Recursively create directories, sub-trees and all.
+    J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
+    J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
+
     console.log('********************** ultimatum room ' + counter++ + ' **********************');
 
     var COINS = settings.COINS;
@@ -212,7 +224,7 @@ function init(node, dk, settings, counter, DUMP_DIR) {
     console.log('init');
 }
 
-function gameover(node, channel) {
+function gameover(node, channel, gameRoom) {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
 
     // Saving all indexes.
@@ -268,7 +280,7 @@ function notEnoughPlayers() {
     }, 30000);
 }
 
-function endgame(node, dk, DUMP_DIR, settings) {
+function endgame(node, dk, settings) {
     var code, exitcode, accesscode;
     var bonusFile, bonus;
     var EXCHANGE_RATE;
@@ -318,4 +330,6 @@ function endgame(node, dk, DUMP_DIR, settings) {
     node.fs.writeCsv(bonusFile, bonus, {
         headers: ["access", "exit", "bonus", "terminated"]
     });
+
+    node.done();
 }
