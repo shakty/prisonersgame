@@ -156,8 +156,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     });
 
     stager.extendStep('endgame', {
-        cb: cbs.endgame,
-        steprule: stepRules.SOLO
+        cb: cbs.endgame
     });
 
     stager.extendStep('questionnaire', {
