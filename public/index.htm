@@ -51,8 +51,12 @@
       });
 
       // Connecting to waiting room.
-      //node.connect("/ultimatum", { query: 'clientType=autoplay' });
-      node.connect("/ultimatum");
+      if (JSUS.getQueryString('auto') === 'true') {
+          node.connect("/ultimatum", { query: 'clientType=autoplay' });
+      }
+      else {
+          node.connect("/ultimatum");
+      }
   }
 </script>
 </body>
