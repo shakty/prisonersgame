@@ -22,5 +22,5 @@ module.exports = function(settings) {
         .next('endgame')
         .gameover();
 
-  return stager.getState();
-}
+    return stager.getState();
+};
