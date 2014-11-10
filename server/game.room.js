@@ -46,7 +46,7 @@ module.exports = function(node, channel, room) {
         }
     });
 
-    var clientWait = channel.require(__dirname + '/includes/wait.client', {
+    var playerWait = channel.require(__dirname + '/includes/wait.player', {
         ngc: ngc
     });
 
@@ -92,7 +92,7 @@ module.exports = function(node, channel, room) {
 
             // Send players the waiting stage.
             if (p.clientType === 'player') {
-                node.remoteSetup('nodegame', p.id, clientWait);
+                node.remoteSetup('nodegame', p.id, playerWait);
                 node.remoteCommand('start', p.id);
 
                 node.say('waitingRoom', 'ROOM', {

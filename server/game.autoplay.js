@@ -12,7 +12,7 @@
 module.exports = function(gameRoom, treatmentName, settings) {
     var game;
 
-    game = require(__dirname + '/game.client.js')
+    game = require(__dirname + '/game.player.js')
         (gameRoom, treatmentName, settings);
     game.env.auto = true;
     game.nodename = 'autoplay';
