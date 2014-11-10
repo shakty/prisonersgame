@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <title>Monitor Screen</title>
 <body>
-  <div id="root"></div>
+<div id="root"></div>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/javascripts/nodegame-full.js" charset="utf-8"></script>
 <script src="./js/ChannelList.js" charset="utf-8"></script>
@@ -15,19 +15,19 @@
 <link rel='stylesheet' href='/stylesheets/monitor.css'></link>
 
 <script>
-    window.onload = function() {
+  window.onload = function() {
     var game = new Monitor(node);
 
     var conf = {
       url: "/ultimatum/admin",
       io: {
-          reconnect: false
+        reconnect: false
       },
       socket: {
-    	  type: 'SocketIo'
+        type: 'SocketIo'
       },
       events: {
-    	  dumpEvents: true
+        dumpEvents: true
       }
     };
     JSUS.mixin(conf, game);
