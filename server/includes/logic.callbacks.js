@@ -15,7 +15,6 @@ var path = require('path');
 var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
 
 module.exports = {
-
     init: init,
     gameover: gameover,
     doMatch: doMatch,
@@ -24,7 +23,7 @@ module.exports = {
 
 };
 
-function init(node, dk, settings, counter) {
+function init(node, dk, settings, counter, client) {
     DUMP_DIR = path.resolve(__dirname, 'data') + '/' + counter + '/';
     DUMP_DIR_JSON = DUMP_DIR + 'json/';
     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
@@ -115,6 +114,7 @@ function init(node, dk, settings, counter) {
     // Reconnections must be handled by the game developer.
     node.on.preconnect(function(p) {
         var code;
+
         console.log('Oh...somebody reconnected!', p);
         code = dk.codeExists(p.id);
 

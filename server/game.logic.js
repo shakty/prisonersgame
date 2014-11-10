@@ -64,7 +64,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
-        cbs.init(node, dk, settings, counter);
+        cbs.init(node, dk, settings, counter, client);
     });
 
      // Event handler registered in the init function are always valid.
