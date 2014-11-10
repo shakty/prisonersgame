@@ -1,4 +1,4 @@
-/**
+/** ff
  * # Channels definition file for Ultimatum Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
@@ -23,11 +23,11 @@ module.exports = [
 
         // If TRUE, players can invoke GET commands on admins.
         getFromAdmins: true,
-        
+
         // Unauthorized clients will be redirected here.
         // (defaults: "/pages/accessdenied.htm")
         accessDeniedUrl: '/ultimatum/unauth.htm',
-        
+
         // Channel Waiting Room configuration.
         waitingRoom: {
             // Relative path from server/ directory.
@@ -35,9 +35,9 @@ module.exports = [
             name:       'waitRoom'
         }
     }
-    
+
     ,
-    
+
     // Requirements channel.
     {
         name: 'requirements',
@@ -49,7 +49,7 @@ module.exports = [
         verbosity: 100,
 
         getFromAdmins: true,
-        
+
         waitingRoom: {
             logicPath: 'requirements.room.js',
             name: 'requirementsWR'
