@@ -1,4 +1,4 @@
-/** ff
+/**
  * # Channels definition file for Ultimatum Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
