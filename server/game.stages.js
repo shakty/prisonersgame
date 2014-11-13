@@ -23,4 +23,4 @@ module.exports = function(settings) {
         .gameover();
 
   return stager.getState();
-}
+};

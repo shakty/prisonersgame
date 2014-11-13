@@ -105,8 +105,8 @@ module.exports = function(auth) {
 
     // Assigns Player Ids based on cookie token.
     function idGen(channel, info) {
-        var cid;
-
+        var cid, cookies, validCookie;
+        
         if (settings.AUTH === 'NO') {
             cid = channel.registry.generateClientId();
             
