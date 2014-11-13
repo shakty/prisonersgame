@@ -1,5 +1,5 @@
 /**
- * # Client code for Ultimatum Game
+ * # Player code for Ultimatum Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
@@ -32,7 +32,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     // Import other functions used in the game.
 
-    cbs = require(__dirname + '/includes/client.callbacks.js')
+    cbs = require(__dirname + '/includes/player.callbacks.js')
 
     // Specify init function, and extend default stages.
 
@@ -77,7 +77,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     // A step rule is a function deciding what to do when a player has
     // terminated a step and entered the stage level _DONE_.
     // Other stepRules are: SOLO, SYNC_STAGE, SYNC_STEP, OTHERS_SYNC_STEP.
-    // In this case the client will wait for command from the server.
+    // In this case the client will wait for a command from the server.
     stager.setDefaultStepRule(stepRules.WAIT);
 
     // stager.setDefaultProperty('done', cbs.clearFrame);

@@ -24,35 +24,39 @@
 <!-- <iframe id="mainframe" name="mainframe"></iframe> -->
 <script>
   window.onload = function () {
+    // Configuring nodegame.
+    // All these properties can get overwritten by remoteSetup from server.
+    node.setup('nodegame', {
+      // HOST needs to be specified only
+      // if this file is located in another server
+      // host: http://myserver.com,
+      verbosity: 10,
+      window: {
+        promptOnleave: false,
+        noEscape: true // Defaults TRUE
+      },
+      env: {
+        auto: false,
+        debug: false
+      },
+      events: {
+        dumpEvents: false, // output to console all fired events
+        history: false // keep a record of all fired events
+      },
+      socket: {
+        type: 'SocketIo', // for remote connections
+        reconnect: false
+      }
+    });
 
-      // Configuring nodegame.
-      // All these properties can get overwritten by remoteSetup from server.
-      node.setup('nodegame', {
-	  // HOST needs to be specified only
-	  // if this file is located in another server
-	  // host: http://myserver.com,
-          verbosity: 10,
-          window: {
-              promptOnleave: false,
-              noEscape: true // Defaults TRUE
-          },
-          env: {
-              auto: false,
-              debug: false
-          },
-          events: {
-              dumpEvents: false, // output to console all fired events
-              history: false // keep a record of all fired events
-          },
-          socket: {
-              type: 'SocketIo', // for remote connections
-              reconnect: false
-          }
-      });
-
-      // Connecting to waiting room.
-      //node.connect("/ultimatum", undefined, { query: 'clientType=autoplay' });
+    // Connecting to waiting room.
+    if (location.search) {
+      // Pass query arguments on.
+      node.connect("/ultimatum", { query: location.search.substr(1) });
+    }
+    else {
       node.connect("/ultimatum");
+    }
   }
 </script>
 </body>

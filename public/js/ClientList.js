@@ -356,7 +356,7 @@
         button.onclick = function() {
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
-                text:   'STARTBOT',
+                text:   'STARTBOT'
             }));
         };
         commandPanelBody.appendChild(button);

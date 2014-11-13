@@ -1,7 +1,7 @@
 function QUIZ(answers) {
     var node =  parent.node,
-    J = parent.JSUS,
-    W = parent.W;
+        J = parent.JSUS,
+        W = parent.W;
 
     var results = {
         __correct__: false
@@ -47,10 +47,10 @@ function QUIZ(answers) {
 
         if (radioObj.length) {
             for (var i = 0; i < radioObj.length; i++) {
-	        if (radioObj[i].checked) {
-		    return radioObj[i].value;
-	        }
-	    }
+                if (radioObj[i].checked) {
+                    return radioObj[i].value;
+                }
+            }
         }
 
         return radioObj.checked;
@@ -62,17 +62,17 @@ function QUIZ(answers) {
     // are reset to unchecked
     function setCheckedValue(radioObj, newValue) {
         if (!radioObj)
-	    return;
+            return;
         var radioLength = radioObj.length;
         if (radioLength == undefined) {
-	    radioObj.checked = (radioObj.value == newValue.toString());
-	    return;
+            radioObj.checked = (radioObj.value == newValue.toString());
+            return;
         }
         for (var i = 0; i < radioLength; i++) {
-	    radioObj[i].checked = false;
-	    if (radioObj[i].value == newValue.toString()) {
-	        radioObj[i].checked = true;
-	    }
+            radioObj[i].checked = false;
+            if (radioObj[i].value == newValue.toString()) {
+                radioObj[i].checked = true;
+            }
         }
     }
 

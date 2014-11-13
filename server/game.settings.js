@@ -11,9 +11,10 @@ module.exports = {
 
     // Files
     gamePaths: {
-        logic:  "game.logic.js",
-        player: "game.client.js",
-        bot:    "game.bot.js"
+        logic:    "game.logic.js",
+        player:   "game.player.js",
+        bot:      "game.bot.js",
+        autoplay: "game.autoplay.js"
     },
 
     // Group settings.
@@ -60,7 +61,8 @@ module.exports = {
         pp: {
             name: "pp",
             fullName: "Peer Pressure",
-            description: "Introduces peer pressure to players to not disconnect.",
+            description:
+                "Introduces peer pressure to players to not disconnect.",
             WAIT_TIME: 30
         }
     }

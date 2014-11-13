@@ -46,7 +46,7 @@ module.exports = function(node, channel, room) {
         }
     });
 
-    var clientWait = channel.require(__dirname + '/includes/wait.client', {
+    var playerWait = channel.require(__dirname + '/includes/wait.player', {
         ngc: ngc
     });
 
@@ -92,7 +92,7 @@ module.exports = function(node, channel, room) {
 
             // Send players the waiting stage.
             if (p.clientType === 'player') {
-                node.remoteSetup('nodegame', p.id, clientWait);
+                node.remoteSetup('nodegame', p.id, playerWait);
                 node.remoteCommand('start', p.id);
 
                 node.say('waitingRoom', 'ROOM', {
@@ -130,7 +130,7 @@ module.exports = function(node, channel, room) {
                 // Creating a sub gaming room.
                 // The object must contains the following information:
                 // - clients: a list of players (array or PlayerList)
-                // - group: a name to group together multiple game rooms (string)
+                // - group: a name to group together several game rooms (string)
                 // - gameName: the name of the game to play (string)
                 // - treatmentName: the name of the treatment to play (string)
                 gameRoom = channel.createGameRoom({

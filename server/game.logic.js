@@ -41,15 +41,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     // instances of game logics.
     var counter = settings.SESSION_ID;
 
-    var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
-    DUMP_DIR = path.resolve(__dirname, 'data') + '/' + counter + '/';
-    DUMP_DIR_JSON = DUMP_DIR + 'json/';
-    DUMP_DIR_CSV = DUMP_DIR + 'csv/';
-
-    // Recursively create directories, sub-trees and all.
-    J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
-    J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
-
     // Client game to send to reconnecting players.
     // The client function needs to be given a treatment name and
     // the treatment options, and it returns a game object.
@@ -73,12 +64,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(function() {
-        cbs.init(node, dk, settings, counter, DUMP_DIR);
+        cbs.init(node, dk, settings, counter, client);
     });
 
      // Event handler registered in the init function are always valid.
     stager.setOnGameOver(function() {
-        cbs.gameover(node, channel);
+        cbs.gameover(node, channel, gameRoom);
     });
 
     // Extending default stages.
@@ -121,9 +112,10 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
     stager.extendStep('endgame', {
         cb: function() {
-            cbs.endgame(node, dk, DUMP_DIR, settings);
+            cbs.endgame(node, dk, settings);
         },
-        minPlayers: undefined
+        minPlayers: undefined,
+        steprule: stepRules.SOLO
     });
 
     // Here we group together the definition of the game logic.

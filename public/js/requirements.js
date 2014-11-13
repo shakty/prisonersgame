@@ -13,7 +13,6 @@
  * ---
  */
 function Requirements() {
-
     var J = JSUS;
 
     var div, token;
@@ -102,7 +101,7 @@ function Requirements() {
 
         node.connect("/requirements");
         node.on('PLAYER_CREATED', function() {
-            
+
             node.get('MTID', function(authorized) {
                 var msg;
                 if (authorized.success) {
@@ -152,24 +151,24 @@ function Requirements() {
 
             // Configuring nodegame.
             node.setup('nodegame', {
-	        // HOST needs to be specified only
-	        // if this file is located in another server
-	        // host: http://myserver.com,
-	        window: {
-	            promptOnleave: false,
+                // HOST needs to be specified only
+                // if this file is located in another server
+                // host: http://myserver.com,
+                window: {
+                    promptOnleave: false,
                     noEscape: true // Defaults TRUE
-	        },
-	        env: {
-	            auto: false,
-	        },
-	        events: {
-	            dumpEvents: false, // output to console all fired events
+                },
+                env: {
+                    auto: false,
+                },
+                events: {
+                    dumpEvents: false, // output to console all fired events
                     history: false // keep a record of all fired events
-	        },
-	        socket: {
-	            type: 'SocketIo', // for remote connections
-	            reconnect: false
-	        },
+                },
+                socket: {
+                    type: 'SocketIo', // for remote connections
+                    reconnect: false
+                },
                 game_metadata: game.metadata,
                 plot: game.plot,
                 verbosity: 10
@@ -217,4 +216,4 @@ function Requirements() {
 
 window.onload = function() {
     Requirements();
-}
+};
