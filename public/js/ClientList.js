@@ -130,6 +130,9 @@
 
         this.clientsField = null;
         this.msgBar = {};
+
+        // Bot parameter field:
+        this.botGameField = null;
     }
 
     ClientList.prototype.setChannel = function(channelName) {
@@ -139,6 +142,7 @@
                 this.roomTable.table.parentNode.style.display = 'none';
             }
             this.setRoom(null, null);
+            this.botGameField.value = channelName;
         }
 
         this.channelName = channelName;
@@ -216,6 +220,7 @@
         var buttonTable, tableRow, tableCell;
         var setupOpts, btnLabel;
         var selectionDiv, recipientSelector;
+        var filePathField, queryField;
 
         that = this;
 
@@ -350,19 +355,42 @@
             }
         }
 
-        // Add bot-start button:
+        // Add bot-start button with parameter fields:
+        buttonDiv = document.createElement('div');
+        commandPanelBody.appendChild(buttonDiv);
+
+        this.botGameField = W.getTextInput();
+        this.botGameField.size = 10;
+        buttonDiv.appendChild(this.botGameField);
+        buttonDiv.appendChild(document.createTextNode('/'));
+        filePathField = W.getTextInput();
+        filePathField.size = 7;
+        buttonDiv.appendChild(filePathField);
+        queryField = W.getTextInput();
+        queryField.value = '?clientType=autoplay';
+        queryField.size = 17;
+        buttonDiv.appendChild(queryField);
+
         button = document.createElement('button');
         button.innerHTML = 'Start bot';
         button.onclick = function() {
+            var gameName, filePath, queryString;
+
+            gameName = that.botGameField.value;
+            filePath = filePathField.value;
+            queryString = queryField.value;
+
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
                 text:   'STARTBOT',
                 data:   {
-                    gameName: that.channelName || undefined
+                    gameName:    gameName || undefined,
+                    filePath:    filePath,
+                    queryString: queryString
                 }
             }));
         };
-        commandPanelBody.appendChild(button);
+        buttonDiv.appendChild(button);
 
         // Add MsgBar:
         this.appendMsgBar();
