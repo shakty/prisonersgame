@@ -107,11 +107,11 @@ module.exports = function(node, channel, room) {
                 // Uncomment to connect a bot 
                 // and start playing immediately
 
-                channel.connectBot({
-                    room: room,
-                    clientType: 'bot',
-                    loadGame: false
-                });
+                //channel.connectBot({
+                //    room: room,
+                //    clientType: 'bot',
+                //    loadGame: false
+                //});
                 return;
             }
 
