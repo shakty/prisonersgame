@@ -356,7 +356,10 @@
         button.onclick = function() {
             node.socket.send(node.msg.create({
                 target: 'SERVERCOMMAND',
-                text:   'STARTBOT'
+                text:   'STARTBOT',
+                data:   {
+                    gameName: that.channelName || undefined
+                }
             }));
         };
         commandPanelBody.appendChild(button);
