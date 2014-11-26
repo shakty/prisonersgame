@@ -5,7 +5,6 @@
  *
  * Handles incoming connections, validates authorization tokens
  * check browser requirements, and collect feedbacks.
- * ---
  */
 module.exports = function(node, channel, room) {
     'use strict';

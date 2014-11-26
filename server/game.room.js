@@ -5,7 +5,6 @@
  *
  * Handles incoming connections, matches them, sets the Ultimatum game
  * in each client, move them in a separate gaming room, and start the game.
- * ---
  */
 module.exports = function(node, channel, room) {
 

@@ -7,7 +7,6 @@
  * Extensively documented tutorial.
  *
  * http://www.nodegame.org
- * ---
  */
 
 var ngc = require('nodegame-client');
