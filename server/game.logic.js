@@ -59,18 +59,22 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var stager = ngc.getStager(gameSequence);
 
     // Import other functions used in the game.
-
-    var cbs = require(__dirname + '/includes/logic.callbacks.js')
+    // Some objects are shared.
+    var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
+        node: node,
+        gameRoom: gameRoom,
+        settings: settings,
+        dk: dk,
+        client: client,
+        counter: counter
+        // Reference to channel added by default.
+    });
 
     // Event handler registered in the init function are always valid.
-    stager.setOnInit(function() {
-        cbs.init(node, dk, settings, counter, client);
-    });
+    stager.setOnInit(cbs.init);
 
      // Event handler registered in the init function are always valid.
-    stager.setOnGameOver(function() {
-        cbs.gameover(node, channel, gameRoom);
-    });
+    stager.setOnGameOver(cbs.gameover);
 
     // Extending default stages.
 
@@ -106,14 +110,12 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     stager.extendStep('ultimatum', {
         cb: function() {
             this.node.log('Ultimatum');
-            cbs.doMatch(this.node);
+            cbs.doMatch();
         }
     });
 
     stager.extendStep('endgame', {
-        cb: function() {
-            cbs.endgame(node, dk, settings);
-        },
+        cb: cbs.endgame,
         minPlayers: undefined,
         steprule: stepRules.SOLO
     });

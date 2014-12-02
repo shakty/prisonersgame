@@ -23,7 +23,15 @@ module.exports = {
 
 };
 
-function init(node, dk, settings, counter, client) {
+var node = module.parent.exports.node;
+var channel = module.parent.exports.channel;
+var gameRoom = module.parent.exports.gameRoom;
+var settings = module.parent.exports.settings;
+var dk = module.parent.exports.dk;
+var client = module.parent.exports.client;
+var counter = module.parent.exports.counter;
+
+function init() {
     DUMP_DIR = path.resolve(__dirname, 'data') + '/' + counter + '/';
     DUMP_DIR_JSON = DUMP_DIR + 'json/';
     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
@@ -224,7 +232,7 @@ function init(node, dk, settings, counter, client) {
     console.log('init');
 }
 
-function gameover(node, channel, gameRoom) {
+function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
 
     // Saving all indexes.
@@ -235,7 +243,7 @@ function gameover(node, channel, gameRoom) {
     channel.destroyGameRoom(gameRoom.name);
 }
 
-function doMatch(node) {
+function doMatch() {
     var g, i, bidder, respondent, data_b, data_r;
 
     // Method shuffle accepts one parameter to update the db, as well as
@@ -280,7 +288,7 @@ function notEnoughPlayers() {
     }, 30000);
 }
 
-function endgame(node, dk, settings) {
+function endgame() {
     var code, exitcode, accesscode;
     var bonusFile, bonus;
     var EXCHANGE_RATE;
