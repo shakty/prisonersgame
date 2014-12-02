@@ -6,7 +6,6 @@
  * Handles bidding, and responds between two players automatically.
  *
  * http://www.nodegame.org
- * ---
  */
 
 module.exports = function(gameRoom, treatmentName, settings) {

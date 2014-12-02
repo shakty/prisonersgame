@@ -34,18 +34,13 @@
 
     function renderCell(o, that) {
         var content;
-        var text, textElem;
+        var textElem;
 
         content = o.content;
         if ('object' === typeof content) {
-            switch (o.y) {
-            case 0:
-                text = content.info.name;
-                break;
-            }
-
             textElem = document.createElement('span');
-            textElem.innerHTML = '<a class="ng_clickable">' + text + '</a>';
+            textElem.innerHTML = '<a class="ng_clickable">' +
+                                 content.info.name + '</a>';
             textElem.onclick = function() {
                 that.selectedGame = content.info.name;
                 that.writeGameInfo();
@@ -179,7 +174,8 @@
         if (!selGame) return;
 
         this.detailTable.addRow([selGame.info.name]);
-        this.detailTable.addRow([selGame.info.alias.join(', ')]);
+        this.detailTable.addRow(selGame.info.alias ?
+                [selGame.info.alias.join(', ')] : ['']);
         this.detailTable.addRow([selGame.info.descr]);
 
         treatmentList = document.createElement('span');

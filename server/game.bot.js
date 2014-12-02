@@ -6,7 +6,6 @@
  * Code for a bot playing the ultimatum game randomly.
  * 
  * http://www.nodegame.org
- * ---
  */
 
 var ngc = require('nodegame-client');

@@ -5,7 +5,6 @@
  *
  * Handles incoming connections, matches them, sets the Ultimatum game
  * in each client, move them in a separate gaming room, and start the game.
- * ---
  */
 module.exports = function(node, channel, room) {
 
@@ -107,11 +106,11 @@ module.exports = function(node, channel, room) {
                 // Uncomment to connect a bot 
                 // and start playing immediately
 
-                channel.connectBot({
-                    room: room,
-                    clientType: 'bot',
-                    loadGame: false
-                });
+                //channel.connectBot({
+                //    room: room,
+                //    clientType: 'bot',
+                //    loadGame: false
+                //});
                 return;
             }
 

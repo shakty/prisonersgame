@@ -16,7 +16,6 @@
  * through the game plot whenever it enters a new game step.
  *
  * http://www.nodegame.org
- * ---
  */
 
 var path = require('path');

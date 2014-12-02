@@ -4,7 +4,6 @@
  * MIT Licensed
  *
  * http://www.nodegame.org
- * ---
  */
 
 

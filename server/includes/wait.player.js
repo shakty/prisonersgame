@@ -4,7 +4,6 @@
  * MIT Licensed
  *
  * Displays a simple waiting page for clients about to start a game.
- * ---
  */
 
 var ngc = module.parent.exports.ngc;
