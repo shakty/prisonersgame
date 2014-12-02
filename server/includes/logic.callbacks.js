@@ -245,6 +245,11 @@ function gameover() {
 function doMatch() {
     var g, i, bidder, respondent, data_b, data_r;
 
+    if (node.game.pl.size() < 2) {
+        if (!this.countdown) notEnoughPlayers();
+        return;
+    }
+
     // Method shuffle accepts one parameter to update the db, as well as
     // returning a shuffled copy.
     g = node.game.pl.shuffle();
@@ -274,8 +279,8 @@ function doMatch() {
 }
 
 function notEnoughPlayers() {
+    if (this.countdown) return;
     console.log('Warning: not enough players!!');
-
     this.countdown = setTimeout(function() {
         console.log('Countdown fired. Going to Step: questionnaire.');
         node.remoteCommand('erase_buffer', 'ROOM');
@@ -283,7 +288,7 @@ function notEnoughPlayers() {
         node.game.gameTerminated = true;
         // if syncStepping = false
         //node.remoteCommand('goto_step', 5);
-        node.game.gotoStep(new GameStage('5'));
+        node.game.gotoStep('questionnaire');
     }, 30000);
 }
 

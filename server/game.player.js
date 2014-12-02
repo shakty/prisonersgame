@@ -85,7 +85,8 @@ module.exports = function(gameRoom, treatmentName, settings) {
 
     stager.extendStep('selectLanguage', {
         cb: cbs.selectLanguage,
-        timer: 100000
+        timer: 100000,
+        minPlayers: MIN_PLAYERS
     });
 
     stager.extendStep('precache', {
