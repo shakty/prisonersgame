@@ -28,7 +28,7 @@ function waiting2start() {
     W.addLoadingDots(span_dots_container);
 
     function updateConnected(data) {
-    	span_connected.innerHTML = data.nPlayers + ' / ' + data.poolSize;
+        span_connected.innerHTML = data.nPlayers + ' / ' + data.poolSize;
         if (data.retry) {
             span_msg.innerHTML = 'A batch of games has just started. ' +
                 'Unfortunately, you have not been selected. Please, keep ' +
@@ -56,7 +56,7 @@ function waiting2start() {
     node.getJSON(['/ultimatum/data_example.json'], function(data) {
         var root;
 
-        root = W.getElementById('waitingForPlayers')
+        root = W.getElementById('waitingForPlayers');
         W.writeln('Game version: ' + data.version, root);
 
     }, function() {

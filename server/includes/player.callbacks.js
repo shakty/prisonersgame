@@ -8,7 +8,6 @@
 
 
 module.exports = {
-
     init: init,
     precache: precache,
     selectLanguage: selectLanguage,
@@ -19,7 +18,6 @@ module.exports = {
     endgame: endgame,
     clearFrame: clearFrame,
     notEnoughPlayers: notEnoughPlayers
-
 };
 
 
@@ -37,7 +35,6 @@ function init() {
 
     // Setup the header (by default on the left side).
     if (!W.getHeader()) {
-
         header = W.generateHeader();
 
         // Uncomment to visualize the name of the stages.
@@ -171,8 +168,11 @@ function precache() {
         '/ultimatum/' + langPath + 'languageSelection.html',
         '/ultimatum/' + langPath + node.game.instructionsPage,
         '/ultimatum/' + langPath + 'quiz.html',
-        //'/ultimatum/' + langPath + 'bidder.html',  // these two are cached by following
-        //'/ultimatum/' + langPath + 'resp.html',    // loadFrame calls (for demonstration)
+
+        // These two are cached later by loadFrame calls (for demonstration):
+        //'/ultimatum/' + langPath + 'bidder.html',
+        //'/ultimatum/' + langPath + 'resp.html',
+
         '/ultimatum/' + langPath + 'postgame.html',
         '/ultimatum/' + langPath + 'ended.html'
     ], function() {
@@ -222,34 +222,34 @@ function instructions() {
     W.loadFrame('/ultimatum/' + node.player.lang.path +
                 node.game.instructionsPage, function() {
 
-                    var b = W.getElementById('read');
-                    b.onclick = function() {
-                        node.done();
-                    };
+        var b = W.getElementById('read');
+        b.onclick = function() {
+            node.done();
+        };
 
-                    ////////////////////////////////////////////////
-                    // nodeGame hint:
-                    //
-                    // node.env executes a function conditionally to
-                    // the environments defined in the configuration
-                    // options.
-                    //
-                    // If the 'auto' environment was set to TRUE,
-                    // then the function will be executed
-                    //
-                    ////////////////////////////////////////////////
-                    node.env('auto', function() {
+        ////////////////////////////////////////////////
+        // nodeGame hint:
+        //
+        // node.env executes a function conditionally to
+        // the environments defined in the configuration
+        // options.
+        //
+        // If the 'auto' environment was set to TRUE,
+        // then the function will be executed
+        //
+        ////////////////////////////////////////////////
+        node.env('auto', function() {
 
-                        //////////////////////////////////////////////
-                        // nodeGame hint:
-                        //
-                        // Emit an event randomly in a time interval
-                        // from 0 to 2000 milliseconds
-                        //
-                        //////////////////////////////////////////////
-                        node.timer.randomEmit('DONE', 2000);
-                    });
-                });
+            //////////////////////////////////////////////
+            // nodeGame hint:
+            //
+            // Emit an event randomly in a time interval
+            // from 0 to 2000 milliseconds
+            //
+            //////////////////////////////////////////////
+            node.timer.randomEmit('DONE', 2000);
+        });
+    });
     console.log('Instructions');
 }
 
@@ -257,13 +257,14 @@ function quiz() {
     var that = this;
     W.loadFrame('/ultimatum/' + node.player.lang.path + 'quiz.html',
                 function() {
-                    var b, QUIZ;
-                    node.env('auto', function() {
-                        node.timer.randomExec(function() {
-                            node.game.timer.doTimeUp();
-                        });
-                    });
-                });
+
+        var b, QUIZ;
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                node.game.timer.doTimeUp();
+            });
+        });
+    });
     console.log('Quiz');
 }
 
@@ -321,13 +322,12 @@ function ultimatum() {
         //
         /////////////////////////////////////////////
         W.loadFrame('/ultimatum/' + langPath + 'bidder.html', function() {
-
             // Start the timer after an offer was received.
             options = {
                 milliseconds: 30000,
                 timeup: function() {
-                    node.emit('BID_DONE', Math.floor(1 +
-                                                     Math.random()*100), other);
+                    node.emit('BID_DONE',
+                              Math.floor(1 + Math.random() * 100), other);
                 }
             };
 
@@ -346,8 +346,7 @@ function ultimatum() {
                 //////////////////////////////////////////////
                 node.timer.randomExec(function() {
                     node.emit('BID_DONE',
-                              Math.floor(1+Math.random()*100),
-                              other);
+                              Math.floor(1 + Math.random() * 100), other);
                 }, 4000);
             });
 
@@ -372,7 +371,6 @@ function ultimatum() {
                 node.timer.randomEmit('DONE', 3000);
             });
         }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
-
     });
 
     // Load the respondent interface.
@@ -433,13 +431,11 @@ function ultimatum() {
                 });
 
                 accept.onclick = function() {
-                    node.emit('RESPONSE_DONE', 'ACCEPT', msg.data,
-                              other);
+                    node.emit('RESPONSE_DONE', 'ACCEPT', msg.data, other);
                 };
 
                 reject.onclick = function() {
-                    node.emit('RESPONSE_DONE', 'REJECT', msg.data,
-                              other);
+                    node.emit('RESPONSE_DONE', 'REJECT', msg.data, other);
                 };
             });
         }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
@@ -454,32 +450,33 @@ function postgame() {
 
     W.loadFrame('/ultimatum/' + node.player.lang.path +
                 'postgame.html', function() {
-                    node.env('auto', function() {
-                        node.timer.randomExec(function() {
-                            node.game.timer.doTimeUp();
-                        });
-                    });
-                });
+
+        node.env('auto', function() {
+            node.timer.randomExec(function() {
+                node.game.timer.doTimeUp();
+            });
+        });
+    });
     console.log('Postgame');
 }
 
 function endgame() {
     W.loadFrame('/ultimatum/' + node.player.lang.path + 'ended.html',
                 function() {
-                    node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
-                    node.game.timer.waitBox.hideBox();
-                    node.game.timer.setToZero();
-                    node.on.data('WIN', function(msg) {
-                        var win, exitcode, codeErr;
-                        var root;
-                        root = W.getElementById('container');
-                        codeErr = 'ERROR (code not found)';
-                        win = msg.data && msg.data.win || 0;
-                        exitcode = msg.data && msg.data.exitcode || codeErr;
-                        W.writeln('Your bonus in this game is: ' + win, root);
-                        W.writeln('Your exitcode is: ' + exitcode, root);
-                    });
-                });
+        node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
+        node.game.timer.waitBox.hideBox();
+        node.game.timer.setToZero();
+        node.on.data('WIN', function(msg) {
+            var win, exitcode, codeErr;
+            var root;
+            root = W.getElementById('container');
+            codeErr = 'ERROR (code not found)';
+            win = msg.data && msg.data.win || 0;
+            exitcode = msg.data && msg.data.exitcode || codeErr;
+            W.writeln('Your bonus in this game is: ' + win, root);
+            W.writeln('Your exitcode is: ' + exitcode, root);
+        });
+    });
 
     console.log('Game ended');
 }
