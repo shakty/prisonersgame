@@ -166,10 +166,9 @@ function init() {
 function precache() {
     var langPath = node.player.lang.path;
     W.lockScreen('Loading...');
-    node.done();
-    return;
-    // preCache is broken.
+
     W.preCache([
+        '/ultimatum/' + langPath + 'languageSelection.html',
         '/ultimatum/' + langPath + node.game.instructionsPage,
         '/ultimatum/' + langPath + 'quiz.html',
         //'/ultimatum/' + langPath + 'bidder.html',  // these two are cached by following
@@ -201,9 +200,6 @@ function selectLanguage() {
             node.timer.randomEmit('DONE');
         });
     });
-
-
-    return;
 }
 
 function instructions() {
@@ -375,8 +371,7 @@ function ultimatum() {
                 W.write(' Your offer was rejected.', root);
                 node.timer.randomEmit('DONE', 3000);
             });
-        });
-        //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+        }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
 
     });
 
@@ -447,8 +442,7 @@ function ultimatum() {
                               other);
                 };
             });
-        });
-        //}, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+        }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
 
     });
 

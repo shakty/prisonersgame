@@ -48,10 +48,3 @@ block mainContent
                     =' '+correctAnswers+' '
                     span(id='answers_counter') 0 / 3
     script(src='/ultimatum/js/quiz.js')
-    script(type='text/javascript').
-        var treatment = parent.node.env('treatment');
-            QUIZ = QUIZ({
-                howMuch: 100,
-                reject: 3,
-                disconnect:  treatment == 'pp' ? 1 : 3
-            });

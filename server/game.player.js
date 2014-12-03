@@ -221,7 +221,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
         auto: settings.AUTO,
         treatment: treatmentName
     };
-    game.verbosity = 100;
+    game.verbosity = 0;
 
     game.debug = settings.DEBUG;
     game.nodename = 'player';

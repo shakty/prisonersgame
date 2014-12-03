@@ -82,3 +82,11 @@ function QUIZ(answers) {
         checkAnswers: checkAnswers
     };
 }
+
+
+var treatment = parent.node.env('treatment');
+QUIZ = QUIZ({
+    howMuch: 100,
+    reject: 3,
+    disconnect: treatment == 'pp' ? 1 : 3
+});
