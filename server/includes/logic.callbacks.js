@@ -171,10 +171,7 @@ function init() {
         node.remoteSetup('game_settings', p.id, client.settings);
         node.remoteSetup('plot', p.id, client.plot);
         node.remoteSetup('env', p.id, client.env);
-        node.remoteSetup('env', p.id, {
-            treatment: node.env('treatment')
-        });
-
+        
         // Start the game on the reconnecting client.
         node.remoteCommand('start', p.id);
         // Pause the game on the reconnecting client, will be resumed later.

@@ -32,7 +32,7 @@ module.exports = {
 
     // Which treatment to play.
     // Leave undefined for a randomly chosen treatment.
-    CHOSEN_TREATMENT: 'pp',
+    CHOSEN_TREATMENT: undefined, // 
 
     // Number or rounds to repeat the bidding. *
     REPEAT: 2,
