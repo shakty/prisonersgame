@@ -173,7 +173,10 @@ function init() {
         node.remoteSetup('env', p.id, client.env);
         
         // Start the game on the reconnecting client.
-        node.remoteCommand('start', p.id);
+        // Need to give step: false, because otherwise pre-caching will
+        // call done() on reconnecting stage.
+        node.remoteCommand('start', p.id, { step: false } );
+
         // Pause the game on the reconnecting client, will be resumed later.
         // node.remoteCommand('pause', p.id);
 

@@ -163,7 +163,7 @@ function init() {
 function precache() {
     var langPath = node.player.lang.path;
     W.lockScreen('Loading...');
-
+    console.log('pre-caching...');
     W.preCache([
         '/ultimatum/languageSelection.html', // no text here.
         '/ultimatum/' + langPath + node.game.instructionsPage,
