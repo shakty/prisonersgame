@@ -165,7 +165,7 @@ function precache() {
     W.lockScreen('Loading...');
 
     W.preCache([
-        '/ultimatum/' + langPath + 'languageSelection.html',
+        '/ultimatum/languageSelection.html', // no text here.
         '/ultimatum/' + langPath + node.game.instructionsPage,
         '/ultimatum/' + langPath + 'quiz.html',
 
