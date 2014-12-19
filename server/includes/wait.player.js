@@ -60,7 +60,7 @@ function waiting2start() {
         W.writeln('Game version: ' + data.version, root);
 
     }, function() {
-        console.log('getJSON finished');
+        node.log('getJSON finished');
     } );
 }
 
