@@ -156,7 +156,7 @@ function init() {
             }));
         });
 
-        // Send currently connected players to reconnecting.
+        // Send currently connected players to reconnecting one.
         node.socket.send(node.msg.create({
             target: 'PLIST',
             data: node.game.pl.fetchSubObj('id'),
