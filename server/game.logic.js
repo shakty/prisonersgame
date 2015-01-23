@@ -30,15 +30,21 @@ var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
 var J = ngc.JSUS;
 
+// Variable registered outside of the export function
+// are shared among all instances of game logics.
+var counter = 0;
+
+// Flag to not cache required files.
+var nocache = true;
+
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
 // - channel: the ServerChannel object in which this logic will be running.
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(node, channel, gameRoom, treatmentName, settings) {
 
-    // Variable registered outside of the export function are shared among all
-    // instances of game logics.
-    var counter = settings.SESSION_ID;
+    // Increment counter.
+    counter = counter ? ++counter : settings.SESSION_ID;
 
     // Client game to send to reconnecting players.
     // The client function needs to be given a treatment name and
@@ -67,7 +73,7 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
         client: client,
         counter: counter
         // Reference to channel added by default.
-    });
+    }, nocache);
 
     // Event handler registered in the init function are always valid.
     stager.setOnInit(cbs.init);

@@ -19,7 +19,6 @@ module.exports = {
     doMatch: doMatch,
     endgame: endgame,
     notEnoughPlayers: notEnoughPlayers
-
 };
 
 var node = module.parent.exports.node;
