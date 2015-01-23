@@ -38,7 +38,7 @@ function init() {
         header = W.generateHeader();
 
         // Uncomment to visualize the name of the stages.
-        // node.game.visualState = node.widgets.append('VisualState', header);
+        //node.game.visualStage = node.widgets.append('VisualStage', header);
 
         node.game.rounds = node.widgets.append('VisualRound', header, {
             displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
@@ -191,6 +191,7 @@ function selectLanguage() {
 
         node.game.lang = node.widgets.append('LanguageSelector',
                                              W.getFrameDocument().body);
+
         W.getFrameDocument().body.appendChild(b);
         b.onclick = function() {
             node.done();

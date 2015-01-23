@@ -18,6 +18,7 @@ block mainContent
                         p
                             - for (x = 0; x < 3; ++x)
                                 input(type='radio', name='howMuch', value=vals[x]+'')
+                                |\n
                                 =vals[x]
                                 br
 
@@ -30,6 +31,7 @@ block mainContent
                         p
                             - for (x = 0; x < 4; ++x)
                                 input(type='radio', name='reject',value=x+'')
+                                |\n
                                 =howMuchYouGet[x]
                                 br
                 dt
@@ -41,6 +43,7 @@ block mainContent
                         p
                             - for(x = 1; x < 5; ++x)
                                 input(type='radio', name='disconnect', value=x+'')
+                                |\n
                                 =disconnect[x-1]
                                 br
             div(id='done_box')
