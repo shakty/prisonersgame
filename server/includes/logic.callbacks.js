@@ -30,7 +30,7 @@ var client = module.parent.exports.client;
 var counter = module.parent.exports.counter;
 
 function init() {
-    DUMP_DIR = path.resolve(__dirname, 'data') + '/' + counter + '/';
+    DUMP_DIR = path.resolve(channel.resolveGameDir('ultimatum'), 'data') + '/' + counter + '/';
     DUMP_DIR_JSON = DUMP_DIR + 'json/';
     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
 
@@ -236,6 +236,9 @@ function gameover() {
     // Saving all indexes.
     node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
     node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
+
+    // Dump all memory.
+    node.fs.saveMemory('json', DUMP_DIR_JSON + 'memory_all.json');
 
     // TODO: update database.
     channel.destroyGameRoom(gameRoom.name);
