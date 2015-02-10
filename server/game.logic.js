@@ -20,11 +20,11 @@
 
 var path = require('path');
 
-var Database = require('nodegame-db').Database;
+//var Database = require('nodegame-db').Database;
 // Variable _node_ is shared by the requiring module
 // (game.room.js) through `channel.require` method.
-var ngdb = new Database(module.parent.exports.node);
-var mdb = ngdb.getLayer('MongoDB');
+//var ngdb = new Database(module.parent.exports.node);
+//var mdb = ngdb.getLayer('MongoDB');
 
 var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;

@@ -1,0 +1,10 @@
+language: node_js
+node_js: 0.10
+install:
+# Install expect.
+  - sudo apt-get install expect
+# Get nodegame.
+  - bin/install-nodegame-for-ultimatum.sh
+script:
+  - cd nodegame
+  - node test/launcher-autoplay.js

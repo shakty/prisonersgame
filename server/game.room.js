@@ -25,9 +25,9 @@ module.exports = function(node, channel, room) {
 
     // Loads the database layer. If you do not use an external database
     // you do not need these lines.
-    var Database = require('nodegame-db').Database;
-    var ngdb = new Database(node);
-    var mdb = ngdb.getLayer('MongoDB');
+    //var Database = require('nodegame-db').Database;
+    //var ngdb = new Database(node);
+    //var mdb = ngdb.getLayer('MongoDB');
 
     // Load the nodegame-client object.
     var ngc = require('nodegame-client');
