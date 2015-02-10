@@ -74,6 +74,7 @@ sn.ready(function() {
     //}, 5000);
 
     handleGameover = function() {
+        console.log('Ultimatum game has run successfully.');
         process.exit();
     };
 
