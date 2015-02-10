@@ -55,11 +55,37 @@ var options = {
 // Start server, options parameter is optional.
 var sn = new ServerNode(options);
 sn.ready(function() {
-    var i, n;
+    var i, n, phantoms, handleGameover;
+    var numFinished;
+
     n = 2;
-    for (i = 1; i <= n; ++i) { 
-        console.log('Connecting autoplay-bot #', i, '/', n);
-        sn.channels.ultimatum.connectPhantom();
+    phantoms = [];
+    for (i = 0; i < n; ++i) { 
+        console.log('Connecting autoplay-bot #', i+1, '/', n);
+        phantoms[i] = sn.channels.ultimatum.connectPhantom();
+    }
+
+    // TODO: Listen for room creation instead of timeout.
+    //setTimeout(function() {
+    //    var node;
+    //    node = sn.channels.ultimatum.gameRooms["ultimatum1"].node;
+    //    node.events.ee.ng.on(
+    //        'GAME_OVER', function() { console.log('The game is over now.'); });
+    //}, 5000);
+
+    handleGameover = function() {
+        process.exit();
+    };
+
+    // Wait for all PhantomJS processes to exit, then stop the server.
+    numFinished = 0;
+    for (i = 0; i < n; ++i) {
+        phantoms[i].on('exit', function(code) {
+            numFinished ++;
+            if (numFinished == n) {
+                handleGameover();
+            }
+        });
     }
 });
 
