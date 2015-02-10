@@ -5,4 +5,4 @@ install:
   - bin/install-nodegame-for-ultimatum.sh
 script:
   - cd nodegame
-  - node test/launcher-autoplay.js
+  - node ../test/launcher-autoplay.js
