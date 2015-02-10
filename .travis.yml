@@ -1,8 +1,14 @@
 language: node_js
 node_js: 0.10
 install:
+# Install dependencies.
+  - npm install
 # Get nodegame.
   - bin/install-nodegame-for-ultimatum.sh
 script:
+# Run autoplay-game to get memory dump.
   - cd nodegame
   - node ../test/launcher-autoplay.js
+  - cd ..
+# Run tests on dump.
+  - npm test
