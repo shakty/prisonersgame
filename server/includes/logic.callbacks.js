@@ -238,7 +238,7 @@ function gameover() {
     node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
 
     // Dump all memory.
-    node.fs.saveMemory('json', DUMP_DIR_JSON + 'memory_all.json');
+    node.fs.saveMemory('json', DUMP_DIR + 'memory_all.json');
 
     // TODO: update database.
     channel.destroyGameRoom(gameRoom.name);
