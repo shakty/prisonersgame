@@ -3,20 +3,21 @@
 # Copyright(c) 2015 Stefano Balietti
 # MIT Licensed
 #
-# Run this from inside the ultimatum directory:
+# Run this from inside the ultimatum directory inside nodegame/games/:
 #  $ bin/run-standalone-test.sh
 #
-# Should be same as procedure in .travis.yml.
+# Used for testing this package under other packages.
 # Returns true if and only if the tests are run successfully.
 
 # Return on failure immediately.
 set -e
 
-bin/install-nodegame-for-ultimatum.sh
+ln -s ../../node_modules node_modules
 npm install
 
-cd nodegame
-node ../test/launcher-autoplay.js
-cd ..
+# Go to the nodegame directory.
+cd ../..
+node games/ultimatum/test/launcher-autoplay.js
+cd games/ultimatum
 
 npm test
