@@ -331,7 +331,7 @@ function ultimatum() {
                 milliseconds: 30000,
                 timeup: function() {
                     node.emit('BID_DONE',
-                              Math.floor(1 + Math.random() * 100), other);
+                              Math.floor(Math.random() * 101), other);
                 }
             };
 
@@ -350,7 +350,7 @@ function ultimatum() {
                 //////////////////////////////////////////////
                 node.timer.randomExec(function() {
                     node.emit('BID_DONE',
-                              Math.floor(1 + Math.random() * 100), other);
+                              Math.floor(Math.random() * 101), other);
                 }, 4000);
             });
 

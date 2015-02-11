@@ -66,7 +66,7 @@ function ultimatum() {
         
         setTimeout(function() {
             node.emit('BID_DONE',
-                      Math.floor(1+Math.random()*100),
+                      Math.floor(Math.random() * 101),
                       other);
         }, 2000);
 
