@@ -129,9 +129,12 @@ function init() {
     };
 
     this.isValidBid = function(n) {
-        if (!n) return false;
+        if (typeof n !== 'string') return false;
+
+        if (!/^\d+$/.test(n)) return false;
+
         n = parseInt(n, 10);
-        return !isNaN(n) && isFinite(n) && n >= 0 && n <= 100;
+        return n >= 0 && n <= 100;
     };
 
     treatment = node.env('treatment');
@@ -357,7 +360,7 @@ function ultimatum() {
                     W.writeln('Please enter a number between 0 and 100');
                     return;
                 }
-                node.emit('BID_DONE', offer.value, other);
+                node.emit('BID_DONE', parseInt(offer.value, 10), other);
             };
 
             root = W.getElementById('container');
