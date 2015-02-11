@@ -73,6 +73,8 @@ describe('Bidding rounds', function() {
             response = roundDb.select('key', '=', 'response').fetch()[0].value;
 
             // Check value ranges.
+            offer.should.be.Number;
+            (offer % 1).should.equal(0, 'Offer not an integer!');
             offer.should.be.within(0, 100, 'Offer not in [0, 100]!');
             ['ACCEPT', 'REJECT'].should.containEql(response.response,
                 'Invalid response!');
