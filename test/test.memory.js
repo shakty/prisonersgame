@@ -2,11 +2,12 @@ var fs = require('fs');
 var should = require('should');
 var NDDB = require('NDDB').NDDB;
 
-var numGames = 4;  // determined by n in launcher-autoplay.js
+var numGames = require('./settings.js').numGames;
 var filePaths = [];
 var dbs = [];
 var gameSettings;
 
+// Generate memory file pathnames.
 for (var i = 0; i < numGames; ++i) {
     filePaths.push('./data/' + (100 + i) + '/memory_all.json');
 }

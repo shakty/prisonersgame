@@ -57,8 +57,10 @@ var sn = new ServerNode(options);
 sn.ready(function() {
     var i, n, phantoms, handleGameover;
     var numFinished;
+    var testSettings;
 
-    n = 8;  // determines numGames in test.memory.js
+    testSettings = require('./settings.js');
+    n = 2 * testSettings.numGames;
     phantoms = [];
     for (i = 0; i < n; ++i) { 
         console.log('Connecting autoplay-bot #', i+1, '/', n);
