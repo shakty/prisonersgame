@@ -58,7 +58,7 @@ sn.ready(function() {
     var i, n, phantoms, handleGameover;
     var numFinished;
 
-    n = 2;
+    n = 8;  // determines numGames in test.memory.js
     phantoms = [];
     for (i = 0; i < n; ++i) { 
         console.log('Connecting autoplay-bot #', i+1, '/', n);

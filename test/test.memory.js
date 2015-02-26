@@ -2,22 +2,34 @@ var fs = require('fs');
 var should = require('should');
 var NDDB = require('NDDB').NDDB;
 
-var filePath = './data/100/memory_all.json';
-var db;
+var numGames = 4;  // determined by n in launcher-autoplay.js
+var filePaths = [];
+var dbs = [];
 var gameSettings;
 
-describe('The file "' + filePath + '"', function() {
-    it('should exist', function(done) {
-        fs.exists(filePath, function(exists) {
-            exists.should.be.true;
-            done();
-        });
+for (var i = 0; i < numGames; ++i) {
+    filePaths.push('./data/' + (100 + i) + '/memory_all.json');
+}
+
+describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
+    it('should exist', function() {
+        var gameNo;
+
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            fs.existsSync(filePaths[gameNo]).should.be.true;
+        }
     });
 
     it('should be loadable with NDDB', function() {
-        db = new NDDB();
-        db.load(filePath);
-        db.size().should.be.above(0);
+        var gameNo, db;
+
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            db = new NDDB();
+            db.load(filePaths[gameNo]);
+            db.size().should.be.above(0,
+                'Empty DB in game '+(gameNo+1)+'/'+numGames+'!');
+            dbs.push(db);
+        }
     });
 });
 
@@ -27,60 +39,78 @@ describe('File contents', function() {
     });
 
     it('should have the right number of entries', function() {
+        var gameNo;
+
         // Assuming two players.
-        db.size().should.equal(4 + 4 * gameSettings.REPEAT + 4);
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            dbs[gameNo].size().should.equal(4 + 4 * gameSettings.REPEAT + 4,
+                'Wrong number of entries in game '+(gameNo+1)+'/'+numGames+'!');
+        }
     });
 
     it('should have consistent player IDs', function() {
-        var i;
+        var gameNo, i;
         var group;
 
-        // Assuming two players.
-        group = db.groupBy('player');
-        group.length.should.equal(2,
-            'Invalid number of players!');
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            // Assuming two players.
+            group = dbs[gameNo].groupBy('player');
+            group.length.should.equal(2,
+                'Wrong number of players in game '+(gameNo+1)+'/'+numGames+'!');
 
-        // Check for ID data-type.
-        for (i = 0; i < 2; ++i) {
-            group[i].db[0].player.should.be.String;
+            // Check for ID data-type.
+            for (i = 0; i < 2; ++i) {
+                group[i].db[0].player.should.be.String;
+            }
         }
     });
 });
 
 describe('Bidding rounds', function() {
-    var bidDb;
+    var bidDbs = [];
 
     before(function() {
-        bidDb = db.select('stage.stage', '=', 5).breed();
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            bidDbs.push(dbs[gameNo].select('stage.stage', '=', 5).breed());
+        }
     });
 
     it('should have the correct number of repetitions', function() {
-        // Maximum round should equal the repetition number in the settings.
-        Math.max.apply(null,
-            bidDb.fetchValues('stage.round')['stage.round']
-        ).should.equal(gameSettings.REPEAT);
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            // Maximum round should equal the repetition number in the settings.
+            Math.max.apply(null,
+                bidDbs[gameNo].fetchValues('stage.round')['stage.round']
+            ).should.equal(gameSettings.REPEAT,
+                'Wrong number of rounds in game '+(gameNo+1)+'/'+numGames+'!');
+        }
     });
 
     it('should have valid offers', function() {
         var i, roundDb;
         var offer, response;
 
-        for (i = 1; i <= gameSettings.REPEAT; ++i) {
-            roundDb = bidDb.select('stage.round', '=', i).breed();
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            for (i = 1; i <= gameSettings.REPEAT; ++i) {
+                roundDb = bidDbs[gameNo].select('stage.round', '=', i).breed();
 
-            // Get offer and response.
-            offer = roundDb.select('key', '=', 'offer').fetch()[0].value;
-            response = roundDb.select('key', '=', 'response').fetch()[0].value;
+                // Get offer and response.
+                offer = roundDb.select('key', '=', 'offer').fetch()[0].value;
+                response = roundDb.select('key', '=', 'response').fetch()[0].value;
 
-            // Check value ranges.
-            offer.should.be.Number;
-            (offer % 1).should.equal(0, 'Offer not an integer!');
-            offer.should.be.within(0, 100, 'Offer not in [0, 100]!');
-            ['ACCEPT', 'REJECT'].should.containEql(response.response,
-                'Invalid response!');
+                // Check value ranges.
+                offer.should.be.Number;
+                (offer % 1).should.equal(0, 'Offer not an integer in game '+
+                    (gameNo+1)+'/'+numGames+'!');
+                offer.should.be.within(0, 100, 'Offer not in [0, 100] in game '+
+                    (gameNo+1)+'/'+numGames+'!');
+                ['ACCEPT', 'REJECT'].should.containEql(response.response,
+                    'Invalid response in game '+(gameNo+1)+'/'+numGames+'!');
 
-            // Check offer/response correspondence.
-            offer.should.equal(response.value, 'Response contains incorrect offer!');
+                // Check offer/response correspondence.
+                offer.should.equal(response.value,
+                    'Response contains incorrect offer in game '+
+                    (gameNo+1)+'/'+numGames+'!');
+            }
         }
     });
 
@@ -88,31 +118,38 @@ describe('Bidding rounds', function() {
         var i, roundDb;
         var bidderId, respondentId, responseObj;
 
-        for (i = 1; i <= gameSettings.REPEAT; ++i) {
-            roundDb = bidDb.select('stage.round', '=', i).breed();
+        for (gameNo = 0; gameNo < numGames; ++gameNo) {
+            for (i = 1; i <= gameSettings.REPEAT; ++i) {
+                roundDb = bidDbs[gameNo].select('stage.round', '=', i).breed();
 
-            // Check role IDs.
-            bidderId = roundDb
-                .select('key', '=', 'ROLE')
-                .and('value', '=', 'BIDDER')
-                .fetch()[0].player;
-            respondentId = roundDb
-                .select('key', '=', 'ROLE')
-                .and('value', '=', 'RESPONDENT')
-                .fetch()[0].player;
+                // Check role IDs.
+                bidderId = roundDb
+                    .select('key', '=', 'ROLE')
+                    .and('value', '=', 'BIDDER')
+                    .fetch()[0].player;
+                respondentId = roundDb
+                    .select('key', '=', 'ROLE')
+                    .and('value', '=', 'RESPONDENT')
+                    .fetch()[0].player;
 
-            bidderId.should.not.equal(respondentId,
-                'Bidder same as respondent!');
+                bidderId.should.not.equal(respondentId,
+                    'Bidder same as respondent in game '+
+                    (gameNo+1)+'/'+numGames+'!');
 
-            // Check offer/response correspondence.
-            roundDb.select('key', '=', 'offer').fetch()[0].player.should.equal(
-                bidderId, 'Bid did not come from bidder!');
+                // Check offer/response correspondence.
+                roundDb.select('key', '=', 'offer')
+                    .fetch()[0].player.should.equal(
+                        bidderId, 'Bid did not come from bidder in game '+
+                        (gameNo+1)+'/'+numGames+'!');
 
-            responseObj = roundDb.select('key', '=', 'response').fetch()[0];
-            responseObj.player.should.equal(
-                respondentId, 'Response did not come from respondent!');
-            responseObj.value.from.should.equal(
-                bidderId, 'Response contains incorrect bidder ID!');
+                responseObj = roundDb.select('key', '=', 'response').fetch()[0];
+                responseObj.player.should.equal(respondentId,
+                    'Response did not come from respondent in game '+
+                    (gameNo+1)+'/'+numGames+'!');
+                responseObj.value.from.should.equal(bidderId,
+                    'Response contains incorrect bidder ID in game '+
+                    (gameNo+1)+'/'+numGames+'!');
+            }
         }
     });
 });
