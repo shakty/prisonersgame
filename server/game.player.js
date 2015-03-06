@@ -119,28 +119,39 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // - or a function returning the number of milliseconds.
         timer: 60000,
         done: function() {
-            var b, QUIZ, answers, isTimeup;
-            QUIZ = W.getFrameWindow().QUIZ;
-            b = W.getElementById('submitQuiz');
+            //function maybeDone() {
+                var b, QUIZ, answers, isTimeup;
+                QUIZ = W.getFrameWindow().QUIZ;
+                b = W.getElementById('submitQuiz');
 
-            answers = QUIZ.checkAnswers(b);
-            isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
+                answers = QUIZ.checkAnswers(b);
+                isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
 
-            if (!answers.__correct__ && !isTimeUp) {
-                return false;
-            }
+                if (!answers.__correct__ && !isTimeUp) {
+                    return false;
+                }
 
-            answers.timeUp = isTimeUp;
+                answers.timeUp = isTimeUp;
 
-            // On TimeUp there are no answers
-            node.set('QUIZ', answers);
-            node.emit('INPUT_DISABLE');
-            // We save also the time to complete the step.
-            node.set('timestep', {
-                time: node.timer.getTimeSince('step'),
-                timeup: isTimeUp
-            });
-            return true;
+                // On TimeUp there are no answers
+                node.set('QUIZ', answers);
+                node.emit('INPUT_DISABLE');
+                // We save also the time to complete the step.
+                node.set('timestep', {
+                    time: node.timer.getTimeSince('step'),
+                    timeup: isTimeUp
+                });
+                return true;
+            //}
+
+            //try {
+            //    return maybeDone();
+            //}
+            //catch (e) {
+            //    node.set('ERROR', 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE retrying!');
+            //    setTimeout(function() { node.done(); }, 2000);
+            //    return false;
+            //}
         }
     });
 
