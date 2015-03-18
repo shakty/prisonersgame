@@ -25,8 +25,6 @@ module.exports = function(auth) {
         if (!dk.codes.size()) {
             throw new Error('game.room: no codes found.');
         }
-        // Add a ref to the node obj.
-        node.dk = dk;
     }
 
     if (settings.AUTH === 'MTURK') {
