@@ -14,18 +14,21 @@ var path = require('path');
 // Load the ServerNode class.
 var ServerNode = require('nodegame-server').ServerNode;
 
+// Load the test settings.
+var testSettings = require('./settings.js');
+
 // Overrides some of the default options for ServerNode.
 var options = {
 
     // Additional conf directory.
     confDir: './conf',
-    
+
     // Log Dir
     logDir: './log',
-    
+
     servernode: function(servernode) {
         // Special configuration for the ServerNode object.
-        
+
         // Adds a new game directory (Default is nodegame-server/games).
         servernode.gamesDirs.push('./games');
         // Sets the debug mode, exceptions will be thrown (Default is false).
@@ -40,14 +43,7 @@ var options = {
     sio: function(sio) {
         // Special configuration for Socket.Io goes here here.
 
-        // sio.set('transports', [
-        //   'websocket'
-        // , 'flashsocket'
-        // , 'htmlfile'
-        // , 'xhr-polling'
-        // , 'jsonp-polling'
-        // ]);
-
+        // sio.set('transports', testSettings.sio_transport);
         return true;
     }
 };
@@ -57,12 +53,10 @@ var sn = new ServerNode(options);
 sn.ready(function() {
     var i, n, phantoms, handleGameover;
     var numFinished;
-    var testSettings;
 
-    testSettings = require('./settings.js');
     n = 2 * testSettings.numGames;
     phantoms = [];
-    for (i = 0; i < n; ++i) { 
+    for (i = 0; i < n; ++i) {
         console.log('Connecting autoplay-bot #', i+1, '/', n);
         phantoms[i] = sn.channels.ultimatum.connectPhantom();
     }
@@ -72,7 +66,7 @@ sn.ready(function() {
     //    var node;
     //    node = sn.channels.ultimatum.gameRooms["ultimatum1"].node;
     //    node.events.ee.ng.on(
-    //        'GAME_OVER', function() { console.log('The game is over now.'); });
+    //        'GAME_OVER', function() {console.log('The game is over now.');});
     //}, 5000);
 
     handleGameover = function() {
