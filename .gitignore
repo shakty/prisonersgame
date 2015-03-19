@@ -8,6 +8,7 @@ Session.vim
 
 \#*
 .\#*
+*.swp
 
 server/csv
 server/data

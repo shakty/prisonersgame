@@ -230,10 +230,6 @@ function instructions() {
     W.loadFrame('/ultimatum/' + node.player.lang.path +
                 node.game.instructionsPage, function() {
 
-
-        // Hack to avoid double offers. Todo: fix.
-        node.game.offerDone = false;
-        
         var b = W.getElementById('read');
         b.onclick = function() {
             node.done();
@@ -303,6 +299,10 @@ function ultimatum() {
 
     node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                      'COUNT_UP_ROUNDS_TO_TOTAL']);
+
+
+    // Hack to avoid double offers. Todo: fix.
+    node.game.offerDone = false;    
 
     // Load the BIDDER interface.
     node.on.data('BIDDER', function(msg) {
