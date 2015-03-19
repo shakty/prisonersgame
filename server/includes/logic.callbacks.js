@@ -75,7 +75,7 @@ function init() {
                 // Respondent payoff.
                 code = dk.codes.id.get(p);
                 if (!code) {
-                    console.log('AAAH code not found!');
+                    console.log('Err. Code not found!');
                     return;
                 }
                 gain = node.game.lastBids[p];
@@ -326,7 +326,7 @@ function endgame() {
             code.win = 0;
         }
         else {
-            code.win = Number((code.win || 0) / EXCHANGE_RATE).toFixed(2);
+            code.win = Number((code.win || 0) / (EXCHANGE_RATE/100)).toFixed(2);
             code.win = parseFloat(code.win, 10);
         }
         dk.checkOut(accesscode, exitcode, code.win);
