@@ -63,6 +63,9 @@ function init() {
 
     node.on('BID_DONE', function(offer, to) {
         var root;
+        // Hack. To avoid double offers. Todo: fix.
+        if (node.game.offerDone) return;
+        node.game.offerDone = true;
 
         node.game.timer.clear();
         node.game.timer.startWaiting({milliseconds: 30000});
@@ -71,8 +74,9 @@ function init() {
         node.set('offer', offer);
         node.say('OFFER', to, offer);
         root = W.getElementById('container');
-        W.write(' Your offer: ' +  offer +
-                '. Waiting for the respondent... ', root);
+        // Leave a space.
+        W.writeln(' Your offer: ' +  offer +
+                  '. Waiting for the respondent... ', root);
     });
 
     node.on('RESPONSE_DONE', function(response, offer, from) {
@@ -226,6 +230,10 @@ function instructions() {
     W.loadFrame('/ultimatum/' + node.player.lang.path +
                 node.game.instructionsPage, function() {
 
+
+        // Hack to avoid double offers. Todo: fix.
+        node.game.offerDone = false;
+        
         var b = W.getElementById('read');
         b.onclick = function() {
             node.done();

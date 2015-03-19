@@ -21,5 +21,7 @@ module.exports = function(settings) {
         .next('endgame')
         .gameover();
 
+//    stager.skip('quiz');
+
     return stager.getState();
 };
