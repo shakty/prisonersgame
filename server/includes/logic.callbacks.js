@@ -303,8 +303,7 @@ function endgame() {
 
     console.log('Endgame');
 
-    EXCHANGE_RATE = settings.EXCHANGE_RATE;
-
+    EXCHANGE_RATE = settings.EXCHANGE_RATE / settings.COINS;;
 
     bonusFile = DUMP_DIR + 'bonus.csv';
 
@@ -326,7 +325,7 @@ function endgame() {
             code.win = 0;
         }
         else {
-            code.win = Number((code.win || 0) / (EXCHANGE_RATE/100)).toFixed(2);
+            code.win = Number((code.win || 0) / (EXCHANGE_RATE)).toFixed(2);
             code.win = parseFloat(code.win, 10);
         }
         dk.checkOut(accesscode, exitcode, code.win);
