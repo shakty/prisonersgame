@@ -325,7 +325,7 @@ function endgame() {
             code.win = 0;
         }
         else {
-            code.win = Number((code.win || 0) / (EXCHANGE_RATE)).toFixed(2);
+            code.win = Number((code.win || 0) * (EXCHANGE_RATE)).toFixed(2);
             code.win = parseFloat(code.win, 10);
         }
         dk.checkOut(accesscode, exitcode, code.win);
