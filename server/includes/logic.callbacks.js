@@ -303,7 +303,7 @@ function endgame() {
 
     console.log('Endgame');
 
-    EXCHANGE_RATE = settings.EXCHANGE_RATE / settings.COINS;;
+    EXCHANGE_RATE = settings.EXCHANGE_RATE_INSTRUCTIONS / settings.COINS;;
 
     bonusFile = DUMP_DIR + 'bonus.csv';
 
