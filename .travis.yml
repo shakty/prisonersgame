@@ -19,7 +19,7 @@ install:
 script:
 # Run autoplay-game to get memory dump.
   - cd nodegame
-  - node start/launcher-autoplay.js
+  - node start/launcher-autoplay.js ultimatum
   - cd ..
 # Run tests on dump.
   - npm test
