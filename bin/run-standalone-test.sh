@@ -17,7 +17,7 @@ npm install
 
 # Go to the nodegame directory and run the automatic game.
 cd ../..
-node start/launcher-autoplay.js ultimatum
+node test/launcher-autoplay.js ultimatum
 cd games/ultimatum
 
 npm test
