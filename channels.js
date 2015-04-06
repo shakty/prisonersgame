@@ -33,7 +33,9 @@ module.exports = [
             // Relative path from server/ directory.
             logicPath:  'game.room.js',
             name:       'waitRoom'
-        }
+        },
+
+        enableReconnections: false
     }
 
     ,
@@ -53,7 +55,9 @@ module.exports = [
         waitingRoom: {
             logicPath: 'requirements.room.js',
             name: 'requirementsWR'
-        }
+        },
+
+        enableReconnections: false
     }
 
 ];
