@@ -205,7 +205,9 @@ function selectLanguage() {
         };
 
         node.env('auto', function() {
-            node.timer.randomEmit('DONE');
+            node.timer.randomExec(function() {
+                node.done()
+            });
         });
     });
 }
@@ -251,11 +253,13 @@ function instructions() {
             //////////////////////////////////////////////
             // nodeGame hint:
             //
-            // Emit an event randomly in a time interval
+            // Execute a function randomly in a time interval
             // from 0 to 2000 milliseconds
             //
             //////////////////////////////////////////////
-            node.timer.randomEmit('DONE', 2000);
+            node.timer.randomExec(function() {
+                node.done();
+            }, 2000);
         });
     });
     console.log('Instructions');
@@ -375,12 +379,16 @@ function ultimatum() {
 
             node.on.data('ACCEPT', function(msg) {
                 W.write(' Your offer was accepted.', root);
-                node.timer.randomEmit('DONE', 3000);
+                node.timer.randomExec(function() {
+                    node.done();
+                }, 3000);
             });
 
             node.on.data('REJECT', function(msg) {
                 W.write(' Your offer was rejected.', root);
-                node.timer.randomEmit('DONE', 3000);
+                node.timer.randomExec(function() {
+                    node.done();
+                }, 3000);
             });
         }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
     });
