@@ -11,7 +11,7 @@ before_install:
   - ln -s nodegame/node_modules .
 install:
 # Get nodegame.
-  - bin/install-nodegame-for-module.sh -n "smoosh ya-csv"
+  - ./bin/install-nodegame-for-module.sh -n "smoosh ya-csv"
 # Install dependencies.
   - npm install
 # Register this Ultimatum game in nodegame.
@@ -19,7 +19,7 @@ install:
 script:
 # Run autoplay-game to get memory dump.
   - cd nodegame
-  - node ../test/launcher-autoplay.js
+  - node test/launcher-autoplay.js ultimatum
   - cd ..
 # Run tests on dump.
   - npm test

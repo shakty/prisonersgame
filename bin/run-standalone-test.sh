@@ -12,12 +12,12 @@
 # Return on failure immediately.
 set -e
 
-ln -s ../../node_modules node_modules
+ln -fs ../../node_modules .
 npm install
 
-# Go to the nodegame directory.
+# Go to the nodegame directory and run the automatic game.
 cd ../..
-node games/ultimatum/test/launcher-autoplay.js
+node test/launcher-autoplay.js ultimatum
 cd games/ultimatum
 
 npm test

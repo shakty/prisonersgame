@@ -1,3 +1,4 @@
 module.exports = {
-    numGames: 4
+    sioTransports: ["websocket", "flashsocket", "htmlfile", "xhr-polling", "jsonp-polling"],
+    numPlayers: 2
 };

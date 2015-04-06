@@ -2,10 +2,18 @@ var fs = require('fs');
 var should = require('should');
 var NDDB = require('NDDB').NDDB;
 
-var numGames = require('./settings.js').numGames;
+var numPlayers = require('./settings.js').numPlayers;
+var numGames;
 var filePaths = [];
 var dbs = [];
 var gameSettings;
+
+// TODO: Assuming two players per game.
+if (numPlayers % 2 != 0) {
+    console.log('Invalid number of players! Check settings.js.');
+    process.exit(1);
+}
+numGames = numPlayers / 2;
 
 // Generate memory file pathnames.
 for (var i = 0; i < numGames; ++i) {
@@ -42,7 +50,7 @@ describe('File contents', function() {
     it('should have the right number of entries', function() {
         var gameNo;
 
-        // Assuming two players.
+        // TODO: Assuming two players.
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
             dbs[gameNo].size().should.equal(4 + 4 * gameSettings.REPEAT + 4,
                 'Wrong number of entries in game '+(gameNo+1)+'/'+numGames+'!');
