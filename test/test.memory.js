@@ -48,11 +48,14 @@ describe('File contents', function() {
     });
 
     it('should have the right number of entries', function() {
-        var gameNo;
+        var gameNo, nSets;
+
+        // 1 instr, 2 quiz, 2 * REPEAT ultimatum + 2 quest = 18
+        nSets = 2 * (1 + 2 + 2 * gameSettings.REPEAT + 2);
 
         // TODO: Assuming two players.
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
-            dbs[gameNo].size().should.equal(4 + 4 * gameSettings.REPEAT + 4,
+            dbs[gameNo].size().should.equal(nSets,
                 'Wrong number of entries in game '+(gameNo+1)+'/'+numGames+'!');
         }
     });

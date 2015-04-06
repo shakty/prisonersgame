@@ -79,7 +79,7 @@ module.exports = function(gameRoom, treatmentName, settings) {
     // In this case the client will wait for a command from the server.
     stager.setDefaultStepRule(stepRules.WAIT);
 
-    // stager.setDefaultProperty('done', cbs.clearFrame);
+    stager.setDefaultProperty('done', cbs.clearFrame);
 
     MIN_PLAYERS = [ settings.MIN_PLAYERS, cbs.notEnoughPlayers ];
 
@@ -119,39 +119,28 @@ module.exports = function(gameRoom, treatmentName, settings) {
         // - or a function returning the number of milliseconds.
         timer: 60000,
         done: function() {
-            //function maybeDone() {
-                var b, QUIZ, answers, isTimeup;
-                QUIZ = W.getFrameWindow().QUIZ;
-                b = W.getElementById('submitQuiz');
+            var b, QUIZ, answers, isTimeup;
+            QUIZ = W.getFrameWindow().QUIZ;
+            b = W.getElementById('submitQuiz');
 
-                answers = QUIZ.checkAnswers(b);
-                isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
+            answers = QUIZ.checkAnswers(b);
+            isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
 
-                if (!answers.__correct__ && !isTimeUp) {
-                    return false;
-                }
+            if (!answers.__correct__ && !isTimeUp) {
+                return false;
+            }
 
-                answers.timeUp = isTimeUp;
+            answers.timeUp = isTimeUp;
 
-                // On TimeUp there are no answers
-                node.set('QUIZ', answers);
-                node.emit('INPUT_DISABLE');
-                // We save also the time to complete the step.
-                node.set('timestep', {
-                    time: node.timer.getTimeSince('step'),
-                    timeup: isTimeUp
-                });
-                return true;
-            //}
-
-            //try {
-            //    return maybeDone();
-            //}
-            //catch (e) {
-            //    node.set('ERROR', 'EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE retrying!');
-            //    setTimeout(function() { node.done(); }, 2000);
-            //    return false;
-            //}
+            // On TimeUp there are no answers
+            node.set('QUIZ', answers);
+            node.emit('INPUT_DISABLE');
+            // We save also the time to complete the step.
+            node.set('timestep', {
+                time: node.timer.getTimeSince('step'),
+                timeup: isTimeUp
+            });
+            return true;
         }
     });
 
