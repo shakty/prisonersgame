@@ -88,9 +88,10 @@ module.exports = function(node, channel, room) {
             // PlayerList object of waiting players.
             wRoom = room.clients.player;
             nPlayers = wRoom.size();
-
             // Send players the waiting stage.
-            if (p.clientType === 'player') {
+            if (p.clientType === 'player' ||
+                p.clientType === 'autoplay') {
+
                 node.remoteSetup('nodegame', p.id, playerWait);
                 node.remoteCommand('start', p.id);
 
