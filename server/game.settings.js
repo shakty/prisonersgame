@@ -55,7 +55,7 @@ module.exports = {
     AUTH: 'NO', // MTURK, LOCAL, NO.
 
     // Available treatments:
-    // (there is also the "default" treatment, using the options above)
+    // (there is also the "standard" treatment, using the options above)
     treatments: {
         pp: {
             name: "pp",

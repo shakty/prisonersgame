@@ -55,7 +55,7 @@ module.exports = function(node, channel, room) {
 
         if ('undefined' === typeof treatment) {
             treatmentList = J.keys(settings.treatments);
-            treatmentList.push('default');
+            treatmentList.push('standard');
             treatment = J.randomInt(0, treatmentList.length);
             treatment = treatmentList[treatment];
         }
