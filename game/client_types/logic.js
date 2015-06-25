@@ -41,7 +41,10 @@ var nocache = true;
 // - node: the NodeGameClient object.
 // - channel: the ServerChannel object in which this logic will be running.
 // - gameRoom: the GameRoom object in which this logic will be running.
-module.exports = function(node, channel, gameRoom, treatmentName, settings) {
+module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
+
+    var channel = gameRoom.channel;
+    var node = gameRoom.node;
 
     // Increment counter.
     counter = counter ? ++counter : settings.SESSION_ID;
@@ -58,10 +61,6 @@ module.exports = function(node, channel, gameRoom, treatmentName, settings) {
     var basedir = channel.resolveGameDir('ultimatum');
     var confPath = basedir + '/auth/descil.conf.js';
     var dk = require('descil-mturk')(confPath);
-
-    // Import the stager.
-    var gameSequence = require(__dirname + '/game.stages.js')(settings);
-    var stager = ngc.getStager(gameSequence);
 
     // Import other functions used in the game.
     // Some objects are shared.

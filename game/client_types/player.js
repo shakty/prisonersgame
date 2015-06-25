@@ -14,20 +14,17 @@ var Stager = ngc.Stager;
 var stepRules = ngc.stepRules;
 var constants = ngc.constants;
 
-// Export the game-creating function. It needs the name of the treatment and
-// its options.
-module.exports = function(gameRoom, treatmentName, settings) {
+// Export the game-creating function.
+module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     var game, MIN_PLAYERS;
-    var gameSequence, stager;
     var cbs;
+
+    var channel = gameRoom.channel;
+    var node = gameRoom.node;
 
     // The game object to return at the end of the function.
     game = {};
-
-    // Import the stager.
-    gameSequence = require(__dirname + '/game.stages.js')(settings);
-    stager = ngc.getStager(gameSequence);
 
     // Import other functions used in the game.
 

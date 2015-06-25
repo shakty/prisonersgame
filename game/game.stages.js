@@ -6,10 +6,7 @@
  * http://www.nodegame.org
  */
 
-var ngc = require('nodegame-client');
-
-module.exports = function(settings) {
-    var stager = ngc.getStager();
+module.exports = function(stager, settings) {
 
     stager.init()
         .next('precache')
@@ -21,7 +18,5 @@ module.exports = function(settings) {
         .next('endgame')
         .gameover();
 
-//    stager.skip('quiz');
-
-    return stager.getState();
+    // stager.skip('quiz');
 };
