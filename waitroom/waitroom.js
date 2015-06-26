@@ -170,18 +170,13 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         
         // Create new game room.
         gameRoom = channel.createGameRoom({
-            group: 'burdenshare',
             clients: tmpPlayerList,
-            gameName: 'burdenshare',
             treatmentName: treatmentName
         });
 
         // Setup and start game.
         gameRoom.setupGame();
         gameRoom.startGame(true, []);
-        
-        // Ste 19.06
-        // gameRoom.startGame(true, tmpPlayerList.id.getAllKeys());
     }
 
     function monitorReconnects(p) {

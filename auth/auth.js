@@ -1,78 +1,25 @@
 /**
  * # Authorization functions for Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * Sets authorizations for accessing the Ultimatum channels.
  * ---
  */
-module.exports = function(auth) {
+module.exports = function(auth, settings) {
 
-    var path = require('path');
-
-    var J = require('JSUS').JSUS;
-
-    // TODO: receive callback or pass from paramter.
-    // Load settings.
-    var settings = require(__dirname + '/../server/game.settings.js');
-
-    // Reads in descil-mturk configuration.
-    var confPath = path.resolve(__dirname, 'descil.conf.js');
-
-    // Load the code database.
-    var dk = require('descil-mturk')(confPath);
-    function codesNotFound() {
-        if (!dk.codes.size()) {
-            throw new Error('game.room: no codes found.');
-        }
-    }
-
-    if (settings.AUTH === 'MTURK') {
-        dk.getCodes(codesNotFound);
-    }
-    else if (settings.AUTH === 'LOCAL') {
-        dk.readCodes(codesNotFound);
-    }
 
     // Creating an authorization function for the players.
-    // This is executed before the PCONNECT listener.
+    // This is executed before the client the PCONNECT listener.
     // Here direct messages to the client can be sent only using
     // his socketId property, since no clientId has been created yet.
+
     function authPlayers(channel, info) {
 
         var code, player, token;
-        var header, cookies, room, clientType;
+        playerId = info.cookies.player;
+        token = info.cookies.token;
 
-        header = info.headers;
-        cookies = info.cookies;
-        room = info.startingRoom;
-        clientType = info.clientType;
-
-        if (settings.AUTH === 'NO') {
-            return true;
-        }
-
-        playerId = cookies.player;
-        token = cookies.token;
-
-        console.log('game.room: checking auth.');
-
-        // Weird thing.
-        if ('string' !== typeof playerId) {
-            console.log('no player: ', player);
-            return false;
-        }
-
-        // Weird thing.
-        if ('string' !== typeof token) {
-            console.log('no token: ', token);
-            return false;
-        }
-
-        code = dk.codeExists(token);
-
-        console.log(code);
-        console.log("-------------------");
 
         // Code not existing.
         if (!code) {
@@ -103,30 +50,34 @@ module.exports = function(auth) {
 
     // Assigns Player Ids based on cookie token.
     function idGen(channel, info) {
-        var cid, cookies, validCookie;
-        
-        if (settings.AUTH === 'NO') {
-            cid = channel.registry.generateClientId();
-            
-            // If no auth, add the new code to the db.
-            dk.codes.insert({
-                AccessCode: cid,
-                ExitCode: cid + '_exit'
-            });
-            return cid;
-        }
+        var cid = channel.registry.generateClientId();
+        var cookies;
+        var ids;
 
-        cookies = info.cookies;
-        validCookie = info.validSessionCookie;
 
         // Return the id only if token was validated.
         // More checks could be done here to ensure that token is unique in ids.
-        if (cookies.token && validCookie) {
-            return cookies.token;
+        ids = channel.registry.getIds();
+        cookies = info.cookies;
+        if (cookies.player) {
+
+            if (!ids[cookies.player] || ids[cookies.player].disconnected) {
+                return cookies.player;
+            }
+            else {
+                console.log("already in ids", cookies.player);
+                return false;
+            }
         }
     }
 
+    function decorateClientObj(clientObject, info) {
+        if (info.headers) clientObject.userAgent = info.headers['user-agent'];
+    }
+
     // Assigning the auth callbacks to the player server.
-    auth.authorization('ultimatum', 'player', authPlayers);
-    auth.clientIdGenerator('ultimatum', 'player', idGen);
+    // auth.authorization('player', authPlayers);
+    // auth.clientIdGenerator('player', idGen);
+    auth.clientObjDecorator('player', decorateClientObj);
+
 };

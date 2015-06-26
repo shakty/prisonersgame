@@ -54,11 +54,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // the treatment options, and it returns a game object.
     // TODO: Only pass the options from the current treatment; at
     // the moment, the entire game.settings structure is passed.
-    var client = require(gameRoom.gamePaths.player)(
-            gameRoom, treatmentName, settings);
+    // var client = require(gameRoom.gamePaths.player)(
+    //        gameRoom, treatmentName, settings);
+
+
 
     // Reads in descil-mturk configuration.
-    var basedir = channel.resolveGameDir('ultimatum');
+    var basedir = channel.getGameDir();
     var confPath = basedir + '/auth/descil.conf.js';
     var dk = require('descil-mturk')(confPath);
 
@@ -69,7 +71,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         gameRoom: gameRoom,
         settings: settings,
         dk: dk,
-        client: client,
+        // client: client,
         counter: counter
         // Reference to channel added by default.
     }, nocache);
@@ -124,22 +126,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         steprule: stepRules.SOLO
     });
 
+    stager.setDefaultProperties({
+        publishLevel: 0,
+        syncStepping: true
+    });
+
     // Here we group together the definition of the game logic.
     return {
         nodename: 'lgc' + counter,
-        game_metadata: {
-            name: 'ultimatum',
-            version: '0.1.0'
-        },
-        game_settings: {
-            // Will not publish any update of stage / stageLevel, etc.
-            publishLevel: 0,
-            // Will send a start / step command to ALL the clients when
-            // the logic will start / step through the game.
-            // This option requires that the game plots of the clients
-            // and logic are symmetric or anyway compatible.
-            syncStepping: true
-        },
         // Extracts, and compacts the game plot that we defined above.
         plot: stager.getState(),
         // If debug is false (default false), exception will be caught and

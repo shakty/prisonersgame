@@ -2,7 +2,7 @@ var J = require('JSUS').JSUS;
 
 module.exports = function(settings, headers) {
 
-    var coins = settings.standard.COINS;
+    var coins = settings.pp.COINS;
     var values = [
         Math.floor(coins/2, 10),
         coins,
@@ -23,7 +23,7 @@ module.exports = function(settings, headers) {
             "He gets what I offered, I get nothing.",
             "Both get nothing."
         ],
-        "considerTheFollowing": "Consider the following scenario. Four players (A,B,C,D) are playing. B disconnects for more than " + settings.standard.WAIT_TIME + " seconds, and the game is terminated. What happens then?",
+        "considerTheFollowing": "Consider the following scenario. Four players (A,B,C,D) are playing. B disconnects for more than " + settings.pp.WAIT_TIME + " seconds, and the game is terminated. What happens then?",
         "disconnect": [
             "A,C,D are paid only the show up fee. B is not paid at all.",
             "A,C,D are paid the show up fee plus the bonus collected so far. B is paid only the show up fee.",

@@ -1,5 +1,5 @@
 module.exports = function(settings, headers) {
-    var coins = settings.standard.COINS;
+    var coins = settings.pp.COINS;
 
     return {
         "title": "Bidder",

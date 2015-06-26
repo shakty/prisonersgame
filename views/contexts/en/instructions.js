@@ -1,8 +1,8 @@
 module.exports = function(settings, headers) {
 
-    var C = settings.standard.COINS;
-    var R = settings.standard.REPEAT;
-    var E = settings.standard.EXCHANGE_RATE_INSTRUCTIONS;
+    var C = settings.pp.COINS;
+    var R = settings.pp.REPEAT;
+    var E = settings.pp.EXCHANGE_RATE_INSTRUCTIONS;
 
     var B = (C*R) * (E/C);
 

@@ -25,13 +25,7 @@ function init() {
     var that, waitingForPlayers, treatment, header;
 
     that = this;
-
     this.node.log('Init.');
-
-    // Hide the waiting for other players message.
-    waitingForPlayers = W.getElementById('waitingForPlayers');
-    waitingForPlayers.innerHTML = '';
-    waitingForPlayers.style.display = 'none';
 
     // Setup the header (by default on the left side).
     if (!W.getHeader()) {

@@ -26,11 +26,15 @@ var channel = module.parent.exports.channel;
 var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var dk = module.parent.exports.dk;
-var client = module.parent.exports.client;
 var counter = module.parent.exports.counter;
 
+
+var client = gameRoom.getClientType('player');
+var autoplay = gameRoom.getClientType('autoplay');
+
+
 function init() {
-    DUMP_DIR = path.resolve(channel.resolveGameDir('ultimatum'), 'data') + '/' + counter + '/';
+    DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
     DUMP_DIR_JSON = DUMP_DIR + 'json/';
     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
 
@@ -242,8 +246,8 @@ function gameover() {
     // Dump all memory.
     node.fs.saveMemory('json', DUMP_DIR + 'memory_all.json');
 
-    // TODO: update database.
-    channel.destroyGameRoom(gameRoom.name);
+    // TODO: fix this.
+    // channel.destroyGameRoom(gameRoom.name);
 }
 
 function doMatch() {

@@ -8,11 +8,14 @@
  * http://www.nodegame.org
  */
 
-module.exports = function(gameRoom, treatmentName, settings) {
+module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
+
+    var channel = gameRoom.channel;
+    var node = gameRoom.node;
+
     var game;
 
-    game = require(__dirname + '/game.player.js')
-        (gameRoom, treatmentName, settings);
+    game = gameRoom.getClientType('player');
     game.env.auto = true;
     game.nodename = 'autoplay';
 

@@ -2,7 +2,7 @@ var J = require('JSUS').JSUS;
 
 module.exports = function(settings, headers) {
 
-    var coins = settings.standard.COINS;
+    var coins = settings.pp.COINS;
     var values = [
         Math.floor(coins/2, 10),
         coins,

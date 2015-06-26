@@ -25,13 +25,6 @@ module.exports = {
     // (defaults: "/pages/accessdenied.htm")
     accessDeniedUrl: '/ultimatum/unauth.htm',
 
-    // Channel Waiting Room configuration.
-    waitingRoom: {
-        // Relative path from server/ directory.
-        logicPath:  'game.room.js',
-        name:       'waitRoom'
-    },
-
     enableReconnections: false
 };
 
