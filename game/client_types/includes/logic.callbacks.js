@@ -25,7 +25,6 @@ var node = module.parent.exports.node;
 var channel = module.parent.exports.channel;
 var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
-var dk = module.parent.exports.dk;
 var counter = module.parent.exports.counter;
 
 
@@ -77,11 +76,8 @@ function init() {
             if (node.game.lastBids.hasOwnProperty(p)) {
 
                 // Respondent payoff.
-                code = dk.codes.id.get(p);
-                if (!code) {
-                    console.log('Err. Code not found!');
-                    return;
-                }
+                code = channel.registry.getClient(p);
+                
                 gain = node.game.lastBids[p];
                 if (gain) {
                     code.win = !code.win ? gain : code.win + gain;
@@ -113,13 +109,7 @@ function init() {
 
     // Register player disconnection, and wait for him...
     node.on.pdisconnect(function(p) {
-
-        delete node.game.memory.stage[node.game.getCurrentGameStage()];
-
-        dk.updateCode(p.id, {
-            disconnected: true,
-            stage: p.stage
-        });
+        console.log('Disconnection in Stage: ' + node.player.stage);
     });
 
     // Player reconnecting.
@@ -128,7 +118,7 @@ function init() {
         var code;
 
         console.log('Oh...somebody reconnected!', p);
-        code = dk.codeExists(p.id);
+        code = channel.registry.getClient(p.id);
 
         if (!code) {
             console.log('game.logic: reconnecting player not found in ' +
@@ -235,7 +225,7 @@ function init() {
 
     console.log('init');
 }
-
+g
 function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
 
@@ -316,7 +306,7 @@ function endgame() {
 
     bonus = node.game.pl.map(function(p) {
 
-        code = dk.codes.id.get(p.id);
+        code = channel.registry.getClient(p.id);
         if (!code) {
             console.log('ERROR: no code in endgame:', p.id);
             return ['NA', 'NA'];
@@ -332,7 +322,7 @@ function endgame() {
             code.win = Number((code.win || 0) * (EXCHANGE_RATE)).toFixed(2);
             code.win = parseFloat(code.win, 10);
         }
-        dk.checkOut(accesscode, exitcode, code.win);
+        channel.registry.checkOut(p.id);
 
         node.say('WIN', p.id, {
             win: code.win,

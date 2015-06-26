@@ -49,29 +49,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Increment counter.
     counter = counter ? ++counter : settings.SESSION_ID;
 
-    // Client game to send to reconnecting players.
-    // The client function needs to be given a treatment name and
-    // the treatment options, and it returns a game object.
-    // TODO: Only pass the options from the current treatment; at
-    // the moment, the entire game.settings structure is passed.
-    // var client = require(gameRoom.gamePaths.player)(
-    //        gameRoom, treatmentName, settings);
-
-
-
     // Reads in descil-mturk configuration.
     var basedir = channel.getGameDir();
-    var confPath = basedir + '/auth/descil.conf.js';
-    var dk = require('descil-mturk')(confPath);
-
+   
     // Import other functions used in the game.
     // Some objects are shared.
     var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
         node: node,
         gameRoom: gameRoom,
         settings: settings,
-        dk: dk,
-        // client: client,
         counter: counter
         // Reference to channel added by default.
     }, nocache);
