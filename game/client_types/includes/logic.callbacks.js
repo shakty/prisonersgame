@@ -53,8 +53,6 @@ function init() {
     // we need to take into account only the final bids within that round.
     node.game.lastBids = {};
 
-    node.on.data('ERROR', function(msg) { console.log(msg); });  // DEBUG
-
     // "STEPPING" is the last event emitted before the stage is updated.
     node.on('STEPPING', function() {
         var currentStage, db, p, gain;
@@ -225,7 +223,7 @@ function init() {
 
     console.log('init');
 }
-g
+
 function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
 

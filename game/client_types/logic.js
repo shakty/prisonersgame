@@ -49,9 +49,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Increment counter.
     counter = counter ? ++counter : settings.SESSION_ID;
 
-    // Reads in descil-mturk configuration.
-    var basedir = channel.getGameDir();
-   
     // Import other functions used in the game.
     // Some objects are shared.
     var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
@@ -75,8 +72,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.setDefaultProperty('minPlayers', [ 
         settings.MIN_PLAYERS,
-        cbs.notEnoughPlayers 
+        cbs.notEnoughPlayers
     ]);
+
+// TODO: this should work in the future. It will avoid to
+// to extend all the other stages.
+//     stager.setDefaultProperty('cb', {
+//         cb: function() {}
+//     });
 
     stager.extendStep('precache', {
         cb: function() {}
