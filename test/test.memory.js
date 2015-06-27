@@ -44,7 +44,7 @@ describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
 
 describe('File contents', function() {
     before(function() {
-        gameSettings = require('../server/game.settings.js');
+        gameSettings = require('../game/game.settings.js');
     });
 
     it('should have the right number of entries', function() {
