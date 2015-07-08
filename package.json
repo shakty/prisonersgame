@@ -26,15 +26,6 @@
     "node": "*",
     "nodegame": ">= 0.6.0"
   },
-  "nodegame": {
-    "logic": "./server/logic.js",
-    "dependencies": {
-      "not_used": "for now"
-    },
-    "widgets": {
-      "moneytalk": "0.1.0"
-    }
-  },
   "scripts": {
     "test": "./node_modules/.bin/mocha ./test/test.*.js"
   }
