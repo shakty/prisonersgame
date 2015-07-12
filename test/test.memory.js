@@ -50,7 +50,7 @@ describe('File contents', function() {
     it('should have the right number of entries', function() {
         var gameNo, nSets;
 
-        // 1 instr, 2 quiz, 2 * REPEAT ultimatum + 2 quest = 18
+        // 1 precache, 1 instr, 2 quiz, 2 * REPEAT ultimatum + 2 quest = 18
         nSets = 2 * (1 + 2 + 2 * gameSettings.REPEAT + 2);
 
         // TODO: Assuming two players.

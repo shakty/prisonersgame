@@ -75,11 +75,11 @@ function init() {
 
     node.on('RESPONSE_DONE', function(response, offer, from) {
         console.log(response, offer, from);
-        node.set('response', {
-            response: response,
-            value: offer,
-            from: from
-        });
+        // node.set('response', {
+        //    response: response,
+        //    value: offer,
+        //    from: from
+        // });
         node.say(response, from, response);
 
         //////////////////////////////////////////////
@@ -97,7 +97,11 @@ function init() {
         // node.emit('DONE');
         //
         /////////////////////////////////////////////
-        node.done();
+        node.done({
+            response: response,
+            value: offer,
+            from: from
+        });
     });
 
 
@@ -184,7 +188,7 @@ function precache() {
 }
 
 function selectLanguage() {
-    W.loadFrame('/ultimatum/languageSelection.html', function() {
+    W.loadFrame('languageSelection.html', function() {
         var b = W.getElement('input', 'done', {
             type: "button", value: "Choice Made",
             className: "btn btn-lg btn-primary"
@@ -223,8 +227,7 @@ function instructions() {
     // passed as second parameter.
     //
     /////////////////////////////////////////////
-    W.loadFrame('/ultimatum/' + node.player.lang.path +
-                node.game.instructionsPage, function() {
+    W.loadFrame(node.player.lang.path + node.game.instructionsPage, function() {
 
         var b = W.getElementById('read');
         b.onclick = function() {
@@ -261,8 +264,7 @@ function instructions() {
 
 function quiz() {
     var that = this;
-    W.loadFrame('/ultimatum/' + node.player.lang.path + 'quiz.html',
-                function() {
+    W.loadFrame(node.player.lang.path + 'quiz.html', function() {
 
         var b, QUIZ;
         node.env('auto', function() {
@@ -331,7 +333,7 @@ function ultimatum() {
         // all the changes done while the frame was open.
         //
         /////////////////////////////////////////////
-        W.loadFrame('/ultimatum/' + langPath + 'bidder.html', function() {
+        W.loadFrame(langPath + 'bidder.html', function() {
             // Start the timer after an offer was received.
             options = {
                 milliseconds: 30000,
@@ -393,7 +395,7 @@ function ultimatum() {
         other = msg.data.other;
         node.set('ROLE', 'RESPONDENT');
 
-        W.loadFrame('/ultimatum/' + langPath + 'resp.html', function() {
+        W.loadFrame(langPath + 'resp.html', function() {
             options = {
                 milliseconds: 30000
             };
@@ -462,8 +464,7 @@ function ultimatum() {
 function postgame() {
     node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
 
-    W.loadFrame('/ultimatum/' + node.player.lang.path +
-                'postgame.html', function() {
+    W.loadFrame(node.player.lang.path + 'postgame.html', function() {
 
         node.env('auto', function() {
             node.timer.randomExec(function() {
@@ -475,7 +476,7 @@ function postgame() {
 }
 
 function endgame() {
-    W.loadFrame('/ultimatum/' + node.player.lang.path + 'ended.html',
+    W.loadFrame(node.player.lang.path + 'ended.html',
                 function() {
         node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
         node.game.timer.waitBox.hideBox();
@@ -498,10 +499,10 @@ function endgame() {
 function clearFrame() {
     node.emit('INPUT_DISABLE');
     // We save also the time to complete the step.
-    node.set('timestep', {
-        time: node.timer.getTimeSince('step'),
-        timeup: node.game.timer.gameTimer.timeLeft <= 0
-    });
+    // node.set('timestep', {
+    //     time: node.timer.getTimeSince('step'),
+    //     timeup: node.game.timer.gameTimer.timeLeft <= 0
+    // });
     return true;
 }
 
