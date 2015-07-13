@@ -168,16 +168,16 @@ function precache() {
     W.lockScreen('Loading...');
     console.log('pre-caching...');
     W.preCache([
-        '/ultimatum/languageSelection.html', // no text here.
-        '/ultimatum/' + langPath + node.game.instructionsPage,
-        '/ultimatum/' + langPath + 'quiz.html',
+        'languageSelection.html', // no text here.
+        langPath + node.game.instructionsPage,
+        langPath + 'quiz.html',
 
         // These two are cached later by loadFrame calls (for demonstration):
-        //'/ultimatum/' + langPath + 'bidder.html',
-        //'/ultimatum/' + langPath + 'resp.html',
+        // 'langPath + 'bidder.html',
+        // 'langPath + 'resp.html',
 
-        '/ultimatum/' + langPath + 'postgame.html',
-        '/ultimatum/' + langPath + 'ended.html'
+        langPath + 'postgame.html',
+        langPath + 'ended.html'
     ], function() {
         console.log('Precache done.');
         // Pre-Caching done; proceed to the next stage.
@@ -205,8 +205,7 @@ function selectLanguage() {
 
         node.env('auto', function() {
             node.timer.randomExec(function() {
-                W.setUriPrefix(node.player.lang.path);
-                node.done()
+                b.click();
             });
         });
     });
