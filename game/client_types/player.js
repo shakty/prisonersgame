@@ -1,6 +1,6 @@
 /**
  * # Player code for Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
@@ -121,7 +121,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             b = W.getElementById('submitQuiz');
 
             answers = QUIZ.checkAnswers(b);
-            isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
+            isTimeUp = node.game.timer.isTimeup();
 
             if (!answers.__correct__ && !isTimeUp) {
                 return false;
@@ -179,7 +179,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
             }
 
-            isTimeUp = node.game.timer.gameTimer.timeLeft <= 0;
+            isTimeUp = node.game.timer.isTimeup();
 
             // If there is still some time left, let's ask the player
             // to complete at least the second question.
@@ -194,10 +194,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             });
 
             node.emit('INPUT_DISABLE');
-            // node.set('timestep', {
-            //    time: node.timer.getTimeSince('step'),
-            //    timeup: isTimeUp
-            // });
+
             return true;
         }
     });
@@ -205,17 +202,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // We serialize the game sequence before sending it.
     game.plot = stager.getState();
 
-    // Let's add the metadata information.
-    game.metadata = {
-        name: 'ultimatum',
-        version: '0.2.0',
-        description: 'no descr'
-    };
-
     // Other settings, optional.
-    game.settings = {
-        publishLevel: 2
-    };
+   
     game.env = {
         auto: settings.AUTO,
         treatment: treatmentName

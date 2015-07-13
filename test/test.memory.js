@@ -50,8 +50,9 @@ describe('File contents', function() {
     it('should have the right number of entries', function() {
         var gameNo, nSets;
 
-        // 1 precache, 1 instr, 2 quiz, 2 * REPEAT ultimatum + 2 quest = 18
-        nSets = 2 * (1 + 2 + 2 * gameSettings.REPEAT + 2);
+        // 2 precache, 2 languageSel, 2 instr, 4 quiz, 4 quest = 14
+        // 6 * REPEAT ultimatum 
+        nSets = 14 + (6 * gameSettings.REPEAT);
 
         // TODO: Assuming two players.
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
@@ -106,15 +107,20 @@ describe('Bidding rounds', function() {
                 roundDb = bidDbs[gameNo].select('stage.round', '=', i).breed();
 
                 // Get offer and response.
-                offer = roundDb.select('key', '=', 'offer').fetch()[0].value;
-                response = roundDb.select('key', '=', 'response').fetch()[0].value;
+                offer = roundDb.select('key', '=', 'offer')
+                    .fetch()[0].value.offer;
+                response = roundDb.select('key', '=', 'response')
+                    .fetch()[0].value;
 
                 // Check value ranges.
                 offer.should.be.Number;
+
                 (offer % 1).should.equal(0, 'Offer not an integer in game '+
                     (gameNo+1)+'/'+numGames+'!');
+
                 offer.should.be.within(0, 100, 'Offer not in [0, 100] in game '+
                     (gameNo+1)+'/'+numGames+'!');
+
                 ['ACCEPT', 'REJECT'].should.containEql(response.response,
                     'Invalid response in game '+(gameNo+1)+'/'+numGames+'!');
 

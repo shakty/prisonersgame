@@ -53,8 +53,12 @@ function init() {
 
     // Add event listeners valid for the whole game.
 
-    node.on('BID_DONE', function(offer, to) {
-        var root;
+    node.on('BID_DONE', function(offer, to, timeup) {
+        var root, time;
+
+        // Time to make a bid.
+        time = node.timer.getTimeSince('bidder_loaded');
+        
         // Hack. To avoid double offers. Todo: fix.
         if (node.game.offerDone) return;
         node.game.offerDone = true;
@@ -63,8 +67,16 @@ function init() {
         node.game.timer.startWaiting({milliseconds: 30000});
 
         W.getElementById('submitOffer').disabled = 'disabled';
-        node.set('offer', offer);
+
+        // Notify the server.
+        node.set('offer', {
+            offer: offer,
+            time: time,
+            timeup: timeup
+        });
+        // Notify the other player.
         node.say('OFFER', to, offer);
+
         root = W.getElementById('container');
         // Leave a space.
         W.writeln(' Your offer: ' +  offer +
@@ -72,13 +84,18 @@ function init() {
     });
 
     node.on('RESPONSE_DONE', function(response, offer, from) {
+        var time;
+        time = node.timer.getTimeSince('offer_received');
+
         console.log(response, offer, from);
-        // node.set('response', {
-        //    response: response,
-        //    value: offer,
-        //    from: from
-        // });
+
         node.say(response, from, response);
+
+        node.set('response', {
+            response: response,
+            value: offer,
+            from: from
+        });
 
         //////////////////////////////////////////////
         // nodeGame hint:
@@ -86,19 +103,20 @@ function init() {
         // node.done() communicates to the server that
         // the player has completed the current state.
         //
-        // What happens next depends on the game.
-        // In this game the player will have to wait
-        // until all the other players are also "done".
+        // The parameters are send to the server with
+        // a SET message. This SET message has two
+        // properties by default:
         //
-        // This command is a shorthand for:
+        // - time: time passed since the begin of the step
+        // - timeup: if a timeup happened
         //
-        // node.emit('DONE');
+        // which can be overwritten by the parameter.
         //
         /////////////////////////////////////////////
         node.done({
-            response: response,
-            value: offer,
-            from: from
+            // Overwrite default `time` property
+            // (since the beginning of the step).
+            time: time
         });
     });
 
@@ -338,7 +356,7 @@ function ultimatum() {
                 milliseconds: 30000,
                 timeup: function() {
                     node.emit('BID_DONE',
-                              Math.floor(Math.random() * 101), other);
+                              Math.floor(Math.random() * 101), other, true);
                 }
             };
 
@@ -385,6 +403,9 @@ function ultimatum() {
                     node.done();
                 }, 3000);
             });
+
+            node.timer.setTimestamp('bidder_loaded');
+
         }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
     });
 
@@ -452,7 +473,10 @@ function ultimatum() {
                 reject.onclick = function() {
                     node.emit('RESPONSE_DONE', 'REJECT', msg.data, other);
                 };
+
+                node.timer.setTimestamp('offer_received');
             });
+
         }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
 
     });
