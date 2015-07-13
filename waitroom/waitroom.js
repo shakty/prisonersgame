@@ -15,8 +15,9 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     var channel = waitRoom.channel;
 
     var GROUP_SIZE = settings.GROUP_SIZE;
-    var POOL_SIZE = settings.poolSize || GROUP_SIZE;
+    var POOL_SIZE = settings.POOL_SIZE || GROUP_SIZE;
     var MAX_WAIT_TIME = settings.MAX_WAIT_TIME;
+    var ON_TIMEOUT = settings.ON_TIMEOUT;
 
     var treatments = Object.keys(channel.gameInfo.settings);
     var tLen = treatments.length;
@@ -130,10 +131,10 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
         // Send the number of minutes to wait.
         node.remoteSetup('waitroom', p.id, {
-            poolSize: settings.POOL_SIZE,
-            groupSize: settings.GROUP_SIZE,
-            maxWaitTime: settings.MAX_WAIT_TIME,
-            onTimeout: settings.ON_TIMEOUT
+            poolSize: POOL_SIZE,
+            groupSize: GROUP_SIZE,
+            maxWaitTime: MAX_WAIT_TIME,
+            onTimeout: ON_TIMEOUT
         });
 
         console.log('NPL ', nPlayers);

@@ -1,11 +1,10 @@
 /**
  * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
  */
-
 
 module.exports = {
     init: init,
@@ -19,7 +18,6 @@ module.exports = {
     clearFrame: clearFrame,
     notEnoughPlayers: notEnoughPlayers
 };
-
 
 function init() {
     var that, waitingForPlayers, treatment, header;
@@ -50,7 +48,7 @@ function init() {
     // Add default CSS.
     if (node.conf.host) {
         W.addCSS(W.getFrameRoot(), node.conf.host +
-                 '/stylesheets/nodegame.css');
+                 'stylesheets/nodegame.css');
     }
 
     // Add event listeners valid for the whole game.
@@ -199,6 +197,9 @@ function selectLanguage() {
 
         W.getFrameDocument().body.appendChild(b);
         b.onclick = function() {
+            // The chosen language prefix will be added automatically
+            // to every call to W.loadFrame().
+            W.setUriPrefix(node.player.lang.path);
             node.done();
         };
 
@@ -227,7 +228,7 @@ function instructions() {
     // passed as second parameter.
     //
     /////////////////////////////////////////////
-    W.loadFrame(node.player.lang.path + node.game.instructionsPage, function() {
+    W.loadFrame(node.game.instructionsPage, function() {
 
         var b = W.getElementById('read');
         b.onclick = function() {
@@ -264,7 +265,7 @@ function instructions() {
 
 function quiz() {
     var that = this;
-    W.loadFrame(node.player.lang.path + 'quiz.html', function() {
+    W.loadFrame('quiz.html', function() {
 
         var b, QUIZ;
         node.env('auto', function() {
@@ -292,8 +293,6 @@ function ultimatum() {
     //
     /////////////////////////////////////////////
     var that = this;
-
-    var langPath = node.player.lang.path;
 
     var root, b, options, other;
 
@@ -333,7 +332,7 @@ function ultimatum() {
         // all the changes done while the frame was open.
         //
         /////////////////////////////////////////////
-        W.loadFrame(langPath + 'bidder.html', function() {
+        W.loadFrame('bidder.html', function() {
             // Start the timer after an offer was received.
             options = {
                 milliseconds: 30000,
@@ -395,7 +394,7 @@ function ultimatum() {
         other = msg.data.other;
         node.set('ROLE', 'RESPONDENT');
 
-        W.loadFrame(langPath + 'resp.html', function() {
+        W.loadFrame('resp.html', function() {
             options = {
                 milliseconds: 30000
             };
@@ -464,7 +463,7 @@ function ultimatum() {
 function postgame() {
     node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
 
-    W.loadFrame(node.player.lang.path + 'postgame.html', function() {
+    W.loadFrame('postgame.html', function() {
 
         node.env('auto', function() {
             node.timer.randomExec(function() {
@@ -476,8 +475,8 @@ function postgame() {
 }
 
 function endgame() {
-    W.loadFrame(node.player.lang.path + 'ended.html',
-                function() {
+    W.loadFrame('ended.html', function() {
+
         node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
         node.game.timer.waitBox.hideBox();
         node.game.timer.setToZero();
