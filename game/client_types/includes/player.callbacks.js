@@ -204,7 +204,7 @@ function selectLanguage() {
         };
 
         node.env('auto', function() {
-            node.timer.randomExec(function() {                
+            node.timer.randomExec(function() {
                 W.setUriPrefix(node.player.lang.path);
                 node.done()
             });
@@ -302,7 +302,7 @@ function ultimatum() {
 
 
     // Hack to avoid double offers. Todo: fix.
-    node.game.offerDone = false;    
+    node.game.offerDone = false;
 
     // Load the BIDDER interface.
     node.on.data('BIDDER', function(msg) {
