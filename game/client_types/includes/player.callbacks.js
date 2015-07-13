@@ -197,14 +197,15 @@ function selectLanguage() {
 
         W.getFrameDocument().body.appendChild(b);
         b.onclick = function() {
-            // The chosen language prefix will be added automatically
-            // to every call to W.loadFrame().
+            // The chosen language prefix will be
+            // added automatically to every call to W.loadFrame().
             W.setUriPrefix(node.player.lang.path);
             node.done();
         };
 
         node.env('auto', function() {
-            node.timer.randomExec(function() {
+            node.timer.randomExec(function() {                
+                W.setUriPrefix(node.player.lang.path);
                 node.done()
             });
         });
