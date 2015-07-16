@@ -40,6 +40,8 @@ git clone https://github.com/nodeGame/shelf.js.git
 git clone https://github.com/nodeGame/descil-mturk.git
 git clone https://github.com/nodeGame/nodegame-db.git
 git clone https://github.com/nodeGame/nodegame-mongodb.git
+git clone https://github.com/nodeGame/nodegame-requirements.git
+git clone https://github.com/nodeGame/nodegame-monitor.git
 npm install smoosh
 npm install ya-csv
 #npm install commander
@@ -77,7 +79,7 @@ link_deps JSUS NDDB shelf.js nodegame-widgets
 npm install
 
 # Patching express connect.
-patch node_modules/express/node_modules/connect/lib/middleware/static.js < bin/ng.connect.static.js.patch
+# patch node_modules/express/node_modules/connect/lib/middleware/static.js < bin/ng.connect.static.js.patch
 
 # Rebuild js files.
 node bin/make.js build-client -a -o nodegame-full

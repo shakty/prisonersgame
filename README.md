@@ -1,0 +1,3 @@
+# Ultimatum Game
+
+Ultimatum.

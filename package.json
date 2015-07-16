@@ -17,7 +17,7 @@
     "type": "git",
     "url": "git://github.com/nodegame/ultimatum.git"
   },
-  "license": "MIT/X11",
+  "license": "MIT",
   "devDependencies": {
     "mocha": ">= 2.1.0",
     "should": ">= 5.0.0"
