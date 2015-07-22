@@ -34,7 +34,7 @@ describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
 
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
             db = new NDDB();
-            db.load(filePaths[gameNo]);
+            db.loadSync(filePaths[gameNo]);
             db.size().should.be.above(0,
                 'Empty DB in game '+(gameNo+1)+'/'+numGames+'!');
             dbs.push(db);
