@@ -121,13 +121,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             b = W.getElementById('submitQuiz');
 
             answers = QUIZ.checkAnswers(b);
-            isTimeUp = node.game.timer.isTimeup();
+            isTimeup = node.game.timer.isTimeup();
 
-            if (!answers.__correct__ && !isTimeUp) {
+            if (!answers.__correct__ && !isTimeup) {
                 return false;
             }
 
-            answers.timeUp = isTimeUp;
+            answers.timeUp = isTimeup;
             answers.quiz = true;
 
             // On TimeUp there are no answers
@@ -174,11 +174,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
             }
 
-            isTimeUp = node.game.timer.isTimeup();
+            isTimeup = node.game.timer.isTimeup();
 
             // If there is still some time left, let's ask the player
             // to complete at least the second question.
-            if (q2checked === -1 && !isTimeUp) {
+            if (q2checked === -1 && !isTimeup) {
                 alert('Please answer Question 2');
                 return false;
             }

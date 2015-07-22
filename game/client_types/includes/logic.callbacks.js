@@ -41,7 +41,8 @@ function init() {
     J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
     J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
 
-    console.log('********************** ultimatum room ' + counter++ + ' **********************');
+    console.log('********************** ultimatum room ' + counter++ +
+                ' **********************');
 
     var COINS = settings.COINS;
 
