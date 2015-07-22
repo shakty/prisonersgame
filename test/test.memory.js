@@ -107,10 +107,8 @@ describe('Bidding rounds', function() {
                 roundDb = bidDbs[gameNo].select('stage.round', '=', i).breed();
 
                 // Get offer and response.
-                offer = roundDb.select('key', '=', 'offer')
-                    .fetch()[0].value.offer;
-                response = roundDb.select('key', '=', 'response')
-                    .fetch()[0].value;
+                offer = roundDb.select('offer').fetch()[0].offer;
+                response = roundDb.select('response').fetch()[0];
 
                 // Check value ranges.
                 offer.should.be.Number;
@@ -142,12 +140,10 @@ describe('Bidding rounds', function() {
 
                 // Check role IDs.
                 bidderId = roundDb
-                    .select('key', '=', 'ROLE')
-                    .and('value', '=', 'BIDDER')
+                    .select('role', '=', 'BIDDER')
                     .fetch()[0].player;
                 respondentId = roundDb
-                    .select('key', '=', 'ROLE')
-                    .and('value', '=', 'RESPONDENT')
+                    .select('role', '=', 'RESPONDENT')
                     .fetch()[0].player;
 
                 bidderId.should.not.equal(respondentId,
@@ -155,16 +151,16 @@ describe('Bidding rounds', function() {
                     (gameNo+1)+'/'+numGames+'!');
 
                 // Check offer/response correspondence.
-                roundDb.select('key', '=', 'offer')
+                roundDb.select('offer')
                     .fetch()[0].player.should.equal(
                         bidderId, 'Bid did not come from bidder in game '+
                         (gameNo+1)+'/'+numGames+'!');
 
-                responseObj = roundDb.select('key', '=', 'response').fetch()[0];
+                responseObj = roundDb.select('response').fetch()[0];
                 responseObj.player.should.equal(respondentId,
                     'Response did not come from respondent in game '+
                     (gameNo+1)+'/'+numGames+'!');
-                responseObj.value.from.should.equal(bidderId,
+                responseObj.from.should.equal(bidderId,
                     'Response contains incorrect bidder ID in game '+
                     (gameNo+1)+'/'+numGames+'!');
             }

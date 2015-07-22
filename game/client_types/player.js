@@ -128,17 +128,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             }
 
             answers.timeUp = isTimeUp;
+            answers.quiz = true;
 
             // On TimeUp there are no answers
-            node.set('QUIZ', answers);
+            node.set(answers);
             node.emit('INPUT_DISABLE');
             
-            // Time is set by done bow.
-            // We save also the time to complete the step.
-            // node.set('timestep', {
-            //    time: node.timer.getTimeSince('step'),
-            //    timeup: isTimeUp
-            // });
             return true;
         }
     });
@@ -188,7 +183,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 return false;
             }
 
-            node.set('questionnaire', {
+            node.set({
+                questionnaire: true,
                 q1: q1 || '',
                 q2: q2checked
             });

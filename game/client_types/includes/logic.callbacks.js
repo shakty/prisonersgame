@@ -204,11 +204,6 @@ function init() {
         var resWin, bidWin, code, response;
         response = msg.data;
 
-        if (!response) {
-            // TODO handle error.
-            return;
-        }
-
         if (response.response === 'ACCEPT') {
             resWin = parseInt(response.value, 10);
             bidWin = COINS - resWin;

@@ -69,7 +69,7 @@ function init() {
         W.getElementById('submitOffer').disabled = 'disabled';
 
         // Notify the server.
-        node.set('offer', {
+        node.set({
             offer: offer,
             time: time,
             timeup: timeup
@@ -91,7 +91,7 @@ function init() {
 
         node.say(response, from, response);
 
-        node.set('response', {
+        node.set({
             response: response,
             value: offer,
             from: from
@@ -325,7 +325,7 @@ function ultimatum() {
     node.on.data('BIDDER', function(msg) {
         console.log('RECEIVED BIDDER!');
         other = msg.data.other;
-        node.set('ROLE', 'BIDDER');
+        node.set({role: 'BIDDER'});
 
         //////////////////////////////////////////////
         // nodeGame hint:
@@ -413,7 +413,7 @@ function ultimatum() {
     node.on.data('RESPONDENT', function(msg) {
         console.log('RECEIVED RESPONDENT!');
         other = msg.data.other;
-        node.set('ROLE', 'RESPONDENT');
+        node.set({role: 'RESPONDENT'});
 
         W.loadFrame('resp.html', function() {
             options = {
@@ -521,11 +521,6 @@ function endgame() {
 
 function clearFrame() {
     node.emit('INPUT_DISABLE');
-    // We save also the time to complete the step.
-    // node.set('timestep', {
-    //     time: node.timer.getTimeSince('step'),
-    //     timeup: node.game.timer.gameTimer.timeLeft <= 0
-    // });
     return true;
 }
 
