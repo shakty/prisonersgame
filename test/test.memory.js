@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 var should = require('should');
 var NDDB = require('NDDB').NDDB;
 
@@ -15,9 +16,13 @@ if (numPlayers % 2 != 0) {
 }
 numGames = numPlayers / 2;
 
+var dataDir = path.resolve(__dirname, '../', 'data/') + '/';
+
+console.log(dataDir);
+
 // Generate memory file pathnames.
 for (var i = 0; i < numGames; ++i) {
-    filePaths.push('./data/' + (100 + i) + '/memory_all.json');
+    filePaths.push(dataDir + (100 + i) + '/memory_all.json');
 }
 
 describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
