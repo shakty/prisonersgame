@@ -84,14 +84,13 @@ module.exports = function(settings, room, runtimeConf) {
     stager.setOnInit(init);
 
     stager
-        .init()
         .next('requirements');
 
     // Return the game.
     game = {};
 
     game.metadata = {
-        name: 'Requirements check room for Burde-Sharing-Control-AMT',
+        name: 'Requirements check room',
         description: 'Validates players entry codes with an internal database.',
         version: '0.1'
     };

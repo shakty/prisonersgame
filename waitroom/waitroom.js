@@ -204,9 +204,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     stager.setDefaultProperty('publishLevel', 0);
 
-    stager
-        .init()
-        .next('waiting');
+    stager.next('waiting');
 
     return {
         nodename: 'standard_wroom',

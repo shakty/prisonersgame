@@ -8,7 +8,7 @@
 
 module.exports = function(stager, settings) {
 
-    stager.init()
+    stager
         .next('precache')
         .next('selectLanguage')
         .next('instructions')

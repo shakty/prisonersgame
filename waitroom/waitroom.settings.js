@@ -18,6 +18,7 @@ module.exports = {
     CHOSEN_TREATMENT: 'treatment_rotate',
 
     ON_TIMEOUT: function(data) {
+        var timeOut;
 
         // Enough Time passed, not enough players connected.
         if (data.over === 'Time elapsed!!!') {
