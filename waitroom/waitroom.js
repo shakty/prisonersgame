@@ -39,22 +39,16 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     function makeTimeOut(playerID) {
 
-        timeOuts[playerID] = setTimeout(function() {            
+        timeOuts[playerID] = setTimeout(function() {
             var timeOutData, code;
 
             channel.sysLogger.log("Timeout has not been cleared!!!");
+            pList = waitRoom.clients.player;
+            nPlayers = pList.size();
 
-            channel.registry.checkOut(playerID);            
-
-            // See if an access code is defined, if so checkout remotely also.
-            code = channel.registry.getClient(playerID);           
-            
-            timeOutData = {
+            startGame({
                 over: "Time elapsed!!!",
-                exit: code.ExitCode
-            };
-            node.say("TIME", playerID, timeOutData);
-
+            }, nPlayers, pList);
         }, MAX_WAIT_TIME);
 
     }
@@ -104,10 +98,8 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     }
 
     function clientConnects(p) {
-        var gameRoom, pList;
+        var pList;
         var NPLAYERS;
-        var i;
-        var timeOutData;
         var treatmentName;
         var nPlayers;
 
@@ -126,7 +118,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
         node.remoteSetup('widgets', p.id, {
             destroyAll: true,
-            append: { 'WaitingRoom': {} } 
+            append: { 'WaitingRoom': {} }
         });
 
         // Send the number of minutes to wait.
@@ -139,23 +131,27 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
         console.log('NPL ', nPlayers);
 
-        // Notify all players of new connection.        
+        // Notify all players of new connection.
         node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
-        
+
         // Start counting a timeout for max stay in waiting room.
         makeTimeOut(p.id);
 
         // Wait for all players to connect.
         if (nPlayers < POOL_SIZE) return;
 
-        for (i = 0; i < nPlayers; i++) {
-            timeOutData = {
-                over: "AllPlayersConnected",
-                exit: 0
-            };
+        startGame({
+            over: "AllPlayersConnected",
+            exit: 0
+        }, nPlayer, pList);
+    }
 
+    function startGame(timeOutData, nPlayers, pList) {
+        var i, gameRoom;
+
+        for (i = 0; i < nPlayers; i++) {
             node.say("TIME", pList.db[i].id, timeOutData);
-            
+
             // Clear body.
             node.remoteSetup('page', pList.db[i].id, { clearBody: true });
 
@@ -168,7 +164,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
         // Decide treatment.
         treatmentName = decideTreatment(settings.CHOSEN_TREATMENT);
-        
+
         // Create new game room.
         gameRoom = channel.createGameRoom({
             clients: tmpPlayerList,
