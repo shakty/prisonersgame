@@ -10,6 +10,7 @@ var ngc = require('nodegame-client');
 var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
 var path = require('path');
+var fs = require('fs');
 
 var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
 
@@ -34,12 +35,15 @@ var autoplay = gameRoom.getClientType('autoplay');
 
 function init() {
     DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
-    DUMP_DIR_JSON = DUMP_DIR + 'json/';
-    DUMP_DIR_CSV = DUMP_DIR + 'csv/';
+    
+//     DUMP_DIR_JSON = DUMP_DIR + 'json/';
+//     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
+// 
+//     // Recursively create directories, sub-trees and all.
+//     J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
+//     J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
 
-    // Recursively create directories, sub-trees and all.
-    J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
-    J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
+    J.mkdirSyncRecursive(DUMP_DIR, 0777);
 
     console.log('********************** ultimatum room ' + counter++ +
                 ' **********************');
@@ -56,7 +60,7 @@ function init() {
 
     // "STEPPING" is the last event emitted before the stage is updated.
     node.on('STEPPING', function() {
-        var currentStage, db, p, gain;
+        var currentStage, db, p, gain, prefix;
 
         currentStage = node.game.getCurrentGameStage();
 
@@ -89,10 +93,14 @@ function init() {
 
         if (db && db.size()) {
             // Saving results to FS.
-            node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
-                               '.csv', { flags: 'w' }, db);
-            node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
-                               '.nddb', null, db);
+            // node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
+            //                   '.csv', { flags: 'w' }, db);
+            // node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
+            //                   '.nddb', null, db);
+
+            prefix = DUMP_DIR + 'memory_' + currentStage;
+            db.save(prefix + '.csv', { flags: 'w' }); 
+            db.save(prefix + '.nddb', { flags: 'w' }); 
 
             console.log('Round data saved ', currentStage);
         }
@@ -224,11 +232,12 @@ function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
 
     // Saving all indexes.
-    node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
-    node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
+    // node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
+    // node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
 
     // Dump all memory.
-    node.fs.saveMemory('json', DUMP_DIR + 'memory_all.json');
+    // node.fs.saveMemory('json', DUMP_DIR + 'memory_all.json');
+    node.game.memory.save(DUMP_DIR + 'memory_all.json');
 
     // TODO: fix this.
     // channel.destroyGameRoom(gameRoom.name);
@@ -288,14 +297,10 @@ function notEnoughPlayers() {
 
 function endgame() {
     var code, exitcode, accesscode;
-    var bonusFile, bonus;
+    var filename, bonusFile, bonus;
     var EXCHANGE_RATE;
 
-    console.log('Endgame');
-
     EXCHANGE_RATE = settings.EXCHANGE_RATE_INSTRUCTIONS / settings.COINS;;
-
-    bonusFile = DUMP_DIR + 'bonus.csv';
 
     console.log('FINAL PAYOFF PER PLAYER');
     console.log('***********************');
@@ -326,15 +331,28 @@ function endgame() {
         });
 
         console.log(p.id, ': ',  code.win, code.ExitCode);
-        return [p.id, code.ExitCode, code.win, node.game.gameTerminated];
+        return [p.id, code.ExitCode || 'na', code.win,
+                node.game.gameTerminated];
     });
 
     console.log('***********************');
     console.log('Game ended');
 
-    node.fs.writeCsv(bonusFile, bonus, {
-        headers: ["access", "exit", "bonus", "terminated"]
+    // Write down bonus file.
+    filename = DUMP_DIR + 'bonus.csv';
+    bonusFile = fs.createWriteStream(filename);
+    bonusFile.on('error', function(err) {
+        console.log('Error while saving bonus file: ', err);
     });
+    bonusFile.write(["access", "exit", "bonus", "terminated"].join(', ') + '\n');
+    bonus.forEach(function(v) {
+        bonusFile.write(v.join(', ') + '\n'); 
+    });
+    bonusFile.end();
+
+    // node.fs.writeCsv(bonusFile, bonus, {
+    //     headers: ["access", "exit", "bonus", "terminated"]
+    // });
 
     node.done();
 }
