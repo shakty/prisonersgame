@@ -1,12 +1,14 @@
 /**
  * # Stages of the Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
  */
 
 module.exports = function(stager, settings) {
+
+debugger
 
     stager
         .next('precache')

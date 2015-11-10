@@ -4,7 +4,6 @@
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
- * Extensively documented tutorial.
  *
  * http://www.nodegame.org
  */
@@ -53,7 +52,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Set default step rule.
     stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
-    stager.setDefaultProperty('minPlayers', [ 
+    stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
         cbs.notEnoughPlayers
     ]);
@@ -64,26 +63,28 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 //         cb: function() {}
 //     });
 
-    stager.extendStep('precache', {
-        cb: function() {}
-    });
-    
-    stager.extendStep('selectLanguage', {
-        cb: function() {}
-    });
-    
-    stager.extendStep('instructions', {
-        cb: function() {}
-    });
-    
-    stager.extendStep('quiz', {
-        cb: function() {}
-    });
+    stager.setDefaultCallback(function() {});
 
-    stager.extendStep('questionnaire', {
-        cb: function() {},
-        minPlayers: undefined
-    });
+     stager.extendStep('precache', {
+         cb: function() {}
+     });
+
+     stager.extendStep('selectLanguage', {
+         cb: function() {}
+     });
+
+     stager.extendStep('instructions', {
+         cb: function() {}
+     });
+
+     stager.extendStep('quiz', {
+         cb: function() {}
+     });
+
+     stager.extendStep('questionnaire', {
+         cb: function() {},
+         minPlayers: undefined
+     });
 
     stager.extendStep('ultimatum', {
         cb: function() {
@@ -96,11 +97,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cb: cbs.endgame,
         minPlayers: undefined,
         steprule: stepRules.SOLO
-    });
-
-    stager.setDefaultProperties({
-        publishLevel: 0,
-        syncStepping: true
     });
 
     // Here we group together the definition of the game logic.
