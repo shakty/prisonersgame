@@ -14,6 +14,7 @@ set -e
 
 ln -fs ../../node_modules .
 npm install
+npm install lru-cache sigmund
 
 # Go to the nodegame directory and run the automatic game.
 cd ../..
