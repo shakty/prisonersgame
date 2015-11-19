@@ -8,8 +8,6 @@
 
 module.exports = function(stager, settings) {
 
-debugger
-
     stager
         .next('precache')
         .next('selectLanguage')

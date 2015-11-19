@@ -44,47 +44,17 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Event handler registered in the init function are always valid.
     stager.setOnInit(cbs.init);
 
-     // Event handler registered in the init function are always valid.
+    // Event handler registered in the init function are always valid.
     stager.setOnGameOver(cbs.gameover);
 
     // Extending default stages.
-
-    // Set default step rule.
-    stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
 
     stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
         cbs.notEnoughPlayers
     ]);
 
-// TODO: this should work in the future. It will avoid to
-// to extend all the other stages.
-//     stager.setDefaultProperty('cb', {
-//         cb: function() {}
-//     });
-
     stager.setDefaultCallback(function() {});
-
-     stager.extendStep('precache', {
-         cb: function() {}
-     });
-
-     stager.extendStep('selectLanguage', {
-         cb: function() {}
-     });
-
-     stager.extendStep('instructions', {
-         cb: function() {}
-     });
-
-     stager.extendStep('quiz', {
-         cb: function() {}
-     });
-
-     stager.extendStep('questionnaire', {
-         cb: function() {},
-         minPlayers: undefined
-     });
 
     stager.extendStep('ultimatum', {
         cb: function() {
