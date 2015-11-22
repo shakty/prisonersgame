@@ -12,7 +12,7 @@
 # Return on failure immediately.
 set -e
 
-ln -fs ../../node_modules .
+ln -fs ../../../node_modules .
 npm install
 
 # Go to the nodegame directory and run the automatic game.

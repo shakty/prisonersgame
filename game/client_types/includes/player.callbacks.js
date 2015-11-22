@@ -215,9 +215,6 @@ function selectLanguage() {
 
         W.getFrameDocument().body.appendChild(b);
         b.onclick = function() {
-            // The chosen language prefix will be
-            // added automatically to every call to W.loadFrame().
-            W.setUriPrefix(node.player.lang.path);
             node.done();
         };
 

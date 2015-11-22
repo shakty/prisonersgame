@@ -83,7 +83,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('selectLanguage', {
         cb: cbs.selectLanguage,
         timer: 100000,
-        minPlayers: MIN_PLAYERS
+        minPlayers: MIN_PLAYERS,
+        done: function() {
+            // The chosen language prefix will be
+            // added automatically to every call to W.loadFrame().
+            W.setUriPrefix(node.player.lang.path);
+            return true;
+        }
     });
 
     stager.extendStep('precache', {

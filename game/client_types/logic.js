@@ -1,30 +1,12 @@
 /**
  * # Logic code for Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
- * Extensively documented tutorial.
- *
- * Info:
- * Matching, and stepping can be done in different ways. It can be
- * centralized, and the logic tells the clients when to step, or
- * clients can synchronize themselves and step automatically.
- *
- * In this game, the logic is synchronized with the clients. The logic
- * will send automatically game-commands to start and step
- * through the game plot whenever it enters a new game step.
  *
  * http://www.nodegame.org
  */
-
-var path = require('path');
-
-//var Database = require('nodegame-db').Database;
-// Variable _node_ is shared by the requiring module
-// (game.room.js) through `channel.require` method.
-//var ngdb = new Database(module.parent.exports.node);
-//var mdb = ngdb.getLayer('MongoDB');
 
 var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
@@ -62,45 +44,17 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Event handler registered in the init function are always valid.
     stager.setOnInit(cbs.init);
 
-     // Event handler registered in the init function are always valid.
+    // Event handler registered in the init function are always valid.
     stager.setOnGameOver(cbs.gameover);
 
     // Extending default stages.
 
-    // Set default step rule.
-    stager.setDefaultStepRule(stepRules.OTHERS_SYNC_STEP);
-
-    stager.setDefaultProperty('minPlayers', [ 
+    stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
         cbs.notEnoughPlayers
     ]);
 
-// TODO: this should work in the future. It will avoid to
-// to extend all the other stages.
-//     stager.setDefaultProperty('cb', {
-//         cb: function() {}
-//     });
-
-    stager.extendStep('precache', {
-        cb: function() {}
-    });
-    
-    stager.extendStep('selectLanguage', {
-        cb: function() {}
-    });
-    
-    stager.extendStep('instructions', {
-        cb: function() {}
-    });
-    
-    stager.extendStep('quiz', {
-        cb: function() {}
-    });
-
-    stager.extendStep('questionnaire', {
-        cb: function() {},
-        minPlayers: undefined
-    });
+    stager.setDefaultCallback(function() {});
 
     stager.extendStep('ultimatum', {
         cb: function() {
@@ -113,11 +67,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cb: cbs.endgame,
         minPlayers: undefined,
         steprule: stepRules.SOLO
-    });
-
-    stager.setDefaultProperties({
-        publishLevel: 0,
-        syncStepping: true
     });
 
     // Here we group together the definition of the game logic.
