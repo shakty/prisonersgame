@@ -31,6 +31,8 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     var stager = new node.Stager();
 
+    var roomOpen = true;
+
     // Check whether the execution mode is valid.
     if (EXECUTION_MODE.TYPE !== 'TIMEOUT' &&
         EXECUTION_MODE.TYPE !== 'WAIT_FOR_N_PLAYERS') {
@@ -48,6 +50,12 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         return t;
     }
 
+    function closeRoom() {
+        roomOpen = false;
+    }
+    function openRoom() {
+        roomOpen = true;
+    }
     function makeTimeOut(playerID,waitTime) {
         timeOuts[playerID] = setTimeout(function() {
             var timeOutData, code, pList, nPlayers;
@@ -140,55 +148,68 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             var pList;
             var nPlayers;
             var waitTime;
+            if (roomOpen) {
+                console.log('Client connected to waiting room: ', p.id);
 
-            console.log('Client connected to waiting room: ', p.id);
+                // Mark code as used.
+                channel.registry.markInvalid(p.id);
 
-            // Mark code as used.
-            channel.registry.markInvalid(p.id);
+                pList = waitRoom.clients.player;
+                nPlayers = pList.size();
 
-            pList = waitRoom.clients.player;
-            nPlayers = pList.size();
+                node.remoteSetup('page', p.id, {
+                    clearBody: true,
+                    title: { title: 'Welcome!', addToBody: true }
+                });
 
-            node.remoteSetup('page', p.id, {
-                clearBody: true,
-                title: { title: 'Welcome!', addToBody: true }
-            });
+                node.remoteSetup('widgets', p.id, {
+                    destroyAll: true,
+                    append: { 'WaitingRoom': {} }
+                });
 
-            node.remoteSetup('widgets', p.id, {
-                destroyAll: true,
-                append: { 'WaitingRoom': {} }
-            });
+                if (!firstTime) {
+                    firstTime = new Date().getTime();
+                }
+                waitTime = MAX_WAIT_TIME - (new Date().getTime() - firstTime);
 
-            if (!firstTime) {
-                firstTime = new Date().getTime();
+                // Send the number of minutes to wait.
+                node.remoteSetup('waitroom', p.id, {
+                    poolSize: POOL_SIZE,
+                    groupSize: GROUP_SIZE,
+                    maxWaitTime: waitTime,
+                    onTimeout: ON_TIMEOUT
+                });
+
+                console.log('NPL ', nPlayers);
+
+                // Notify all players of new connection.
+                node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
+
+                // Start counting a timeout for max stay in waiting room.
+                makeTimeOut(p.id, waitTime);
+
+                // Wait for all players to connect.
+                if (nPlayers < POOL_SIZE) return;
+
+                if (EXECUTION_MODE.TYPE === 'WAIT_FOR_N_PLAYERS') {
+                    startGame({
+                        over: "AllPlayersConnected",
+                        exit: 0
+
+                    }, nPlayers, pList);
+                }
             }
-            waitTime = MAX_WAIT_TIME - (new Date().getTime() - firstTime);
+            else {
+                node.remoteSetup('page', p.id, {
+                    clearBody: true,
+                    title: { title: 'Welcome!', addToBody: true },
+                });
+                node.remoteSetup('widgets', p.id, {
+                    destroyAll: true,
+                    append: { 'WaitingRoom': {} }
+                });
 
-            // Send the number of minutes to wait.
-            node.remoteSetup('waitroom', p.id, {
-                poolSize: POOL_SIZE,
-                groupSize: GROUP_SIZE,
-                maxWaitTime: waitTime,
-                onTimeout: ON_TIMEOUT
-            });
-
-            console.log('NPL ', nPlayers);
-
-            // Notify all players of new connection.
-            node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
-
-            // Start counting a timeout for max stay in waiting room.
-            makeTimeOut(p.id, waitTime);
-
-            // Wait for all players to connect.
-            if (nPlayers < POOL_SIZE) return;
-
-            if (EXECUTION_MODE.TYPE === 'WAIT_FOR_N_PLAYERS') {
-                startGame({
-                    over: "AllPlayersConnected",
-                    exit: 0
-
-                }, nPlayers, pList);
+                node.say('ROOM_CLOSED', p.id);
             }
         };
     }();
