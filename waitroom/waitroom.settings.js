@@ -12,6 +12,10 @@ module.exports = {
     // Maximum waiting time.
     MAX_WAIT_TIME: 30000,
 
+    // Time and date of game start. Overrides `MAX_WAIT_TIME`
+    // `START_DATE` is any valid argument to `Date` constructor.
+//    START_DATE: 'November 22, 2015 13:24:00',
+
     // Treatment assigned to groups.
     // If left undefined, a random treatment will be selected.
     // Use "treatment_rotate" for rotating the treatments.
@@ -42,7 +46,7 @@ module.exports = {
             timeOut += "your group to start the experiment.<br>";
         }
         else if(data.over === "Time elapsed!!!") {
-            if(data.nPlayers && data.nPlayers < POOL_SIZE) {
+            if(data.nPlayers && data.nPlayers < this.POOL_SIZE) {
                 return; // Text here?
             }
             else {
@@ -54,7 +58,7 @@ module.exports = {
             timeOut = "An error has occurred. You seem to be ";
             timeOut += "waiting for too long. Please look for a HIT called ";
             timeOut += "<strong>ETH Descil Trouble Ticket</strong> and file ";
-            timeOut += "a new trouble ticket reporting your experience."
+            timeOut += "a new trouble ticket reporting your experience.";
         }
 
         if (data.exit) {

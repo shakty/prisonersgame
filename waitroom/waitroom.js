@@ -18,10 +18,11 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     var GROUP_SIZE = settings.GROUP_SIZE;
     var POOL_SIZE = settings.POOL_SIZE || GROUP_SIZE;
-    var ALT_POOL_SIZE = settings.ALT_POOL_SIZE || ALT_POOL_SIZE;
+    var ALT_POOL_SIZE = settings.ALT_POOL_SIZE;
     var MAX_WAIT_TIME = settings.MAX_WAIT_TIME;
     var ON_TIMEOUT = settings.ON_TIMEOUT;
-    var EXECUTION_MODE = settings.EXECUTION_MODE || EXECUTION_MODE;
+    var EXECUTION_MODE = settings.EXECUTION_MODE;
+    var START_DATE = settings.START_DATE;
 
     var treatments = Object.keys(channel.gameInfo.settings);
     var tLen = treatments.length;
@@ -127,12 +128,16 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         }
     }
 
-    // Using self-calling function to put `waitTime` into closure.
+    // Using self-calling function to put `firstTime` into closure.
     clientConnects = function(firstTime) {
+        if ("undefined" !== typeof START_DATE) {
+           firstTime = new Date().getTime();
+           // Everybody has to wait until START_DATE
+           MAX_WAIT_TIME = new Date(START_DATE).getTime() - firstTime;
+        }
+
         return function(p) {
             var pList;
-            var NPLAYERS;
-            var treatmentName;
             var nPlayers;
             var waitTime;
 
@@ -190,6 +195,8 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     // StartGame may only be called once.
     startGame = function(maxCalls) {
+        var treatmentName;
+        var tmpPlayerList;
         var numCalls;
         numCalls = 0;
         return function (timeOutData, nPlayers, pList) {
