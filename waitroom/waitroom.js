@@ -69,6 +69,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             if (nPlayers >= POOL_SIZE ||
                 (EXECUTION_MODE.MIN_PLAYER &&
                 nPlayers >= EXECUTION_MODE.MIN_PLAYER)) {
+
                 startGame({
                     over: "Time elapsed!!!",
                     nPlayers: nPlayers
@@ -90,9 +91,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
         }, waitTime);
     }
-
-
-
 
     function clearTimeOut(playerID) {
         clearTimeout(timeOuts[playerID]);
@@ -204,7 +202,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             else {
                 node.remoteSetup('page', p.id, {
                     clearBody: true,
-                    title: { title: 'Welcome!', addToBody: true },
+                    title: { title: 'Welcome!', addToBody: true }
                 });
                 node.remoteSetup('widgets', p.id, {
                     destroyAll: true,
@@ -222,6 +220,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         var tmpPlayerList;
         var numCalls;
         numCalls = 0;
+
         return function (timeOutData, nPlayers, pList) {
             var i, gameRoom;
 
