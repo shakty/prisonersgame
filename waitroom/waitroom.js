@@ -36,7 +36,9 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     // Check whether the execution mode is valid.
     if (EXECUTION_MODE.TYPE !== 'TIMEOUT' &&
         EXECUTION_MODE.TYPE !== 'WAIT_FOR_N_PLAYERS') {
-        throw new Error ('invalid execution mode');
+
+        throw new Error(channel.name + ' waiting room: invalid execution ' +
+                        'mode found: ' + EXECUTION_MODE.TYPE);
     }
 
     // decideTreatment: check if string, or use it.

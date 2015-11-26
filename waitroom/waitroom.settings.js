@@ -14,7 +14,7 @@ module.exports = {
 
     // Time and date of game start. Overrides `MAX_WAIT_TIME`
     // `START_DATE` is any valid argument to `Date` constructor.
-//    START_DATE: 'November 22, 2015 13:24:00',
+    //    START_DATE: 'November 22, 2015 13:24:00',
 
     // Treatment assigned to groups.
     // If left undefined, a random treatment will be selected.
@@ -31,7 +31,7 @@ module.exports = {
 
     EXECUTION_MODE: {
         TYPE: 'WAIT_FOR_N_PLAYERS',
-        MIN_PLAYER: 2
+        MIN_PLAYER: 3
     },
 
 
@@ -45,8 +45,8 @@ module.exports = {
             timeOut += "Unfortunately, there are not enough participants in ";
             timeOut += "your group to start the experiment.<br>";
         }
-        else if(data.over === "Time elapsed!!!") {
-            if(data.nPlayers && data.nPlayers < this.POOL_SIZE) {
+        else if (data.over === "Time elapsed!!!") {
+            if (data.nPlayers && data.nPlayers < this.POOL_SIZE) {
                 return; // Text here?
             }
             else {
