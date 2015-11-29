@@ -39,43 +39,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     START_DATE = waitRoom.START_DATE;
 
 
-    function makeTimeOut(playerID,waitTime) {
-        timeOuts[playerID] = setTimeout(function() {
-            var timeOutData, code, pList, nPlayers;
-            channel.sysLogger.log("Timeout has not been cleared!!!");
-            pList = waitRoom.clients.player;
-            nPlayers = pList.size();
-
-            // For execution modes `'TIMEOUT'` and `'WAIT_FOR_N_PLAYERS'`.
-            if (nPlayers >= POOL_SIZE) {
-
-                waitRoom.dispatch({
-                    over: "Time elapsed!!!",
-                    nPlayers: nPlayers
-                }, nPlayers, pList, timeOuts);
-            }
-            else {
-                channel.registry.checkOut(playerID);
-
-                // See if an access code is defined, if so checkout remotely
-                // also.
-                code = channel.registry.getClient(playerID);
-
-                timeOutData = {
-                    over: "Time elapsed, disconnect",
-                    exit: code.ExitCode
-                };
-                node.say("TIME", playerID, timeOutData);
-            }
-
-        }, waitTime);
-    }
-
-    function clearTimeOut(playerID) {
-        clearTimeout(timeOuts[playerID]);
-        delete timeOuts[playerID];
-    }
-
     function clientReconnects(p) {
         channel.sysLogger.log('Reconnection in the waiting room.', p);
 
@@ -102,7 +65,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         var wRoom, i;
 
         // Clear timeout in any case.
-        clearTimeOut(p.id);
+        waitRoom.clearTimeOut(p.id);
 
         // Client really disconnected (not moved into another game room).
         if (channel.registry.clients.disconnected.get(p.id)) {
@@ -165,7 +128,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
 
                 // Start counting a timeout for max stay in waiting room.
-                makeTimeOut(p.id, waitTime);
+                waitRoom.makeTimeOut(p.id, waitTime);
 
                 // Wait for all players to connect.
                 if (nPlayers < POOL_SIZE) return;
@@ -174,8 +137,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                     waitRoom.dispatch({
                         over: "AllPlayersConnected",
                         exit: 0
-
-                    }, nPlayers, pList, timeOuts);
+                    }, timeOuts);
                 }
             }
             else {
