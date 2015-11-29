@@ -16,13 +16,12 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     var clientConnects, startGame;
 
-    var GROUP_SIZE = settings.GROUP_SIZE;
-    var POOL_SIZE = settings.POOL_SIZE || GROUP_SIZE;
-    var ALT_POOL_SIZE = settings.ALT_POOL_SIZE;
-    var MAX_WAIT_TIME = settings.MAX_WAIT_TIME;
-    var ON_TIMEOUT = settings.ON_TIMEOUT;
-    var EXECUTION_MODE = settings.EXECUTION_MODE;
-    var START_DATE = settings.START_DATE;
+    var GROUP_SIZE;
+    var POOL_SIZE;
+    var MAX_WAIT_TIME;
+    var ON_TIMEOUT;
+    var EXECUTION_MODE;
+    var START_DATE;
 
     var treatments = Object.keys(channel.gameInfo.settings);
     var tLen = treatments.length;
@@ -33,13 +32,14 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     var roomOpen = true;
 
-    // Check whether the execution mode is valid.
-    if (EXECUTION_MODE.TYPE !== 'TIMEOUT' &&
-        EXECUTION_MODE.TYPE !== 'WAIT_FOR_N_PLAYERS') {
+    waitRoom.parseSettings(settings);
 
-        throw new Error(channel.name + ' waiting room: invalid execution ' +
-                        'mode found: ' + EXECUTION_MODE.TYPE);
-    }
+    GROUP_SIZE = waitRoom.GROUP_SIZE;
+    POOL_SIZE = waitRoom.POOL_SIZE;
+    MAX_WAIT_TIME = waitRoom.MAX_WAIT_TIME;
+    ON_TIMEOUT = waitRoom.ON_TIMEOUT;
+    EXECUTION_MODE = waitRoom.EXECUTION_MODE;
+    START_DATE = waitRoom.START_DATE;
 
     // decideTreatment: check if string, or use it.
     function decideTreatment(t) {
@@ -66,9 +66,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             nPlayers = pList.size();
 
             // For execution modes `'TIMEOUT'` and `'WAIT_FOR_N_PLAYERS'`.
-            if (nPlayers >= POOL_SIZE ||
-                (EXECUTION_MODE.MIN_PLAYER &&
-                nPlayers >= EXECUTION_MODE.MIN_PLAYER)) {
+            if (nPlayers >= POOL_SIZE) {
 
                 startGame({
                     over: "Time elapsed!!!",
@@ -191,7 +189,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 // Wait for all players to connect.
                 if (nPlayers < POOL_SIZE) return;
 
-                if (EXECUTION_MODE.TYPE === 'WAIT_FOR_N_PLAYERS') {
+                if (EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
                     startGame({
                         over: "AllPlayersConnected",
                         exit: 0

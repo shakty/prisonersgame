@@ -29,10 +29,7 @@ module.exports = {
     // up, it will be checked if there are at least a certain minimum number of
     // players to start the game.
 
-    EXECUTION_MODE: {
-        TYPE: 'WAIT_FOR_N_PLAYERS',
-        MIN_PLAYER: 3
-    },
+    EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS',
 
 
     ON_TIMEOUT: function(data) {
