@@ -14,7 +14,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     var node = waitRoom.node;
     var channel = waitRoom.channel;
 
-    var clientConnects, startGame;
+    var clientConnects;
 
     var GROUP_SIZE;
     var POOL_SIZE;
@@ -23,14 +23,11 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     var EXECUTION_MODE;
     var START_DATE;
 
-    var treatments = Object.keys(channel.gameInfo.settings);
-    var tLen = treatments.length;
 
     var timeOuts = {};
 
     var stager = new node.Stager();
 
-    var roomOpen = true;
 
     waitRoom.parseSettings(settings);
 
@@ -41,23 +38,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     EXECUTION_MODE = waitRoom.EXECUTION_MODE;
     START_DATE = waitRoom.START_DATE;
 
-    // decideTreatment: check if string, or use it.
-    function decideTreatment(t) {
-        if (t === "treatment_rotate") {
-            return treatments[(channel.autoRoomNo) % tLen];
-        }
-        else if ('undefined' === typeof t) {
-            return treatments[J.randomInt(-1,tLen-1)];
-        }
-        return t;
-    }
 
-    function closeRoom() {
-        roomOpen = false;
-    }
-    function openRoom() {
-        roomOpen = true;
-    }
     function makeTimeOut(playerID,waitTime) {
         timeOuts[playerID] = setTimeout(function() {
             var timeOutData, code, pList, nPlayers;
@@ -68,10 +49,10 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             // For execution modes `'TIMEOUT'` and `'WAIT_FOR_N_PLAYERS'`.
             if (nPlayers >= POOL_SIZE) {
 
-                startGame({
+                waitRoom.dispatch({
                     over: "Time elapsed!!!",
                     nPlayers: nPlayers
-                }, nPlayers, pList);
+                }, nPlayers, pList, timeOuts);
             }
             else {
                 channel.registry.checkOut(playerID);
@@ -146,7 +127,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             var pList;
             var nPlayers;
             var waitTime;
-            if (roomOpen) {
+            if (waitRoom.isRoomOpen()) {
                 console.log('Client connected to waiting room: ', p.id);
 
                 // Mark code as used.
@@ -190,11 +171,11 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 if (nPlayers < POOL_SIZE) return;
 
                 if (EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
-                    startGame({
+                    waitRoom.dispatch({
                         over: "AllPlayersConnected",
                         exit: 0
 
-                    }, nPlayers, pList);
+                    }, nPlayers, pList, timeOuts);
                 }
             }
             else {
@@ -212,45 +193,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         };
     }();
 
-    // StartGame may only be called once.
-    startGame = function(maxCalls) {
-        var treatmentName;
-        var tmpPlayerList;
-        var numCalls;
-        numCalls = 0;
-
-        return function (timeOutData, nPlayers, pList) {
-            var i, gameRoom;
-
-            if (++numCalls > maxCalls) return;
-
-            for (i = 0; i < nPlayers; i++) {
-                node.say("TIME", pList.db[i].id, timeOutData);
-
-                // Clear body.
-                node.remoteSetup('page', pList.db[i].id, { clearBody: true });
-
-                // Clear timeout for players.
-                clearTimeout(timeOuts[i]);
-            }
-
-            // Select a subset of players from pool.
-            tmpPlayerList = pList.shuffle().limit(GROUP_SIZE);
-
-            // Decide treatment.
-            treatmentName = decideTreatment(settings.CHOSEN_TREATMENT);
-
-            // Create new game room.
-            gameRoom = channel.createGameRoom({
-                clients: tmpPlayerList,
-                treatmentName: treatmentName
-            });
-
-            // Setup and start game.
-            gameRoom.setupGame();
-            gameRoom.startGame(true, []);
-        };
-    }(1);
 
     function monitorReconnects(p) {
         node.game.ml.add(p);
