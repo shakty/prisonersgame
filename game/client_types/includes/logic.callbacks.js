@@ -127,17 +127,6 @@ function init() {
         console.log('Oh...somebody reconnected!', p);
         code = channel.registry.getClient(p.id);
 
-        if (!code) {
-            console.log('game.logic: reconnecting player not found in ' +
-                        'code db: ' + p.id);
-            return;
-        }
-        if (!code.disconnected) {
-            console.log('game.logic: reconnecting player that was not ' +
-                        'marked disconnected: ' + p.id);
-            return;
-        }
-
         // Mark code as connected.
         code.disconnected = false;
 

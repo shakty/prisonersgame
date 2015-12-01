@@ -25,6 +25,6 @@ module.exports = {
     // (defaults: "/pages/accessdenied.htm")
     accessDeniedUrl: '/ultimatum/unauth.htm',
 
-    enableReconnections: false
+    enableReconnections: true
 };
 
