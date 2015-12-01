@@ -87,7 +87,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         done: function() {
             // The chosen language prefix will be
             // added automatically to every call to W.loadFrame().
-            W.setUriPrefix(node.player.lang.path);
+            if (node.player.lang.name !== 'English') {
+                W.setUriPrefix(node.player.lang.path);
+                node.say('mylang', 'SERVER', node.player.lang);
+            }
             return true;
         }
     });

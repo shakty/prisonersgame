@@ -127,9 +127,6 @@ function init() {
         console.log('Oh...somebody reconnected!', p);
         code = channel.registry.getClient(p.id);
 
-        // Mark code as connected.
-        code.disconnected = false;
-
         // Delete countdown to terminate the game.
         clearTimeout(this.countdown);
 
@@ -162,6 +159,13 @@ function init() {
         node.remoteSetup('game_settings', p.id, client.settings);
         node.remoteSetup('plot', p.id, client.plot);
         node.remoteSetup('env', p.id, client.env);
+
+        if (code.lang.name !== 'English') {
+            // If lang is different from Eng, remote setup it.
+            // TRUE: sets also the URI prefix.
+            console.log('CODE LANG SENT');
+            node.remoteSetup('lang', p.id, [code.lang, true]);
+        }
         
         // Start the game on the reconnecting client.
         // Need to give step: false, because otherwise pre-caching will

@@ -164,6 +164,9 @@ function init() {
     else {
         node.game.instructionsPage = 'instructions.html';
     }
+
+    // Set default language prefix.
+    W.setUriPrefix(node.player.lang.path);
 }
 
 //////////////////////////////////////////////
@@ -182,20 +185,19 @@ function init() {
 //
 /////////////////////////////////////////////
 function precache() {
-    var langPath = node.player.lang.path;
     W.lockScreen('Loading...');
     console.log('pre-caching...');
     W.preCache([
         'languageSelection.html', // no text here.
-        langPath + node.game.instructionsPage,
-        langPath + 'quiz.html',
+        node.game.instructionsPage,
+        'quiz.html',
 
         // These two are cached later by loadFrame calls (for demonstration):
         // 'langPath + 'bidder.html',
         // 'langPath + 'resp.html',
 
-        langPath + 'postgame.html',
-        langPath + 'ended.html'
+        'postgame.html',
+        'ended.html'
     ], function() {
         console.log('Precache done.');
         // Pre-Caching done; proceed to the next stage.

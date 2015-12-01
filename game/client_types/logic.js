@@ -56,6 +56,17 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.setDefaultCallback(function() {});
 
+    stager.extendStep('selectLanguage', {
+        cb: function() {
+            // Storing the language setting.
+            node.on.data('mylang', function(msg) {
+                if (msg.data && msg.data.name !== 'English') {
+                    channel.registry.updateClient(msg.from, { lang: msg.data });
+                }
+            });
+        }
+    });
+
     stager.extendStep('ultimatum', {
         cb: function() {
             this.node.log('Ultimatum');
