@@ -16,27 +16,12 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     var clientConnects;
 
-    var GROUP_SIZE;
-    var POOL_SIZE;
-    var MAX_WAIT_TIME;
-    var ON_TIMEOUT;
-    var EXECUTION_MODE;
-    var START_DATE;
-
-
     var timeOuts = {};
 
     var stager = new node.Stager();
 
 
     waitRoom.parseSettings(settings);
-
-    GROUP_SIZE = waitRoom.GROUP_SIZE;
-    POOL_SIZE = waitRoom.POOL_SIZE;
-    MAX_WAIT_TIME = waitRoom.MAX_WAIT_TIME;
-    ON_TIMEOUT = waitRoom.ON_TIMEOUT;
-    EXECUTION_MODE = waitRoom.EXECUTION_MODE;
-    START_DATE = waitRoom.START_DATE;
 
 
     function clientReconnects(p) {
@@ -80,10 +65,11 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     // Using self-calling function to put `firstTime` into closure.
     clientConnects = function(firstTime) {
-        if ("undefined" !== typeof START_DATE) {
-           firstTime = new Date().getTime();
-           // Everybody has to wait until START_DATE
-           MAX_WAIT_TIME = new Date(START_DATE).getTime() - firstTime;
+        if (!!waitRoom.START_DATE) {
+            firstTime = new Date().getTime();
+            // Everybody has to wait until START_DATE
+            waitRoom.MAX_WAIT_TIME = new Date(waitRoom.START_DATE).getTime()
+                - firstTime;
         }
 
         return function(p) {
@@ -112,14 +98,16 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 if (!firstTime) {
                     firstTime = new Date().getTime();
                 }
-                waitTime = MAX_WAIT_TIME - (new Date().getTime() - firstTime);
+
+                waitTime = waitRoom.MAX_WAIT_TIME -
+                    (new Date().getTime() - firstTime);
 
                 // Send the number of minutes to wait.
                 node.remoteSetup('waitroom', p.id, {
-                    poolSize: POOL_SIZE,
-                    groupSize: GROUP_SIZE,
+                    poolSize: waitRoom.POOL_SIZE,
+                    groupSize: waitRoom.GROUP_SIZE,
                     maxWaitTime: waitTime,
-                    onTimeout: ON_TIMEOUT
+                    onTimeout: waitRoom.ON_TIMEOUT
                 });
 
                 console.log('NPL ', nPlayers);
@@ -131,9 +119,9 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 waitRoom.makeTimeOut(p.id, waitTime);
 
                 // Wait for all players to connect.
-                if (nPlayers < POOL_SIZE) return;
+                if (nPlayers < waitRoom.POOL_SIZE) return;
 
-                if (EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
+                if (waitRoom.EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
                     waitRoom.dispatch({
                         over: "AllPlayersConnected",
                         exit: 0
