@@ -23,7 +23,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
     waitRoom.parseSettings(settings);
 
-
     function clientReconnects(p) {
         channel.sysLogger.log('Reconnection in the waiting room.', p);
 
@@ -107,7 +106,8 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                     poolSize: waitRoom.POOL_SIZE,
                     groupSize: waitRoom.GROUP_SIZE,
                     maxWaitTime: waitTime,
-                    onTimeout: waitRoom.ON_TIMEOUT
+                    onTimeout: waitRoom.ON_TIMEOUT,
+                    startDate: waitRoom.START_DATE
                 });
 
                 console.log('NPL ', nPlayers);
