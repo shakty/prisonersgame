@@ -10,11 +10,12 @@ module.exports = {
     GROUP_SIZE: 2,
 
     // Maximum waiting time.
-    MAX_WAIT_TIME: 30000,
+//    MAX_WAIT_TIME: 30000,
 
     // Time and date of game start. Overrides `MAX_WAIT_TIME`
     // `START_DATE` is any valid argument to `Date` constructor.
-    //    START_DATE: 'November 22, 2015 13:24:00',
+    //    START_DATE: 'December 13, 2015 13:24:00',
+    START_DATE: new Date().getTime() + 30000,
 
     // Treatment assigned to groups.
     // If left undefined, a random treatment will be selected.
@@ -29,41 +30,6 @@ module.exports = {
     // up, it will be checked if there are at least a certain minimum number of
     // players to start the game.
 
-    EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS',
+    EXECUTION_MODE: 'TIMEOUT',
 
-
-    ON_TIMEOUT: function(data) {
-        var timeOut;
-
-        // Enough Time passed, not enough players connected.
-        if (data.over === 'Time elapsed, disconnect') {
-
-            timeOut = "<h3 align='center'>Thank you for your patience.<br>";
-            timeOut += "Unfortunately, there are not enough participants in ";
-            timeOut += "your group to start the experiment.<br>";
-        }
-        else if (data.over === "Time elapsed!!!") {
-            if (data.nPlayers && data.nPlayers < this.POOL_SIZE) {
-                return; // Text here?
-            }
-            else {
-                return;
-            }
-        }
-        // Too much time passed, but no message from server received.
-        else {
-            timeOut = "An error has occurred. You seem to be ";
-            timeOut += "waiting for too long. Please look for a HIT called ";
-            timeOut += "<strong>ETH Descil Trouble Ticket</strong> and file ";
-            timeOut += "a new trouble ticket reporting your experience.";
-        }
-
-        if (data.exit) {
-            timeOut += "<br>Please report this exit code: " + data.exit;
-        }
-
-        timeOut += "<br></h3>";
-
-        this.bodyDiv.innerHTML = timeOut;
-    }
 };
