@@ -10,7 +10,7 @@
  */
 module.exports = {
 
-    alias: 'ultimatum',
+    // alias: 'u1',
 
     playerServer: 'ultimatum',
 
