@@ -2,7 +2,6 @@
   "name": "ultimatum",
   "description": "Plays an ultimatum game with nodegame",
   "version": "1.0.0",
-  "alias": ["u1", "u2"],
   "author": {
     "name": "Stefano Balietti",
     "email": "sbalietti@ethz.ch",

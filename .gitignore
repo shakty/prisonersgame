@@ -16,3 +16,5 @@ server/data
 
 data
 node_modules
+
+*.log
