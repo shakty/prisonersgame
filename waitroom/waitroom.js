@@ -63,85 +63,81 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     }
 
     // Using self-calling function to put `firstTime` into closure.
-    clientConnects = function(firstTime) {
-        if (!!waitRoom.START_DATE) {
-            firstTime = new Date().getTime();
-            // Everybody has to wait until START_DATE
-            waitRoom.MAX_WAIT_TIME = new Date(waitRoom.START_DATE).getTime()
-                - firstTime;
-        }
+    clientConnects = function(p) {
+        var pList;
+        var nPlayers;
+        var waitTime;
+        if (waitRoom.isRoomOpen()) {
+            console.log('Client connected to waiting room: ', p.id);
 
-        return function(p) {
-            var pList;
-            var nPlayers;
-            var waitTime;
-            if (waitRoom.isRoomOpen()) {
-                console.log('Client connected to waiting room: ', p.id);
+            // Mark code as used.
+            channel.registry.markInvalid(p.id);
 
-                // Mark code as used.
-                channel.registry.markInvalid(p.id);
+            pList = waitRoom.clients.player;
+            nPlayers = pList.size();
 
-                pList = waitRoom.clients.player;
-                nPlayers = pList.size();
+            node.remoteSetup('page', p.id, {
+                clearBody: true,
+                title: { title: 'Welcome!', addToBody: true }
+            });
 
-                node.remoteSetup('page', p.id, {
-                    clearBody: true,
-                    title: { title: 'Welcome!', addToBody: true }
-                });
+            node.remoteSetup('widgets', p.id, {
+                destroyAll: true,
+                append: { 'WaitingRoom': {} }
+            });
 
-                node.remoteSetup('widgets', p.id, {
-                    destroyAll: true,
-                    append: { 'WaitingRoom': {} }
-                });
-
-                if (!firstTime) {
-                    firstTime = new Date().getTime();
-                }
-
-                waitTime = waitRoom.MAX_WAIT_TIME -
-                    (new Date().getTime() - firstTime);
-
-                // Send the number of minutes to wait.
-                node.remoteSetup('waitroom', p.id, {
-                    poolSize: waitRoom.POOL_SIZE,
-                    groupSize: waitRoom.GROUP_SIZE,
-                    maxWaitTime: waitTime,
-                    onTimeout: waitRoom.ON_TIMEOUT,
-                    startDate: waitRoom.START_DATE
-                });
-
-                console.log('NPL ', nPlayers);
-
-                // Notify all players of new connection.
-                node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
-
-                // Start counting a timeout for max stay in waiting room.
-                waitRoom.makeTimeOut(p.id, waitTime);
-
-                // Wait for all players to connect.
-                if (nPlayers < waitRoom.POOL_SIZE) return;
-
-                if (waitRoom.EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
-                    waitRoom.dispatch({
-                        over: "AllPlayersConnected",
-                        exit: 0
-                    }, timeOuts);
-                }
+            if (waitRoom.START_DATE) {
+                waitTime = new Date(waitRoom.START_DATE).getTime()
+                    - (new Date().getTime());
+            }
+            else if (waitRoom.MAX_WAIT_TIME) {
+                waitTime = waitRoom.MAX_WAIT_TIME;
             }
             else {
-                node.remoteSetup('page', p.id, {
-                    clearBody: true,
-                    title: { title: 'Welcome!', addToBody: true }
-                });
-                node.remoteSetup('widgets', p.id, {
-                    destroyAll: true,
-                    append: { 'WaitingRoom': {} }
-                });
-
-                node.say('ROOM_CLOSED', p.id);
+                // TODO: run indefinitely
+                throw Error('NOT IMPLEMENTED');
             }
-        };
-    }();
+
+            // Send the number of minutes to wait.
+            node.remoteSetup('waitroom', p.id, {
+                poolSize: waitRoom.POOL_SIZE,
+                groupSize: waitRoom.GROUP_SIZE,
+                maxWaitTime: waitTime,
+                onTimeout: waitRoom.ON_TIMEOUT,
+                startDate: waitRoom.START_DATE
+            });
+
+            console.log('NPL ', nPlayers);
+
+            // Notify all players of new connection.
+            node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
+
+            // Start counting a timeout for max stay in waiting room.
+            waitRoom.makeTimeOut(p.id, waitTime);
+
+            // Wait for all players to connect.
+            if (nPlayers < waitRoom.POOL_SIZE) return;
+
+            if (waitRoom.EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
+                waitRoom.dispatch({
+                    over: "AllPlayersConnected",
+                    exit: 0
+                }, timeOuts);
+            }
+        }
+        else {
+            node.remoteSetup('page', p.id, {
+                clearBody: true,
+                title: { title: 'Welcome!', addToBody: true }
+            });
+            node.remoteSetup('widgets', p.id, {
+                destroyAll: true,
+                append: { 'WaitingRoom': {} }
+            });
+
+            node.say('ROOM_CLOSED', p.id);
+        }
+    };
 
 
     function monitorReconnects(p) {
