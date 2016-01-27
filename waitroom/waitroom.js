@@ -94,8 +94,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 waitTime = waitRoom.MAX_WAIT_TIME;
             }
             else {
-                // TODO: run indefinitely
-                throw Error('NOT IMPLEMENTED');
+                waitTime = null; // Widget won't start timer.
             }
 
             // Send the number of minutes to wait.
