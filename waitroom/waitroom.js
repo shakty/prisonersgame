@@ -14,7 +14,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     var node = waitRoom.node;
     var channel = waitRoom.channel;
 
-    var clientConnects;
 
     var timeOuts = {};
 
@@ -63,7 +62,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     }
 
     // Using self-calling function to put `firstTime` into closure.
-    clientConnects = function(p) {
+    function clientConnects(p) {
         var pList;
         var nPlayers;
         var waitTime;
