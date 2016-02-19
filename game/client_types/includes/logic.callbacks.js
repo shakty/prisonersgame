@@ -218,6 +218,17 @@ function init() {
         }
     });
 
+//     node.events.game.on('PLAYING', function() {
+//         var nextStep = node.player.stage;
+//         // Pushes clients to finish current step in line with the time
+//         // expected by logic, or otherwise disconnects them.
+//         if (this.plot.getProperty(nextStep, 'pushClients')) {
+//             // TODO: check if should be called after PLAYING
+//             // node.events.ee.step.on('PLAYING', ...);
+//             this.pushManager.startTimeout();
+//         }
+//     });
+
     console.log('init');
 }
 

@@ -54,6 +54,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cbs.notEnoughPlayers
     ]);
 
+    stager.setDefaultProperty('pushClients', true);
+
     stager.setDefaultCallback(function() {});
 
     stager.extendStep('selectLanguage', {
@@ -89,7 +91,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // and printed to screen, and the game will continue.
         debug: settings.DEBUG,
         // Controls the amount of information printed to screen.
-        verbosity: 0,
+        verbosity: -100,
         // nodeGame enviroment variables.
         env: {
             auto: settings.AUTO

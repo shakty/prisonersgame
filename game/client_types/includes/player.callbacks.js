@@ -38,6 +38,9 @@ function init() {
         });
 
         node.game.timer = node.widgets.append('VisualTimer', header);
+
+        node.game.debugInfo = node.widgets.append('DebugInfo', header)
+
     }
 
     // Add the main frame where the pages will be loaded.
@@ -54,7 +57,7 @@ function init() {
     // Add event listeners valid for the whole game.
 
     node.on('BID_DONE', function(offer, to, timeup) {
-        var root, time;
+        var root, time, submitOffer;
 
         // Time to make a bid.
         time = node.timer.getTimeSince('bidder_loaded');
@@ -66,7 +69,9 @@ function init() {
         node.game.timer.clear();
         node.game.timer.startWaiting({milliseconds: 30000});
 
-        W.getElementById('submitOffer').disabled = 'disabled';
+        submitOffer = W.getElementById('submitOffer');
+        if (submitOffer) submitOffer.disabled = 'disabled';
+        else debugger;
 
         // Notify the server.
         node.set({
@@ -416,7 +421,15 @@ function ultimatum() {
 
         W.loadFrame('resp.html', function() {
             options = {
-                milliseconds: 30000
+                milliseconds: 30000,
+                timeup: function() {                    
+                    var root;
+                    setTimeout(function() {
+                        root = W.getElementById('container');
+                        W.writeln('The other player is taking longer ' + 
+                                  'than expected...', root);
+                    }, 2000);
+                }
             };
 
             node.game.timer.startWaiting(options);
