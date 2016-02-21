@@ -102,7 +102,8 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 groupSize: waitRoom.GROUP_SIZE,
                 maxWaitTime: waitTime,
                 onTimeout: waitRoom.ON_TIMEOUT,
-                startDate: waitRoom.START_DATE
+                startDate: waitRoom.START_DATE,
+                disconnectIfNotSelected: waitRoom.DISCONNECT_IF_NOT_SELECTED
             });
 
             console.log('NPL ', nPlayers);
