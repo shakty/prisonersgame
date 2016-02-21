@@ -66,6 +66,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         var pList;
         var nPlayers;
         var waitTime;
+        var widgetConfig;
         if (waitRoom.isRoomOpen()) {
             console.log('Client connected to waiting room: ', p.id);
 
@@ -96,15 +97,10 @@ module.exports = function(settings, waitRoom, runtimeConf) {
                 waitTime = null; // Widget won't start timer.
             }
 
-            // Send the number of minutes to wait.
-            node.remoteSetup('waitroom', p.id, {
-                poolSize: waitRoom.POOL_SIZE,
-                groupSize: waitRoom.GROUP_SIZE,
-                maxWaitTime: waitTime,
-                onTimeout: waitRoom.ON_TIMEOUT,
-                startDate: waitRoom.START_DATE,
-                disconnectIfNotSelected: waitRoom.DISCONNECT_IF_NOT_SELECTED
-            });
+            // Send the number of minutes to wait and all waitRoom settings.
+            widgetConfig = waitRoom.getSettings();
+            widgetConfig.waitTime = waitTime;
+            node.remoteSetup('waitroom', p.id, widgetConfig);
 
             console.log('NPL ', nPlayers);
 
