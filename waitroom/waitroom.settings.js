@@ -9,6 +9,9 @@ module.exports = {
     // The size of each group.
     GROUP_SIZE: 2,
 
+    // Number of games to dispatch.
+    N_GAMES: 2,
+
     // Maximum waiting time.
 //    MAX_WAIT_TIME: 30000,
 
