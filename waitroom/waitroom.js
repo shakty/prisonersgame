@@ -87,8 +87,8 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             });
 
             if (waitRoom.START_DATE) {
-                waitTime = new Date(waitRoom.START_DATE).getTime()
-                    - (new Date().getTime());
+                waitTime = new Date(waitRoom.START_DATE).getTime() -
+                    (new Date().getTime());
             }
             else if (waitRoom.MAX_WAIT_TIME) {
                 waitTime = waitRoom.MAX_WAIT_TIME;
@@ -132,7 +132,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
             node.say('ROOM_CLOSED', p.id);
         }
-    };
+    }
 
 
     function monitorReconnects(p) {
