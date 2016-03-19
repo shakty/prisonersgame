@@ -18,7 +18,7 @@ module.exports = {
     // Time and date of game start. Overrides `MAX_WAIT_TIME`
     // `START_DATE` is any valid argument to `Date` constructor.
     //    START_DATE: 'December 13, 2015 13:24:00',
-    START_DATE: new Date().getTime() + 30000,
+    START_DATE: new Date().getTime() + 10000,
 
     // Treatment assigned to groups.
     // If left undefined, a random treatment will be selected.

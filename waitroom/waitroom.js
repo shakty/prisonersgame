@@ -15,8 +15,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     var channel = waitRoom.channel;
 
 
-    var timeOuts = {};
-
     var stager = new node.Stager();
 
 
@@ -115,9 +113,9 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
             if (waitRoom.EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
                 waitRoom.dispatch({
-                    over: "AllPlayersConnected",
+                    action: "AllPlayersConnected",
                     exit: 0
-                }, timeOuts);
+                });
             }
         }
         else {
