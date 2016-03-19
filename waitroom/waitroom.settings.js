@@ -4,7 +4,7 @@
 module.exports = {
 
     // How many clients must connect before groups are formed.
-    POOL_SIZE: 2,
+    POOL_SIZE: 4,
 
     // The size of each group.
     GROUP_SIZE: 2,
@@ -18,14 +18,14 @@ module.exports = {
     // Time and date of game start. Overrides `MAX_WAIT_TIME`
     // `START_DATE` is any valid argument to `Date` constructor.
     //    START_DATE: 'December 13, 2015 13:24:00',
-    START_DATE: new Date().getTime() + 10000,
+    START_DATE: new Date().getTime() + 20000,
 
     // Treatment assigned to groups.
     // If left undefined, a random treatment will be selected.
     // Use "treatment_rotate" for rotating the treatments.
     CHOSEN_TREATMENT: 'treatment_rotate',
 
-    DISCONNECT_IF_NOT_SELECTED: true,
+    DISCONNECT_IF_NOT_SELECTED: false,
 
     // In the execution mode ´'TIMEOUT'´, one waits until the time is up, then
     // it will be checked whether enough players are there to start the game.
