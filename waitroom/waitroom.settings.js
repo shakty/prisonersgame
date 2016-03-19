@@ -25,6 +25,7 @@ module.exports = {
     // Use "treatment_rotate" for rotating the treatments.
     CHOSEN_TREATMENT: 'treatment_rotate',
 
+    DISCONNECT_IF_NOT_SELECTED: true,
 
     // In the execution mode ´'TIMEOUT'´, one waits until the time is up, then
     // it will be checked whether enough players are there to start the game.

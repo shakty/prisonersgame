@@ -98,7 +98,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             }
 
             // Send the number of minutes to wait and all waitRoom settings.
-            widgetConfig = waitRoom.getSettings();
+            widgetConfig = waitRoom.makeWidgetConfig();
             widgetConfig.waitTime = waitTime;
             node.remoteSetup('waitroom', p.id, widgetConfig);
 
