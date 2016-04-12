@@ -16,7 +16,7 @@ module.exports = function(stager, settings) {
         .repeat('ultimatum', settings.REPEAT)
         .next('questionnaire')
         .next('endgame')
-        // .gameover();
+        .gameover();
 
     // stager.skip('quiz');
 };
