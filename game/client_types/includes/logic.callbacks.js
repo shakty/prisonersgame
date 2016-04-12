@@ -36,13 +36,6 @@ var autoplay = gameRoom.getClientType('autoplay');
 function init() {
     DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
     
-//     DUMP_DIR_JSON = DUMP_DIR + 'json/';
-//     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
-// 
-//     // Recursively create directories, sub-trees and all.
-//     J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
-//     J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
-
     J.mkdirSyncRecursive(DUMP_DIR, 0777);
 
     console.log('********************** ultimatum room ' + counter++ +
@@ -97,11 +90,6 @@ function init() {
         db = node.game.memory.stage[currentStage];
 
         if (db && db.size()) {
-            // Saving results to FS.
-            // node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
-            //                   '.csv', { flags: 'w' }, db);
-            // node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
-            //                   '.nddb', null, db);
 
             prefix = DUMP_DIR + 'memory_' + currentStage;
             db.save(prefix + '.csv', { flags: 'w' }); 
@@ -229,13 +217,6 @@ function init() {
 function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
 
-    // Saving all indexes.
-    // node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
-    // node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
-
-    // Dump all memory.
-    // node.fs.saveMemory('json', DUMP_DIR + 'memory_all.json');
-    node.game.memory.save(DUMP_DIR + 'memory_all.json');
 
     // TODO: fix this.
     // channel.destroyGameRoom(gameRoom.name);
@@ -351,9 +332,8 @@ function endgame() {
     });
     bonusFile.end();
 
-    // node.fs.writeCsv(bonusFile, bonus, {
-    //     headers: ["access", "exit", "bonus", "terminated"]
-    // });
+    // Dump all memory.
+    node.game.memory.save(DUMP_DIR + 'memory_all.json');
 
     node.done();
 }
