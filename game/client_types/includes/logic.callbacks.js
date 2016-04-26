@@ -211,6 +211,11 @@ function init() {
         }
     });
 
+    // Logging errors from remote clients to console.
+    node.on('in.say.LOG', function(msg) {
+        if (msg.text === 'error') console.log(msg.data);
+    });
+
     console.log('init');
 }
 
