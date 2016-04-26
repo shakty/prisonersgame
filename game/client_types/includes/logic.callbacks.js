@@ -213,7 +213,10 @@ function init() {
 
     // Logging errors from remote clients to console.
     node.on('in.say.LOG', function(msg) {
-        if (msg.text === 'error' && msg.stage.stage) console.log(msg.data);
+        if (msg.text === 'error' && msg.stage.stage) {
+            console.log('Error from client: ', msg.from);
+            console.log('Error msg: ', msg.data);
+        }
     });
 
     console.log('init');
