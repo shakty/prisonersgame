@@ -1,6 +1,6 @@
 /**
  * # Player code for Ultimatum Game
- * Copyright(c) 2015 Stefano Balietti
+ * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
@@ -99,14 +99,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('instructions', {
         cb: cbs.instructions,
-        // minPlayers: MIN_PLAYERS,
         // syncOnLoaded: true,
         timer: 90000
     });
 
     stager.extendStep('quiz', {
         cb: cbs.quiz,
-        // minPlayers: MIN_PLAYERS,
         // syncOnLoaded: true,
         // `timer` starts automatically the timer managed by the widget
         // VisualTimer if the widget is loaded. When the time is up it fires
@@ -123,7 +121,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             b = W.getElementById('submitQuiz');
 
             answers = QUIZ.checkAnswers(b);
-            isTimeup = node.game.timer.isTimeup();
+            isTimeup = node.game.visualTimer.isTimeup();
 
             if (!answers.__correct__ && !isTimeup) {
                 return false;
@@ -142,7 +140,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('ultimatum', {
         cb: cbs.ultimatum,
-        // minPlayers: MIN_PLAYERS,
         // `syncOnLoaded` forces the clients to wait for all the others to be
         // fully loaded before releasing the control of the screen to the
         // players.  This options introduces a little overhead in
@@ -176,7 +173,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
             }
 
-            isTimeup = node.game.timer.isTimeup();
+            isTimeup = node.game.visualTimer.isTimeup();
 
             // If there is still some time left, let's ask the player
             // to complete at least the second question.

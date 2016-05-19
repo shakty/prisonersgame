@@ -53,18 +53,26 @@ function init() {
     // Add event listeners valid for the whole game.
 
     node.on('BID_DONE', function(offer, to, timeup) {
-        var root, time, submitOffer;
+        var root, time, offer, submitOffer;
 
         // Time to make a bid.
         time = node.timer.getTimeSince('bidder_loaded');
         
-        // Hack. To avoid double offers. Todo: fix.
+        // Avoid double offers.
         if (node.game.offerDone) return;
+
         node.game.offerDone = true;
+
+        // Save references.
+        node.game.lastOffer = offer;
+        node.game.lastTimup = timeup;
+        node.game.lastTime = time;
 
         node.game.visualTimer.clear();
         node.game.visualTimer.startWaiting({milliseconds: 30000});
 
+        offer = W.getElementById('submitOffer');
+        if (offer) offer.disabled = 'disabled';
         submitOffer = W.getElementById('submitOffer');
         if (submitOffer) submitOffer.disabled = 'disabled';
 
@@ -74,6 +82,7 @@ function init() {
             time: time,
             timeup: timeup
         });
+
         // Notify the other player.
         node.say('OFFER', to, offer);
 
@@ -358,12 +367,14 @@ function ultimatum() {
             });
 
             b.onclick = function() {
-                var offer = W.getElementById('offer');
-                if (!that.isValidBid(offer.value)) {
+                var offer, value;
+                offer = W.getElementById('offer');
+                value = that.isValidBid(offer.value);
+                if (value === false) {
                     W.writeln('Please enter a number between 0 and 100');
                     return;
                 }
-                node.emit('BID_DONE', parseInt(offer.value, 10), other);
+                node.emit('BID_DONE', value, other);
             };
 
             root = W.getElementById('container');
