@@ -18,5 +18,5 @@ module.exports = function(stager, settings) {
         .next('endgame')
         .gameover();
 
-    // stager.skip('quiz');
+    // stager.skip('precache');
 };

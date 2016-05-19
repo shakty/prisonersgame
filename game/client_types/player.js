@@ -79,6 +79,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.setDefaultProperty('done', cbs.clearFrame);
 
     MIN_PLAYERS = [ settings.MIN_PLAYERS, cbs.notEnoughPlayers ];
+    MIN_PLAYERS = undefined;
+
 
     stager.extendStep('selectLanguage', {
         cb: cbs.selectLanguage,

@@ -37,7 +37,7 @@ function init() {
             stageOffset: 1
         });
 
-        node.game.timer = node.widgets.append('VisualTimer', header);
+        node.game.visualTimer = node.widgets.append('VisualTimer', header);
 
         node.game.debugInfo = node.widgets.append('DebugInfo', header)
 
@@ -66,12 +66,11 @@ function init() {
         if (node.game.offerDone) return;
         node.game.offerDone = true;
 
-        node.game.timer.clear();
-        node.game.timer.startWaiting({milliseconds: 30000});
+        node.game.visualTimer.clear();
+        node.game.visualTimer.startWaiting({milliseconds: 30000});
 
         submitOffer = W.getElementById('submitOffer');
         if (submitOffer) submitOffer.disabled = 'disabled';
-        else debugger;
 
         // Notify the server.
         node.set({
@@ -273,13 +272,11 @@ function instructions() {
             //////////////////////////////////////////////
             // nodeGame hint:
             //
-            // Execute a function randomly in a time interval
+            // Execute a node.done in a time interval
             // from 0 to 2000 milliseconds
             //
             //////////////////////////////////////////////
-            node.timer.randomExec(function() {
-                node.done();
-            }, 2000);
+            node.timer.randomDone(2000);
         });
     });
     console.log('Instructions');
@@ -292,7 +289,7 @@ function quiz() {
         var b, QUIZ;
         node.env('auto', function() {
             node.timer.randomExec(function() {
-                node.game.timer.doTimeUp();
+                node.game.visualTimer.doTimeUp();
             });
         });
     });
@@ -364,7 +361,7 @@ function ultimatum() {
                 }
             };
 
-            node.game.timer.startTiming(options);
+            node.game.visualTimer.startTiming(options);
 
             b = W.getElementById('submitOffer');
 
@@ -396,16 +393,12 @@ function ultimatum() {
 
             node.on.data('ACCEPT', function(msg) {
                 W.write(' Your offer was accepted.', root);
-                node.timer.randomExec(function() {
-                    node.done();
-                }, 3000);
+                node.timer.randomDone(3000);
             });
 
             node.on.data('REJECT', function(msg) {
                 W.write(' Your offer was rejected.', root);
-                node.timer.randomExec(function() {
-                    node.done();
-                }, 3000);
+                node.timer.randomDone(3000);
             });
 
             node.timer.setTimestamp('bidder_loaded');
@@ -432,8 +425,8 @@ function ultimatum() {
                 }
             };
 
-            node.game.timer.startWaiting(options);
-            node.game.timer.mainBox.hideBox();
+            node.game.visualTimer.startWaiting(options);
+            node.game.visualTimer.mainBox.hideBox();
 
             //////////////////////////////////////////////
             // nodeGame hint:
@@ -461,7 +454,7 @@ function ultimatum() {
                         that.randomAccept(msg.data, other);
                     }
                 };
-                node.game.timer.startTiming(options);
+                node.game.visualTimer.startTiming(options);
 
 
                 offered = W.getElementById('offered');
@@ -503,7 +496,7 @@ function postgame() {
 
         node.env('auto', function() {
             node.timer.randomExec(function() {
-                node.game.timer.doTimeUp();
+                node.game.visualTimer.doTimeUp();
             });
         });
     });
@@ -513,9 +506,9 @@ function postgame() {
 function endgame() {
     W.loadFrame('ended.html', function() {
 
-        node.game.timer.switchActiveBoxTo(node.game.timer.mainBox);
-        node.game.timer.waitBox.hideBox();
-        node.game.timer.setToZero();
+        node.game.visualTimer.switchActiveBoxTo(node.game.visualTimer.mainBox);
+        node.game.visualTimer.waitBox.hideBox();
+        node.game.visualTimer.setToZero();
         node.on.data('WIN', function(msg) {
             var win, exitcode, codeErr;
             var root;
