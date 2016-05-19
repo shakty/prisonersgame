@@ -19,4 +19,6 @@ module.exports = function(stager, settings) {
         .gameover();
 
     // stager.skip('precache');
+    // stager.skip('quiz');
+    // stager.skip('instructions');
 };

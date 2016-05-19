@@ -52,7 +52,7 @@ function init() {
 
     // Add event listeners valid for the whole game.
 
-    node.on('BID_DONE', function(offer, to, timeup) {
+    node.on('BID_DONE', function(value, to, timeup) {
         var root, time, offer, submitOffer;
 
         // Time to make a bid.
@@ -64,31 +64,31 @@ function init() {
         node.game.offerDone = true;
 
         // Save references.
-        node.game.lastOffer = offer;
+        node.game.lastOffer = value;
         node.game.lastTimup = timeup;
         node.game.lastTime = time;
 
         node.game.visualTimer.clear();
         node.game.visualTimer.startWaiting({milliseconds: 30000});
 
-        offer = W.getElementById('submitOffer');
+        offer = W.getElementById('offer');
         if (offer) offer.disabled = 'disabled';
         submitOffer = W.getElementById('submitOffer');
         if (submitOffer) submitOffer.disabled = 'disabled';
 
         // Notify the server.
         node.set({
-            offer: offer,
+            offer: value,
             time: time,
             timeup: timeup
         });
 
         // Notify the other player.
-        node.say('OFFER', to, offer);
+        node.say('OFFER', to, value);
 
         root = W.getElementById('container');
         // Leave a space.
-        W.writeln(' Your offer: ' +  offer +
+        W.writeln(' Your offer: ' +  value +
                   '. Waiting for the respondent... ', root);
     });
 
@@ -371,7 +371,8 @@ function ultimatum() {
                 offer = W.getElementById('offer');
                 value = that.isValidBid(offer.value);
                 if (value === false) {
-                    W.writeln('Please enter a number between 0 and 100');
+                    W.writeln('Please enter a number between 0 and 100',
+                              W.getElementById('container'));
                     return;
                 }
                 node.emit('BID_DONE', value, other);
