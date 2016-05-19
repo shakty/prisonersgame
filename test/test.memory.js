@@ -56,8 +56,8 @@ describe('File contents', function() {
         var gameNo, nSets;
 
         // 2 precache, 2 languageSel, 2 instr, 4 quiz, 4 quest = 14
-        // 6 * REPEAT ultimatum 
-        nSets = 14 + (6 * gameSettings.REPEAT);
+        // 5 * REPEAT ultimatum 
+        nSets = 14 + (5 * gameSettings.REPEAT);
 
         // TODO: Assuming two players.
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
