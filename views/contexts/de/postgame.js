@@ -12,7 +12,6 @@ module.exports = function(settings, headers) {
             "The player found a more rewarding task.",
             "The game was boring, not clear, too long, etc.",
             "Not applicable."
-        ],
-        "clickHere": "Click here when you are done"
+        ]
     };
 };

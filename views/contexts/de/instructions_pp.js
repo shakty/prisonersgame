@@ -16,7 +16,6 @@ module.exports = function(settings, headers) {
         theGameIsRepeated: "The game is repeated " + R + " rounds, therefore the maximum bonus available is " + B + " dollar/s.",
         important: "Important. If one of the players disconnects for more than " + W + " seconds the game will be terminated.",
         inSuchACase: "In such a case the player who disconnected will not be paid at all, and the remaining ones will be paid only the show up fee.",
-        ifYouUnderstood: "If you understood the instructions correctly press the button to proceed to the game.",
-        proceed: "Proceed to the game"
+        ifYouUnderstood: "If you understood the instructions correctly press the button to proceed to the game."
     };
 };

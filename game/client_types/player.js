@@ -105,6 +105,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('quiz', {
         cb: cbs.quiz,
+        // Disable the donebutton for this step.
+        donebutton: false,
         // syncOnLoaded: true,
         // `timer` starts automatically the timer managed by the widget
         // VisualTimer if the widget is loaded. When the time is up it fires
@@ -139,6 +141,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('ultimatum', {
+        // Disable the donebutton for this step.
+        donebutton: false,
         cb: cbs.ultimatum,
         // `syncOnLoaded` forces the clients to wait for all the others to be
         // fully loaded before releasing the control of the screen to the
