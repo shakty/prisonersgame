@@ -36,13 +36,6 @@ var autoplay = gameRoom.getClientType('autoplay');
 function init() {
     DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
     
-//     DUMP_DIR_JSON = DUMP_DIR + 'json/';
-//     DUMP_DIR_CSV = DUMP_DIR + 'csv/';
-// 
-//     // Recursively create directories, sub-trees and all.
-//     J.mkdirSyncRecursive(DUMP_DIR_JSON, 0777);
-//     J.mkdirSyncRecursive(DUMP_DIR_CSV, 0777);
-
     J.mkdirSyncRecursive(DUMP_DIR, 0777);
 
     console.log('********************** ultimatum room ' + counter++ +
@@ -53,6 +46,11 @@ function init() {
     node.game.lastStage = node.game.getCurrentGameStage();
 
     node.game.gameTerminated = false;
+
+    node.game.disconnectStr = 'One or more players disconnected. If they ' +
+        'do not reconnect within ' + settings.WAIT_TIME  +
+        ' seconds the game will be terminated.';
+
 
     // If players disconnects and then re-connects within the same round
     // we need to take into account only the final bids within that round.
@@ -92,11 +90,6 @@ function init() {
         db = node.game.memory.stage[currentStage];
 
         if (db && db.size()) {
-            // Saving results to FS.
-            // node.fs.saveMemory('csv', DUMP_DIR + 'memory_' + currentStage +
-            //                   '.csv', { flags: 'w' }, db);
-            // node.fs.saveMemory('json', DUMP_DIR + 'memory_' + currentStage +
-            //                   '.nddb', null, db);
 
             prefix = DUMP_DIR + 'memory_' + currentStage;
             db.save(prefix + '.csv', { flags: 'w' }); 
@@ -218,16 +211,13 @@ function init() {
         }
     });
 
-//     node.events.game.on('PLAYING', function() {
-//         var nextStep = node.player.stage;
-//         // Pushes clients to finish current step in line with the time
-//         // expected by logic, or otherwise disconnects them.
-//         if (this.plot.getProperty(nextStep, 'pushClients')) {
-//             // TODO: check if should be called after PLAYING
-//             // node.events.ee.step.on('PLAYING', ...);
-//             this.pushManager.startTimeout();
-//         }
-//     });
+    // Logging errors from remote clients to console.
+    node.on('in.say.LOG', function(msg) {
+        if (msg.text === 'error' && msg.stage.stage) {
+            console.log('Error from client: ', msg.from);
+            console.log('Error msg: ', msg.data);
+        }
+    });
 
     console.log('init');
 }
@@ -235,13 +225,6 @@ function init() {
 function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
 
-    // Saving all indexes.
-    // node.fs.saveMemoryIndexes('csv', DUMP_DIR_CSV);
-    // node.fs.saveMemoryIndexes('json', DUMP_DIR_JSON);
-
-    // Dump all memory.
-    // node.fs.saveMemory('json', DUMP_DIR + 'memory_all.json');
-    node.game.memory.save(DUMP_DIR + 'memory_all.json');
 
     // TODO: fix this.
     // channel.destroyGameRoom(gameRoom.name);
@@ -288,15 +271,18 @@ function doMatch() {
 function notEnoughPlayers() {
     if (this.countdown) return;
     console.log('Warning: not enough players!!');
+    // Pause connected players.
+    node.remoteCommand('pause', 'ROOM', this.disconnectStr);
     this.countdown = setTimeout(function() {
         console.log('Countdown fired. Going to Step: questionnaire.');
         node.remoteCommand('erase_buffer', 'ROOM');
         node.remoteCommand('resume', 'ROOM');
         node.game.gameTerminated = true;
         // if syncStepping = false
-        //node.remoteCommand('goto_step', 5);
+        // node.remoteCommand('goto_step', 5);
+        // Step must be not-skipped if you give the id (else give a number).
         node.game.gotoStep('questionnaire');
-    }, 30000);
+    }, settings.WAIT_TIME * 1000);
 }
 
 function endgame() {
@@ -354,9 +340,8 @@ function endgame() {
     });
     bonusFile.end();
 
-    // node.fs.writeCsv(bonusFile, bonus, {
-    //     headers: ["access", "exit", "bonus", "terminated"]
-    // });
+    // Dump all memory.
+    node.game.memory.save(DUMP_DIR + 'memory_all.json');
 
     node.done();
 }
