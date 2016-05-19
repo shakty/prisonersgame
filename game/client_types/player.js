@@ -17,7 +17,7 @@ var constants = ngc.constants;
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var game, MIN_PLAYERS;
+    var game;
     var cbs;
 
     var channel = gameRoom.channel;
@@ -78,14 +78,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.setDefaultProperty('done', cbs.clearFrame);
 
-    MIN_PLAYERS = [ settings.MIN_PLAYERS, cbs.notEnoughPlayers ];
-    MIN_PLAYERS = undefined;
-
-
     stager.extendStep('selectLanguage', {
         cb: cbs.selectLanguage,
         timer: 100000,
-        // minPlayers: MIN_PLAYERS,
         done: function() {
             // The chosen language prefix will be
             // added automatically to every call to W.loadFrame().
@@ -98,15 +93,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('precache', {
-        cb: cbs.precache,
-        // `minPlayers` triggers the execution of a callback in the case
-        // the number of players (including this client) falls the below
-        // the chosen threshold. Related: `maxPlayers`, and `exactPlayers`.
-        // However, the server must be configured to send this information
-        // to the clients, otherwise the count will be always 0 and
-        // trigger the callback immediately. Notice that minPlayers is
-        // configured on logic.js as well.
-        // minPlayers: MIN_PLAYERS,
+        cb: cbs.precache
         // syncOnLoaded: true,
     });
 

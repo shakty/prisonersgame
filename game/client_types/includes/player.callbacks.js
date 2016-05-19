@@ -1,6 +1,6 @@
 /**
  * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2015 Stefano Balietti
+ * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -15,12 +15,11 @@ module.exports = {
     ultimatum: ultimatum,
     postgame: postgame,
     endgame: endgame,
-    clearFrame: clearFrame,
-    notEnoughPlayers: notEnoughPlayers
+    clearFrame: clearFrame
 };
 
 function init() {
-    var that, waitingForPlayers, treatment, header;
+    var that, header;
 
     that = this;
     this.node.log('Init.');
@@ -39,20 +38,17 @@ function init() {
 
         node.game.visualTimer = node.widgets.append('VisualTimer', header);
 
-        node.game.debugInfo = node.widgets.append('DebugInfo', header)
+        // Done button to click.
+        node.game.donebutton = node.widgets.append('DoneButton', header);
+
+        // Additional debug information while developing the game.
+        // node.game.debugInfo = node.widgets.append('DebugInfo', header)
 
     }
 
     // Add the main frame where the pages will be loaded.
-    if (!W.getFrame()) {
-        W.generateFrame();
-    }
+    if (!W.getFrame()) W.generateFrame();    
 
-    // Add default CSS.
-    if (node.conf.host) {
-        W.addCSS(W.getFrameRoot(), node.conf.host +
-                 'stylesheets/nodegame.css');
-    }
 
     // Add event listeners valid for the whole game.
 
@@ -88,18 +84,15 @@ function init() {
     });
 
     node.on('RESPONSE_DONE', function(response, offer, from) {
-        var time;
-        time = node.timer.getTimeSince('offer_received');
 
-        console.log(response, offer, from);
-
+        // Tell the other player own response.
         node.say(response, from, response);
 
-        node.set({
-            response: response,
-            value: offer,
-            from: from
-        });
+//         node.set({
+//             response: response,
+//             value: offer,
+//             from: from
+//         });
 
         //////////////////////////////////////////////
         // nodeGame hint:
@@ -116,11 +109,17 @@ function init() {
         //
         // which can be overwritten by the parameter.
         //
+        // Any number of additional properties can
+        // be added and will be stored in the server.
+        //
         /////////////////////////////////////////////
         node.done({
+            value: offer,
+            from: from,
+            response: response,
             // Overwrite default `time` property
             // (since the beginning of the step).
-            time: time
+            time: node.timer.getTimeSince('offer_received')
         });
     });
 
@@ -151,18 +150,11 @@ function init() {
     };
 
     this.isValidBid = function(n) {
-        if (typeof n !== 'string') return false;
-
-        if (!/^\d+$/.test(n)) return false;
-
-        n = parseInt(n, 10);
-        return n >= 0 && n <= 100;
+        return node.JSUS.isInt(n, -1, 101);
     };
 
-    treatment = node.env('treatment');
-
     // Adapting the game to the treatment.
-    if (treatment === 'pp') {
+    if (node.game.settings.treatmentName === 'pp') {
         node.game.instructionsPage = 'instructions_pp.html';
     }
     else {
@@ -211,23 +203,13 @@ function precache() {
 
 function selectLanguage() {
     W.loadFrame('languageSelection.html', function() {
-        var b = W.getElement('input', 'done', {
-            type: "button", value: "Choice Made",
-            className: "btn btn-lg btn-primary"
-        });
+
 
         node.game.lang = node.widgets.append('LanguageSelector',
                                              W.getFrameDocument().body);
 
-        W.getFrameDocument().body.appendChild(b);
-        b.onclick = function() {
-            node.done();
-        };
-
         node.env('auto', function() {
-            node.timer.randomExec(function() {
-                b.click();
-            });
+            node.timer.randomDone();
         });
     });
 }
@@ -250,11 +232,6 @@ function instructions() {
     //
     /////////////////////////////////////////////
     W.loadFrame(node.game.instructionsPage, function() {
-
-        var b = W.getElementById('read');
-        b.onclick = function() {
-            node.done();
-        };
 
         ////////////////////////////////////////////////
         // nodeGame hint:
@@ -456,11 +433,8 @@ function ultimatum() {
                 };
                 node.game.visualTimer.startTiming(options);
 
-
-                offered = W.getElementById('offered');
-                theofferSpan = W.getElementById('theoffer');
-                theofferSpan.innerHTML = msg.data;
-                offered.style.display = '';
+                W.setInnerHTML('theoffer', msg.data);
+                W.show('offered');
 
                 accept = W.getElementById('accept');
                 reject = W.getElementById('reject');
@@ -527,11 +501,4 @@ function endgame() {
 function clearFrame() {
     node.emit('INPUT_DISABLE');
     return true;
-}
-
-function notEnoughPlayers() {
-    console.log('Not enough players');
-    node.game.pause();
-    W.lockScreen('One player disconnected. We are now waiting to see if ' +
-                 'he or she reconnects. If not the game will be terminated.');
 }

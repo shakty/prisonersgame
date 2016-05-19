@@ -1,6 +1,6 @@
 /**
  * # Functions used by the client of Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -19,7 +19,8 @@ module.exports = {
     gameover: gameover,
     doMatch: doMatch,
     endgame: endgame,
-    notEnoughPlayers: notEnoughPlayers
+    notEnoughPlayers: notEnoughPlayers,
+    enoughPlayersAgain: enoughPlayersAgain
 };
 
 var node = module.parent.exports.node;
@@ -27,11 +28,6 @@ var channel = module.parent.exports.channel;
 var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var counter = module.parent.exports.counter;
-
-
-var client = gameRoom.getClientType('player');
-var autoplay = gameRoom.getClientType('autoplay');
-
 
 function init() {
     DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
@@ -119,39 +115,11 @@ function init() {
 
         console.log('Oh...somebody reconnected!', p);
         code = channel.registry.getClient(p.id);
-
-        // Delete countdown to terminate the game.
-        clearTimeout(this.countdown);
+       
+        gameRoom.setupClient(p.id);
 
         // Clear any message in the buffer from.
         node.remoteCommand('erase_buffer', 'ROOM');
-
-        // Notify other player he is back.
-        // TODO: add it automatically if we return TRUE? It must be done
-        // both in the alias and the real event handler
-        node.game.pl.each(function(player) {
-            node.socket.send(node.msg.create({
-                target: 'PCONNECT',
-                data: {id: p.id},
-                to: player.id
-            }));
-        });
-
-        // Send currently connected players to reconnecting one.
-        node.socket.send(node.msg.create({
-            target: 'PLIST',
-            data: node.game.pl.fetchSubObj('id'),
-            to: p.id
-        }));
-
-        // We could slice the game plot, and send just what we need
-        // however here we resend all the stages, and move their game plot.
-        console.log('** Player reconnected: ' + p.id + ' **');
-        // Setting metadata, settings, and plot.
-        node.remoteSetup('game_metadata',  p.id, client.metadata);
-        node.remoteSetup('game_settings', p.id, client.settings);
-        node.remoteSetup('plot', p.id, client.plot);
-        node.remoteSetup('env', p.id, client.env);
 
         if (code.lang.name !== 'English') {
             // If lang is different from Eng, remote setup it.
@@ -164,9 +132,6 @@ function init() {
         // Need to give step: false, because otherwise pre-caching will
         // call done() on reconnecting stage.
         node.remoteCommand('start', p.id, { step: false } );
-
-        // Pause the game on the reconnecting client, will be resumed later.
-        // node.remoteCommand('pause', p.id);
 
         // It is not added automatically.
         // TODO: add it automatically if we return TRUE? It must be done
@@ -190,8 +155,6 @@ function init() {
             });
             // The logic is also reset to the same game stage.
         }, 100);
-        // Unpause ALL players
-        // node.remoteCommand('resume', 'ALL');
     });
 
     // Update the Payoffs
@@ -224,7 +187,6 @@ function init() {
 
 function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' ****************');
-
 
     // TODO: fix this.
     // channel.destroyGameRoom(gameRoom.name);
@@ -344,4 +306,10 @@ function endgame() {
     node.game.memory.save(DUMP_DIR + 'memory_all.json');
 
     node.done();
+}
+
+
+function enoughPlayersAgain() {
+    // Delete countdown to terminate the game.
+    clearTimeout(this.countdown);
 }

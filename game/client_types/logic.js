@@ -1,6 +1,6 @@
 /**
  * # Logic code for Ultimatum Game
- * Copyright(c) 2015 Stefano Balietti
+ * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
@@ -46,17 +46,22 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // Event handler registered in the init function are always valid.
     stager.setOnGameOver(cbs.gameover);
-
-    // Extending default stages.
-
+    
+    // `minPlayers` triggers the execution of a callback in the case
+    // the number of players (including this client) falls the below
+    // the chosen threshold. Related: `maxPlayers`, and `exactPlayers`.
+    // However, the server must be configured to send this information
+    // to the clients, otherwise the count will be always 0 and
+    // trigger the callback immediately. Notice that minPlayers is
+    // configured on logic.js as well.
+    // minPlayers: MIN_PLAYERS,
     stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
-        cbs.notEnoughPlayers
+        cbs.notEnoughPlayers,
+        cbs.enoughPlayersAgain
     ]);
 
     // stager.setDefaultProperty('pushClients', true);
-
-    stager.setDefaultCallback(function() {});
 
     stager.extendStep('selectLanguage', {
         cb: function() {
@@ -91,11 +96,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // and printed to screen, and the game will continue.
         debug: settings.DEBUG,
         // Controls the amount of information printed to screen.
-        verbosity: -100,
-        // nodeGame enviroment variables.
-        env: {
-            auto: settings.AUTO
-        }
+        verbosity: -100
     };
 
 };
