@@ -17,9 +17,7 @@ var constants = ngc.constants;
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var game;
-    var cbs;
-
+    var game, cbs;
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
@@ -27,7 +25,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     game = {};
 
     // Import other functions used in the game.
-
     cbs = require(__dirname + '/includes/player.callbacks.js');
 
     // Specify init function, and extend default stages.
@@ -153,7 +150,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
-        cb: cbs.endgame
+        cb: cbs.endgame,
+        donebutton: false
     });
 
     stager.extendStep('questionnaire', {
