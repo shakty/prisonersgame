@@ -28,6 +28,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
+    var timers = settings.TIMER;
+
     // Increment counter.
     counter = counter ? ++counter : settings.SESSION_ID;
 
@@ -60,10 +62,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cbs.notEnoughPlayers,
         cbs.enoughPlayersAgain
     ]);
-
-    // stager.setDefaultProperty('pushClients', true);
-
-    stager.extendStep('selectLanguage', {
+    
+    stager.extendStep('selectLanguage', {     
         cb: function() {
             // Storing the language setting.
             node.on.data('mylang', function(msg) {
@@ -71,14 +71,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     channel.registry.updateClient(msg.from, { lang: msg.data });
                 }
             });
-        }
+        },
+        pushClients: true
     });
 
     stager.extendStep('ultimatum', {
         cb: function() {
             this.node.log('Ultimatum');
             cbs.doMatch();
-        }
+        },
+        timer: (timers.bidder + timers.response)
     });
 
     stager.extendStep('endgame', {

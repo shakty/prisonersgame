@@ -21,6 +21,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
+    var timers = settings.TIMER;
+
     // The game object to return at the end of the function.
     game = {};
 
@@ -77,7 +79,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('selectLanguage', {
         cb: cbs.selectLanguage,
-        timer: 100000,
+        // timer: timers.selectLanguage,
         done: function() {
             // The chosen language prefix will be
             // added automatically to every call to W.loadFrame().
@@ -85,7 +87,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 W.setUriPrefix(node.player.lang.path);
                 node.say('mylang', 'SERVER', node.player.lang);
             }
-            return true;
         }
     });
 
@@ -97,7 +98,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('instructions', {
         cb: cbs.instructions,
         // syncOnLoaded: true,
-        timer: 90000
+        // timer: timers.instructions
     });
 
     stager.extendStep('quiz', {
@@ -113,27 +114,26 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //  - an object containing properties _milliseconds_, and _timeup_
         //     the latter being the name of the event to fire (default DONE)
         // - or a function returning the number of milliseconds.
-        timer: 60000,
+        // timer: timers.quiz,
         done: function() {
             var b, QUIZ, answers, isTimeup;
             QUIZ = W.getFrameWindow().QUIZ;
             b = W.getElementById('submitQuiz');
 
             answers = QUIZ.checkAnswers(b);
-            isTimeup = node.game.visualTimer.isTimeup();
+            isTimeup = node.game.timer.isTimeup();
 
             if (!answers.__correct__ && !isTimeup) {
                 return false;
             }
 
-            answers.timeUp = isTimeup;
             answers.quiz = true;
 
-            // On TimeUp there are no answers
-            node.set(answers);
+            // On TimeUp there are no answers.
+
             node.emit('INPUT_DISABLE');
             
-            return true;
+            return answers;
         }
     });
 
@@ -156,7 +156,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('questionnaire', {
         cb: cbs.postgame,
-        timer: 90000,
+        // timer: timers.questionnaire,
         // `done` is a callback function that is executed as soon as a
         // _DONE_ event is emitted. It can perform clean-up operations (such
         // as disabling all the forms) and only if it returns true, the
@@ -175,7 +175,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
             }
 
-            isTimeup = node.game.visualTimer.isTimeup();
+            isTimeup = node.game.timer.isTimeup();
 
             // If there is still some time left, let's ask the player
             // to complete at least the second question.
@@ -184,15 +184,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 return false;
             }
 
-            node.set({
+            node.emit('INPUT_DISABLE');
+
+            return {
                 questionnaire: true,
                 q1: q1 || '',
                 q2: q2checked
-            });
-
-            node.emit('INPUT_DISABLE');
-
-            return true;
+            };
         }
     });
 

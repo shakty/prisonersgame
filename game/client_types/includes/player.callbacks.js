@@ -69,7 +69,9 @@ function init() {
         node.game.lastTime = time;
 
         node.game.visualTimer.clear();
-        node.game.visualTimer.startWaiting({milliseconds: 30000});
+        node.game.visualTimer.startWaiting({
+            milliseconds: node.game.settings.TIMER.response
+        });
 
         offer = W.getElementById('offer');
         if (offer) offer.disabled = 'disabled';
@@ -340,7 +342,7 @@ function ultimatum() {
         W.loadFrame('bidder.html', function() {
             // Start the timer after an offer was received.
             options = {
-                milliseconds: 30000,
+                milliseconds: node.game.settings.TIMER.bidder,
                 timeup: function() {
                     node.emit('BID_DONE',
                               Math.floor(Math.random() * 101), other, true);
@@ -403,7 +405,7 @@ function ultimatum() {
 
         W.loadFrame('resp.html', function() {
             options = {
-                milliseconds: 30000,
+                milliseconds: node.game.settings.TIMER.response,
                 timeup: function() {                    
                     var root;
                     setTimeout(function() {

@@ -1,6 +1,6 @@
 /**
  * # Game settings: Ultimatum Game
- * Copyright(c) 2014 Stefano Balietti
+ * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
  * http://www.nodegame.org
@@ -34,6 +34,15 @@ module.exports = {
     // AUTHORIZATION.
     AUTH: 'NO', // MTURK, LOCAL, NO.
 
+    TIMER: {
+        selectLanguage: 10000, // 100000,
+        instructions: 9000, //90000,
+        quiz: 6000, //60000,
+        questionnaire: 90000,
+        bidder: 30000,
+        response: 30000
+    },
+
     // Available treatments:
     // (there is also the "standard" treatment, using the options above)
     treatments: {
@@ -53,6 +62,7 @@ module.exports = {
         }
     }
 
+    
     // * =  If you change this, you need to update 
     // the instructions and quiz static files in public/
 };
