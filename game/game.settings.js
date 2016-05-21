@@ -35,9 +35,9 @@ module.exports = {
     AUTH: 'NO', // MTURK, LOCAL, NO.
 
     TIMER: {
-        selectLanguage: 10000, // 100000,
-        instructions: 9000, //90000,
-        quiz: 6000, //60000,
+        selectLanguage: 100000,
+        instructions: 90000,
+        quiz: 60000,
         questionnaire: 90000,
         bidder: 30000,
         response: 30000

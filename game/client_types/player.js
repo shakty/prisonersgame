@@ -75,11 +75,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // In this case the client will wait for a command from the server.
     stager.setDefaultStepRule(stepRules.WAIT);
 
-    stager.setDefaultProperty('done', cbs.clearFrame);
-
     stager.extendStep('selectLanguage', {
         cb: cbs.selectLanguage,
-        // timer: timers.selectLanguage,
         done: function() {
             // The chosen language prefix will be
             // added automatically to every call to W.loadFrame().
@@ -98,7 +95,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('instructions', {
         cb: cbs.instructions,
         // syncOnLoaded: true,
-        // timer: timers.instructions
     });
 
     stager.extendStep('quiz', {

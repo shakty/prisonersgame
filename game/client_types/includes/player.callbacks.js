@@ -14,8 +14,7 @@ module.exports = {
     quiz: quiz,
     ultimatum: ultimatum,
     postgame: postgame,
-    endgame: endgame,
-    clearFrame: clearFrame
+    endgame: endgame
 };
 
 function init() {
@@ -510,9 +509,4 @@ function endgame() {
     });
 
     console.log('Game ended');
-}
-
-function clearFrame() {
-    node.emit('INPUT_DISABLE');
-    return true;
 }
