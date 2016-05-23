@@ -36,11 +36,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 id === 'bidder' ||
                 id === 'respondent') {
 
-                console.log('ppppppppp');
                 node.on('PLAYING', function() {
-                    console.log('AAAAAAAAAAA');
                     node.timer.randomExec(function() {
-                        console.log('EEEEEEEEE');
                         node.game.timer.doTimeUp();
                     });
                 });

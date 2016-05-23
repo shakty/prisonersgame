@@ -54,7 +54,7 @@ module.exports = {
         quiz: 60000,
         questionnaire: 90000,
         bidder: 30000,
-        response: 30000
+        respondent: 30000
     },
 
     // Available treatments:
