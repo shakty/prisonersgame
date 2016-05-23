@@ -134,16 +134,38 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('ultimatum', {
+    stager.extendStage('ultimatum', {
         // Disable the donebutton for this step.
         donebutton: false,
-        cb: cbs.ultimatum,
+        init: function() {         
+            node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
+                                             'COUNT_UP_ROUNDS_TO_TOTAL']);
+
+            // Hack to avoid double offers. Todo: fix.
+            node.game.offerDone = false;
+            
+            node.game.role = null;
+            node.game.other = null;
+        }
         // `syncOnLoaded` forces the clients to wait for all the others to be
         // fully loaded before releasing the control of the screen to the
         // players.  This options introduces a little overhead in
         // communications and delay in the execution of a stage. It is probably
         // not necessary in local networks, and it is FALSE by default.
         // syncOnLoaded: true
+    });
+
+
+    stager.extendStep('respondent', {
+        cb: cbs.respondent
+    });
+
+    stager.extendStep('bidder', {
+        cb: cbs.bidder
+    });
+
+    stager.extendStep('matching', {
+        cb: cbs.matching
     });
 
     stager.extendStep('endgame', {
@@ -205,7 +227,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         auto: settings.AUTO,
         treatment: treatmentName
     };
-    game.verbosity = 0;
+    game.verbosity = 1000;
 
     game.debug = settings.DEBUG;
     game.nodename = 'player';

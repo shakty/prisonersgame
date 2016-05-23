@@ -76,12 +76,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('ultimatum', {
+    stager.extendStep('matching', {
         cb: function() {
             this.node.log('Ultimatum');
             cbs.doMatch();
-        },
-        timer: (timers.bidder + timers.response)
+        }
     });
 
     stager.extendStep('endgame', {

@@ -221,7 +221,7 @@ function doMatch() {
 
         // Send a message to each player with their role
         // and the id of the other player.
-        console.log('==================== LOGIC: BIDDER is', bidder.id, 
+        console.log('BIDDER is', bidder.id, 
                     '; RESPONDENT IS', respondent.id);
 
         node.say('BIDDER', bidder.id, data_b);

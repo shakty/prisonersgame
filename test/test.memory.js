@@ -165,7 +165,7 @@ describe('Bidding rounds', function() {
                 responseObj.player.should.equal(respondentId,
                     'Response did not come from respondent in game '+
                     (gameNo+1)+'/'+numGames+'!');
-                responseObj.from.should.equal(bidderId,
+                responseObj.responseTo.should.equal(bidderId,
                     'Response contains incorrect bidder ID in game '+
                     (gameNo+1)+'/'+numGames+'!');
             }

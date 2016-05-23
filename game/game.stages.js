@@ -18,8 +18,16 @@ module.exports = function(stager, settings) {
         .next('endgame')
         .gameover();
 
+    stager.extendStage('ultimatum', {
+        steps: [
+            'matching',
+            'bidder',
+            'respondent'
+        ]
+    });
+
     stager.skip('precache');
     stager.skip('selectLanguage');
     stager.skip('quiz');
-    stager.skip('instructions');
+    // stager.skip('instructions');
 };
