@@ -76,6 +76,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.setDefaultStepRule(stepRules.WAIT);
 
     stager.extendStep('selectLanguage', {
+        frame: 'languageSelection.html',
         cb: cbs.selectLanguage,
         done: function() {
             // The chosen language prefix will be
@@ -89,15 +90,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('precache', {
         cb: cbs.precache
-        // syncOnLoaded: true,
     });
 
     stager.extendStep('instructions', {
-        cb: cbs.instructions,
-        // syncOnLoaded: true,
+        frame: settings.instructionsPage,
+        cb: cbs.instructions
     });
 
     stager.extendStep('quiz', {
+        frame: 'quiz.html',
         cb: cbs.quiz,
         // Disable the donebutton for this step.
         donebutton: false,
@@ -146,11 +147,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('endgame', {
+        frame: 'ended.html',
         cb: cbs.endgame,
         donebutton: false
     });
 
     stager.extendStep('questionnaire', {
+        init: function() {            
+            node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
+        },
+        frame: 'postgame.html',
         cb: cbs.postgame,
         // timer: timers.questionnaire,
         // `done` is a callback function that is executed as soon as a

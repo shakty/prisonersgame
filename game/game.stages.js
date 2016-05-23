@@ -18,7 +18,8 @@ module.exports = function(stager, settings) {
         .next('endgame')
         .gameover();
 
-    // stager.skip('precache');
-    // stager.skip('quiz');
-    // stager.skip('instructions');
+    stager.skip('precache');
+    stager.skip('selectLanguage');
+    stager.skip('quiz');
+    stager.skip('instructions');
 };

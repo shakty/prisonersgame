@@ -62,6 +62,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cbs.notEnoughPlayers,
         cbs.enoughPlayersAgain
     ]);
+
+    stager.setDefaultProperty('pushClients', true);
     
     stager.extendStep('selectLanguage', {     
         cb: function() {
@@ -71,8 +73,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     channel.registry.updateClient(msg.from, { lang: msg.data });
                 }
             });
-        },
-        pushClients: true
+        }
     });
 
     stager.extendStep('ultimatum', {

@@ -35,7 +35,9 @@ function init() {
             stageOffset: 1
         });
 
-        node.game.visualTimer = node.widgets.append('VisualTimer', header);
+        node.game.visualTimer = node.widgets.append('VisualTimer', header, {
+            // gameTimer: node.game.timer
+        });
 
         // Done button to click.
         node.game.donebutton = node.widgets.append('DoneButton', header);
@@ -98,12 +100,6 @@ function init() {
         // Tell the other player own response.
         node.say(response, from, response);
 
-//         node.set({
-//             response: response,
-//             value: offer,
-//             from: from
-//         });
-
         //////////////////////////////////////////////
         // nodeGame hint:
         //
@@ -163,14 +159,6 @@ function init() {
         return node.JSUS.isInt(n, -1, 101);
     };
 
-    // Adapting the game to the treatment.
-    if (node.game.settings.treatmentName === 'pp') {
-        node.game.instructionsPage = 'instructions_pp.html';
-    }
-    else {
-        node.game.instructionsPage = 'instructions.html';
-    }
-
     // Set default language prefix.
     W.setUriPrefix(node.player.lang.path);
 }
@@ -195,7 +183,7 @@ function precache() {
     console.log('pre-caching...');
     W.preCache([
         'languageSelection.html', // no text here.
-        node.game.instructionsPage,
+        node.game.settings.instructionsPage,
         'quiz.html',
 
         // These two are cached later by loadFrame calls (for demonstration):
@@ -212,74 +200,50 @@ function precache() {
 }
 
 function selectLanguage() {
-    W.loadFrame('languageSelection.html', function() {
 
+    node.game.lang = node.widgets.append('LanguageSelector',
+                                         W.getFrameDocument().body);
 
-        node.game.lang = node.widgets.append('LanguageSelector',
-                                             W.getFrameDocument().body);
-
-        node.env('auto', function() {
-            node.timer.randomDone();
-        });
-    });
+    node.env('auto', function() {
+        node.timer.randomDone();
+    });    
 }
 
 function instructions() {
-    var that = this;
-    var count = 0;
 
-    //////////////////////////////////////////////
+    ////////////////////////////////////////////////
     // nodeGame hint:
     //
-    // The W object takes care of all
-    // visual operation of the game. E.g.,
+    // node.env executes a function conditionally to
+    // the environments defined in the configuration
+    // options.
     //
-    // W.loadFrame()
+    // If the 'auto' environment was set to TRUE,
+    // then the function will be executed
     //
-    // loads an HTML file into the game screen,
-    // and the execute the callback function
-    // passed as second parameter.
-    //
-    /////////////////////////////////////////////
-    W.loadFrame(node.game.instructionsPage, function() {
+    ////////////////////////////////////////////////
+    node.env('auto', function() {
 
-        ////////////////////////////////////////////////
+        //////////////////////////////////////////////
         // nodeGame hint:
         //
-        // node.env executes a function conditionally to
-        // the environments defined in the configuration
-        // options.
+        // Executes a node.done in a time interval
+        // from 0 to 2000 milliseconds
         //
-        // If the 'auto' environment was set to TRUE,
-        // then the function will be executed
-        //
-        ////////////////////////////////////////////////
-        node.env('auto', function() {
-
-            //////////////////////////////////////////////
-            // nodeGame hint:
-            //
-            // Execute a node.done in a time interval
-            // from 0 to 2000 milliseconds
-            //
-            //////////////////////////////////////////////
-            node.timer.randomDone(2000);
-        });
+        //////////////////////////////////////////////
+        node.timer.randomDone(2000);
     });
     console.log('Instructions');
 }
 
 function quiz() {
-    var that = this;
-    W.loadFrame('quiz.html', function() {
 
-        var b, QUIZ;
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                node.game.visualTimer.doTimeUp();
-            });
+    node.env('auto', function() {
+        node.timer.randomExec(function() {
+            node.game.timer.doTimeUp();
         });
     });
+
     console.log('Quiz');
 }
 
@@ -317,6 +281,14 @@ function ultimatum() {
 
         //////////////////////////////////////////////
         // nodeGame hint:
+        //
+        // The W object takes care of all
+        // visual operation of the game. E.g.,
+        //
+        // W.loadFrame()
+        //
+        // loads an HTML file into the game screen, and the executes
+        // the callback function passed as second parameter.
         //
         // W.loadFrame takes an optional third 'options' argument which
         // can be used to request caching of the displayed frames (see
@@ -408,9 +380,11 @@ function ultimatum() {
                 timeup: function() {                    
                     var root;
                     setTimeout(function() {
-                        root = W.getElementById('container');
-                        W.writeln('The other player is taking longer ' + 
-                                  'than expected...', root);
+                        if (!node.timer.getTimestamp('offer_received')) {
+                            root = W.getElementById('container');
+                            W.writeln('The other player is taking longer ' + 
+                                      'than expected...', root);
+                        }
                     }, 2000);
                 }
             };
@@ -477,35 +451,30 @@ function ultimatum() {
 }
 
 function postgame() {
-    node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
 
-    W.loadFrame('postgame.html', function() {
-
-        node.env('auto', function() {
-            node.timer.randomExec(function() {
-                node.game.visualTimer.doTimeUp();
-            });
+    node.env('auto', function() {
+        node.timer.randomExec(function() {
+            node.game.timer.doTimeUp();
         });
     });
+
     console.log('Postgame');
 }
 
 function endgame() {
-    W.loadFrame('ended.html', function() {
 
-        node.game.visualTimer.switchActiveBoxTo(node.game.visualTimer.mainBox);
-        node.game.visualTimer.waitBox.hideBox();
-        node.game.visualTimer.setToZero();
-        node.on.data('WIN', function(msg) {
-            var win, exitcode, codeErr;
-            var root;
-            root = W.getElementById('container');
-            codeErr = 'ERROR (code not found)';
-            win = msg.data && msg.data.win || 0;
-            exitcode = msg.data && msg.data.exitcode || codeErr;
-            W.writeln('Your bonus in this game is: ' + win, root);
-            W.writeln('Your exitcode is: ' + exitcode, root);
-        });
+    node.game.visualTimer.switchActiveBoxTo(node.game.visualTimer.mainBox);
+    node.game.visualTimer.waitBox.hideBox();
+    node.game.visualTimer.setToZero();
+    node.on.data('WIN', function(msg) {
+        var win, exitcode, codeErr;
+        var root;
+        root = W.getElementById('container');
+        codeErr = 'ERROR (code not found)';
+        win = msg.data && msg.data.win || 0;
+        exitcode = msg.data && msg.data.exitcode || codeErr;
+        W.writeln('Your bonus in this game is: ' + win, root);
+        W.writeln('Your exitcode is: ' + exitcode, root);
     });
 
     console.log('Game ended');

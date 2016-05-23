@@ -35,9 +35,9 @@ module.exports = {
     AUTH: 'NO', // MTURK, LOCAL, NO.
 
     TIMER: {
-        selectLanguage: 100000,
-        instructions: 90000,
-        quiz: 60000,
+        selectLanguage: 10000,
+        instructions: 9000,
+        quiz: 6000,
         questionnaire: 90000,
         bidder: 30000,
         response: 30000
@@ -51,14 +51,16 @@ module.exports = {
             fullName: "Standard",
             description:
                 "More time to wait and no peer pressure.",
-            WAIT_TIME: 60
+            WAIT_TIME: 60,
+            instructionsPage: 'instructions.html'
         },
 
         pp: {
             fullName: "Peer Pressure",
             description:
                 "Introduces peer pressure to players to not disconnect.",
-            WAIT_TIME: 30
+            WAIT_TIME: 30,
+            instructionsPage: 'instructions_pp.html'
         }
     }
 
