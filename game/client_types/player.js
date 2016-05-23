@@ -38,46 +38,55 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Do something if you like!
     });
 
-    // Add all the stages into the stager.
-
-    //////////////////////////////////////////////
-    // nodeGame hint:
+    ////////////////////////////////////////////////////////////
+    // nodeGame hint: step propreties.
     //
-    // A minimal stage must contain two properties:
+    // A step is a set of properties under a common label (id),
+    // i.e. the id of the step.
     //
-    // - id: a unique name for the stage
-    // - cb: a callback function to execute once
-    //     the stage is loaded.
+    // Properties can be defined at multiple levels, and those defined
+    // at higher levels are inherited by each nested step, that in
+    // turn can overwrite them.
     //
-    // When adding a stage / step into the stager
-    // there are many additional options to
-    // configure it.
+    // For example, if a step is missing a property, it will be looked
+    // into the enclosing stage. If it is not defined in the stage,
+    // the value set with _setDefaultProperties()_ will be used. If
+    // still not found, it will fallback to nodeGame defaults.
     //
-    // Properties defined at higher levels are
-    // inherited by each nested step, that in turn
-    // can overwrite them.
     //
-    // For example if a step is missing a property,
-    // it will be looked into the enclosing stage.
-    // If it is not defined in the stage,
-    // the value set with _setDefaultProperties()_
-    // will be used. If still not found, it will
-    // fallback to nodeGame defaults.
+    // The property named `cb` is one of the most important. 
+    // 
+    // It defines the callback that will be called during the
+    // step. By default, each steps inherits an empty callback,
+    // so that it is not necessary to implement one, if the
+    // player has, for example, just to read a text.
     //
-    // The most important properties are used
-    // and explained below.
+    // Another important property is `stepRule`
     //
-    /////////////////////////////////////////////
-
     // A step rule is a function deciding what to do when a player has
     // terminated a step and entered the stage level _DONE_.
-    // Other stepRules are: SOLO, SYNC_STAGE, SYNC_STEP, OTHERS_SYNC_STEP.
-    // In this case the client will wait for a command from the server.
-    stager.setDefaultStepRule(stepRules.WAIT);
-
+    //
+    // Available step rules are:
+    //
+    //  - 'SOLO': advances through the steps freely
+    //  - 'WAIT': wait for a command from server to go to 
+    //            next step (Default)
+    //  - SYNC_STAGE: wait for
+    //  - SYNC_STEP,
+    //  - OTHERS_SYNC_STEP
+    //
+    // To add/modify properties use the commands:
+    //
+    // `stager.extendStep`: modifies a step
+    // `stager.extendStage`: modifies a stage, and all enclosed steps
+    // `stager.setDefaultProperty`: modifies all stages and steps
+    //
+    ////////////////////////////////////////////////////////////
+    
     stager.extendStep('selectLanguage', {
+        // Option passed to W.loadFrame (only if executed in the browser).
         frame: 'languageSelection.html',
-        cb: cbs.selectLanguage,
+        cb: cbs.selectLanguage,        
         done: function() {
             // The chosen language prefix will be
             // added automatically to every call to W.loadFrame().
