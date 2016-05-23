@@ -10,12 +10,9 @@ module.exports = {
     init: init,
     precache: precache,
     selectLanguage: selectLanguage,
-    instructions: instructions,
-    quiz: quiz,
     matching: matching,
     bidder: bidder,
     respondent: respondent,
-    postgame: postgame,
     endgame: endgame
 };
 
@@ -52,19 +49,17 @@ function init() {
     // Add the main frame where the pages will be loaded.
     if (!W.getFrame()) W.generateFrame();    
 
-
     // Add event listeners valid for the whole game.
 
-    node.on('BID_DONE', function(value, timeup) {
-        var root, time, offer, submitOffer;
-
-        // Time to make a bid.
-        time = node.timer.getTimeSince('bidder_loaded');
+    node.on('BID_DONE', function(value) {
+        var root, time, offer, submitOffer, timeup;
         
         // Avoid double offers.
         if (node.game.offerDone) return;
 
         node.game.offerDone = true;
+
+        timeup = node.game.timer.isTimeup();
 
         // Save references.
         node.game.lastOffer = value;
@@ -86,15 +81,14 @@ function init() {
         W.writeln(' Your offer: ' +  value +
                   '. Waiting for the respondent... ', root);
 
+        // Notify the other player.
+        node.say('OFFER', node.game.other, node.game.lastOffer);
+
         // Notify the server.
-        node.done({
-            offer: value,
-            time: time,
-            timeup: timeup
-        });
+        node.done({ offer: value });
     });
 
-    node.on('RESPONSE_DONE', function(response, offer) {
+    node.on('RESPONSE_DONE', function(response) {
 
         // Tell the other player own response.
         node.say(response, node.game.other, response);
@@ -119,37 +113,37 @@ function init() {
         //
         /////////////////////////////////////////////
         node.done({
-            value: offer,
+            value: node.game.offerReceived,
             responseTo: node.game.other,
-            response: response,
-            // Overwrite default `time` property
-            // (since the beginning of the step).
-            time: node.timer.getTimeSince('offer_received')
+            response: response
         });
     });
 
 
     // Clean up stage upon stepping into the next one.
     node.on('STEPPING', function() {
-        W.clearFrame();
+        // W.clearFrame();
     });
 
     // Add other functions are variables used during the game.
 
     this.other = null;
 
-    this.randomAccept = function(offer, other) {
+    this.bidTimeup = function() {
+        node.emit('BID_DONE', Math.floor(Math.random() * 101), true);
+    };
+
+    this.resTimeup = function() {
         var root, accepted;
         accepted = Math.round(Math.random());
         console.log('randomaccept');
-        console.log(offer + ' ' + other);
         root = W.getElementById('container');
         if (accepted) {
-            node.emit('RESPONSE_DONE', 'ACCEPT', offer, other);
+            node.emit('RESPONSE_DONE', 'ACCEPT');
             W.write(' You accepted the offer.', root);
         }
         else {
-            node.emit('RESPONSE_DONE', 'REJECT', offer, other);
+            node.emit('RESPONSE_DONE', 'REJECT');
             W.write(' You rejected the offer.', root);
         }
     };
@@ -202,50 +196,10 @@ function selectLanguage() {
 
     node.game.lang = node.widgets.append('LanguageSelector',
                                          W.getFrameDocument().body);
-
-    node.env('auto', function() {
-        node.timer.randomDone();
-    });    
 }
 
 
-function instructions() {
 
-    ////////////////////////////////////////////////
-    // nodeGame hint:
-    //
-    // node.env executes a function conditionally to
-    // the environments defined in the configuration
-    // options.
-    //
-    // If the 'auto' environment was set to TRUE,
-    // then the function will be executed
-    //
-    ////////////////////////////////////////////////
-    node.env('auto', function() {
-
-        //////////////////////////////////////////////
-        // nodeGame hint:
-        //
-        // Executes a node.done in a time interval
-        // from 0 to 2000 milliseconds
-        //
-        //////////////////////////////////////////////
-        node.timer.randomDone(2000);
-    });
-    console.log('Instructions');
-}
-
-function quiz() {
-
-    node.env('auto', function() {
-        node.timer.randomExec(function() {
-            node.game.timer.doTimeUp();
-        });
-    });
-
-    console.log('Quiz');
-}
 
 function matching() {
 
@@ -286,11 +240,36 @@ function matching() {
 function bidder() {
 
     var that = this;
-    var root, b, options;
+    var b, options;
 
     if (this.role !== 'BIDDER') {
-        W.writeln('Waiting for an offer..', W.getScreen());
-        node.done();
+        
+        W.loadFrame('resp.html', function() {
+
+            //////////////////////////////////////////////
+            // nodeGame hint:
+            //
+            // nodeGame offers several types of event
+            // listeners. They are all resemble the syntax
+            //
+            // node.on.<target>
+            //
+            // For example: node.on.data(), node.on.plist().
+            //
+            // The low level event listener is simply
+            //
+            // node.on
+            //
+            // For example, node.on('in.say.DATA', cb) can
+            // listen to all incoming DATA messages.
+            //
+            /////////////////////////////////////////////
+            node.on.data('OFFER', function(msg) {
+                that.offerReceived = msg.data;
+                node.done();
+            });
+
+        }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
         return;
     }
 
@@ -326,34 +305,8 @@ function bidder() {
     //
     /////////////////////////////////////////////
     W.loadFrame('bidder.html', function() {
-        // Start the timer after an offer was received.
-        options = {
-            milliseconds: node.game.settings.TIMER.bidder,
-            timeup: function() {
-                node.emit('BID_DONE',
-                          Math.floor(Math.random() * 101), true);
-            }
-        };
-
-        node.game.visualTimer.startTiming(options);
 
         b = W.getElementById('submitOffer');
-
-        node.env('auto', function() {
-
-            //////////////////////////////////////////////
-            // nodeGame hint:
-            //
-            // Execute a function randomly
-            // in a time interval between 0 and 1 second
-            //
-            //////////////////////////////////////////////
-            node.timer.randomExec(function() {
-                node.emit('BID_DONE',
-                          Math.floor(Math.random() * 101));
-            }, 4000);
-        });
-
         b.onclick = function() {
             var offer, value;
             offer = W.getElementById('offer');
@@ -371,21 +324,18 @@ function bidder() {
 
 function respondent() {
     
-    var that = this;
-    var root, b, options;
+    var that;
+    var root, b;
+    var theofferSpan, offered, accept, reject;
 
-    if (this.role !== 'RESPONDENT') {
-        
-        // Notify the other player.
-        node.say('OFFER', node.game.other, node.game.lastOffer);
+    that = this;
+    root = W.getElementById('container');
 
-        root = W.getElementById('container');
-
+    if (this.role !== 'RESPONDENT') {       
         node.on.data('ACCEPT', function(msg) {
             W.write(' Your offer was accepted.', root);
             node.timer.randomDone(3000);
         });
-
         node.on.data('REJECT', function(msg) {
             W.write(' Your offer was rejected.', root);
             node.timer.randomDone(3000);
@@ -393,88 +343,18 @@ function respondent() {
         return;
     }
 
-    W.loadFrame('resp.html', function() {
-        options = {
-            milliseconds: node.game.settings.TIMER.response,
-            timeup: function() {                    
-                var root;
-                setTimeout(function() {
-                    if (!node.timer.getTimestamp('offer_received')) {
-                        root = W.getElementById('container');
-                        W.writeln('The other player is taking longer ' + 
-                                  'than expected...', root);
-                    }
-                }, 2000);
-            }
-        };
+    W.setInnerHTML('theoffer', node.game.offerReceived);
+    W.show('offered');
 
-        node.game.visualTimer.startWaiting(options);
-        node.game.visualTimer.mainBox.hideBox();
+    accept = W.getElementById('accept');
+    accept.onclick = function() {
+        node.emit('RESPONSE_DONE', 'ACCEPT');
+    };
 
-        //////////////////////////////////////////////
-        // nodeGame hint:
-        //
-        // nodeGame offers several types of event
-        // listeners. They are all resemble the syntax
-        //
-        // node.on.<target>
-        //
-        // For example: node.on.data(), node.on.plist().
-        //
-        // The low level event listener is simply
-        //
-        // node.on
-        //
-        // For example, node.on('in.say.DATA', cb) can
-        // listen to all incoming DATA messages.
-        //
-        /////////////////////////////////////////////
-        node.on.data('OFFER', function(msg) {
-            var theofferSpan, offered, accept, reject;
-
-            options = {
-                timeup: function() {
-                    that.randomAccept(msg.data);
-                }
-            };
-            node.game.visualTimer.startTiming(options);
-
-            W.setInnerHTML('theoffer', msg.data);
-            W.show('offered');
-
-            accept = W.getElementById('accept');
-            reject = W.getElementById('reject');
-
-            node.env('auto', function() {
-                node.timer.randomExec(function() {
-                    that.randomAccept(msg.data);
-                }, 3000);
-            });
-
-            accept.onclick = function() {
-                node.emit('RESPONSE_DONE', 'ACCEPT', msg.data);
-            };
-
-            reject.onclick = function() {
-                node.emit('RESPONSE_DONE', 'REJECT', msg.data);
-            };
-
-            node.timer.setTimestamp('offer_received');
-        });
-
-    }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
-
-}
-
-function postgame() {
-
-    node.env('auto', function() {
-        node.timer.randomExec(function() {
-            node.game.timer.doTimeUp();
-        });
-    });
-
-    console.log('Postgame');
+    reject = W.getElementById('reject');
+    reject.onclick = function() {
+        node.emit('RESPONSE_DONE', 'REJECT');
+    };
 }
 
 function endgame() {

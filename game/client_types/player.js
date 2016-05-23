@@ -93,13 +93,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('instructions', {
-        frame: settings.instructionsPage,
-        cb: cbs.instructions
+        frame: settings.instructionsPage
     });
 
     stager.extendStep('quiz', {
         frame: 'quiz.html',
-        cb: cbs.quiz,
         // Disable the donebutton for this step.
         donebutton: false,
         // syncOnLoaded: true,
@@ -146,6 +144,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             
             node.game.role = null;
             node.game.other = null;
+
+            node.game.offerReceived = null;
         }
         // `syncOnLoaded` forces the clients to wait for all the others to be
         // fully loaded before releasing the control of the screen to the
@@ -155,13 +155,22 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // syncOnLoaded: true
     });
 
+    stager.extendStep('bidder', {
+        init: function() {
+            if (this.role === 'BIDDER') {
+                this.plot.updateProperty(this.getCurrentGameStage(), 'timeup',
+                                         node.game.bidTimeup);
+            }
+            else {
+                this.plot.updateProperty(this.getNextStep(), 'timeup',
+                                         node.game.resTimeup);
+            }             
+        },
+        cb: cbs.bidder
+    });
 
     stager.extendStep('respondent', {
         cb: cbs.respondent
-    });
-
-    stager.extendStep('bidder', {
-        cb: cbs.bidder
     });
 
     stager.extendStep('matching', {
@@ -179,7 +188,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
         },
         frame: 'postgame.html',
-        cb: cbs.postgame,
         // timer: timers.questionnaire,
         // `done` is a callback function that is executed as soon as a
         // _DONE_ event is emitted. It can perform clean-up operations (such
