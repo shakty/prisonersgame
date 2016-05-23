@@ -102,28 +102,67 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('quiz', {
-        frame: 'quiz.html',
-        // Disable the donebutton widget for this step.
-        donebutton: false,
+        cb: function() {
+            var w, t;
+            t = node.game.settings.treatmentName;
+            w = node.widgets;
+            this.quiz = w.append('ChoiceManager', W.getElementById('quiz'), {
+                id: 'quizzes',
+                title: false,
+                forms: [
+                    w.get('ChoiceTable', {
+                        id: 'howMuch',
+                        shuffleItems: true,
+                        title: false,
+                        choices: [
+                            '50',
+                            '100',
+                            '0'
+                        ],
+                        correctChoice: 1,
+                        mainText: 'How many coins will you divide with your partner?'
+                    }),
+                    w.get('ChoiceTable', {
+                        id: 'reject',
+                        shuffleItems: true,
+                        title: false,
+                        orientation: 'v',
+                        choices: [
+                            'He does not get anything, I keep my share.',
+                            'I get everything.',
+                            'He gets what I offered, I get nothing.',
+                            'Both get nothing.'
+                        ],
+                        correctChoice: 3,
+                        mainText: 'If you are a bidder what happens if your partner reject your offer?'
+                    }),
+                    w.get('ChoiceTable', {
+                        id: 'disconnect',
+                        shuffleItems: true,
+                        title: false,
+                        orientation: 'v',
+                        choices: [
+                            'A,C,D are paid only the show up fee. B is not paid at all.',
+                            'A,C,D are paid the show up fee plus the bonus collected so far. B is paid only the show up fee.',
+                            'A,C,D are paid the show up fee plus the bonus collected so far. B is not paid at all.',
+                            'All players are paid only the show up fee.',
+                            'All players are paid the show up fee and the bonus collected so far.'
+                        ],
+                        correctChoice: t === 'pp' ? 1 : 3,
+                        mainText: 'Consider the following scenario. Four players (A,B,C,D) are playing. B disconnects for more than 30 seconds, and the game is terminated. What happens then?'
+                    })
+                ]
+            });   
+        },
+        frame: 'quiz2.html',
         done: function() {
-            var b, QUIZ, answers, isTimeup;
-
-            QUIZ = W.getFrameWindow().QUIZ;
-            b = W.getElementById('submitQuiz');
-
-            answers = QUIZ.checkAnswers(b);
+            var answers, isTimeup;          
+            answers = this.quiz.getValues({
+                markAttempt: true,
+                highlight: true
+            });
             isTimeup = node.game.timer.isTimeup();
-
-            if (!answers.__correct__ && !isTimeup) {
-                return false;
-            }
-
-            answers.quiz = true;
-
-            // On TimeUp there are no answers.
-
-            node.emit('INPUT_DISABLE');
-
+            if (!answers.isCorrect && !isTimeup) return false;
             return answers;
         }
     });

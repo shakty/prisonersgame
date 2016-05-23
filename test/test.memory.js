@@ -99,7 +99,8 @@ describe('Bidding rounds', function() {
             Math.max.apply(null,
                 bidDbs[gameNo].fetchValues('stage.round')['stage.round']
             ).should.equal(gameSettings.REPEAT,
-                'Wrong number of rounds in game '+(gameNo+1)+'/'+numGames+'!');
+                'Wrong number of rounds in game ' + 
+                           (gameNo+1) + '/'+numGames + '!');
         }
     });
 

@@ -19,8 +19,23 @@ div#quiz {
     width: 600px;
     text-align: left;
     padding: 10px;
+    background: #CCC;
 }
 
 .quiz_result {
     font-weight: bold;
+}
+
+div#quiz .choicemanager {
+    margin: 0 auto;
+}
+
+table#howMuch td {
+    width: 200px;
+}
+
+table#reject td, table#disconnect td {
+    text-align: left;
+    width: 599px;
+    padding: 5px 10px;
 }

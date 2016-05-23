@@ -152,6 +152,9 @@ function init() {
         return node.JSUS.isInt(n, -1, 101);
     };
 
+    // Quiz questions (to be filled by quiz stage).
+    this.quiz = null;
+
     // Set default language prefix.
     W.setUriPrefix(node.player.lang.path);
 }
@@ -197,13 +200,9 @@ function precache() {
 }
 
 function selectLanguage() {
-
     node.game.lang = node.widgets.append('LanguageSelector',
                                          W.getFrameDocument().body);
 }
-
-
-
 
 function matching() {
 
