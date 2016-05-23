@@ -29,7 +29,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Import other functions used in the game.
     cbs = require(__dirname + '/includes/player.callbacks.js');
 
-    // Specify init function, and extend default stages.
+    // Specify init function, and extend steps.
+
 
     // Init callback.
     stager.setOnInit(cbs.init);
@@ -80,7 +81,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     ////////////////////////////////////////////////////////////
 
     stager.extendStep('selectLanguage', {
-        // Option passed to W.loadFrame (only if executed in the browser).
         frame: 'languageSelection.html',
         cb: cbs.selectLanguage,
         done: function() {
@@ -97,14 +97,42 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cb: cbs.precache
     });
 
-    stager.extendStep('instructions', {
+    stager.extendStep('instructions', {       
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the settings object
+        //
+        // The settings object is automatically populated with the
+        // settings specified for the treatment chosen by the waiting
+        // room. The settings is sent to each remote client and it is
+        // available under: `node.game.settings`.
         frame: settings.instructionsPage
     });
 
     stager.extendStep('quiz', {
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the frame parameter
+        //
+        // The frame parameter is passed to `W.loadFrame` to
+        // load a new page. Additional options exist to automatically
+        // search & replace the DOM, and store a page in the cache.
+        // In its simplest form, it is just a string indicating the
+        // path to the page to load.
+        // 
+        // Pages are loading from the public/ directory inside the
+        // game folder. However, they can also be loaded from the 
+        // views/ directory (if not found in public/).          
+        frame: 'quiz2.html',
         cb: function() {
-            var w, t;
+            var w, t, qt;
+            qt = this.quizTexts;
             t = node.game.settings.treatmentName;
+
+            /////////////////////////////////////////////////////////////
+            // nodeGame hint: the widget collection
+            //
+            // Widgets are re-usable components with predefined methods, 
+            // such as: hide, highlight, disable, getValues, etc.
+            // Here we use the `ChoiceManager` widget to create a quiz page.
             w = node.widgets;
             this.quiz = w.append('ChoiceManager', W.getElementById('quiz'), {
                 id: 'quizzes',
@@ -114,47 +142,31 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         id: 'howMuch',
                         shuffleItems: true,
                         title: false,
-                        choices: [
-                            '50',
-                            '100',
-                            '0'
-                        ],
+                        choices: qt.howMuchChoices,
                         correctChoice: 1,
-                        mainText: 'How many coins will you divide with your partner?'
+                        mainText: qt.howMuchMainText
                     }),
                     w.get('ChoiceTable', {
                         id: 'reject',
                         shuffleItems: true,
                         title: false,
                         orientation: 'v',
-                        choices: [
-                            'He does not get anything, I keep my share.',
-                            'I get everything.',
-                            'He gets what I offered, I get nothing.',
-                            'Both get nothing.'
-                        ],
+                        choices: qt.rejectChoices,
                         correctChoice: 3,
-                        mainText: 'If you are a bidder what happens if your partner reject your offer?'
+                        mainText: qt.rejectMainText
                     }),
                     w.get('ChoiceTable', {
                         id: 'disconnect',
                         shuffleItems: true,
                         title: false,
                         orientation: 'v',
-                        choices: [
-                            'A,C,D are paid only the show up fee. B is not paid at all.',
-                            'A,C,D are paid the show up fee plus the bonus collected so far. B is paid only the show up fee.',
-                            'A,C,D are paid the show up fee plus the bonus collected so far. B is not paid at all.',
-                            'All players are paid only the show up fee.',
-                            'All players are paid the show up fee and the bonus collected so far.'
-                        ],
+                        choices: qt.disconnectChoices,
                         correctChoice: t === 'pp' ? 1 : 3,
-                        mainText: 'Consider the following scenario. Four players (A,B,C,D) are playing. B disconnects for more than 30 seconds, and the game is terminated. What happens then?'
+                        mainText: qt.disconnectMainText
                     })
                 ]
             });   
         },
-        frame: 'quiz2.html',
         done: function() {
             var answers, isTimeup;          
             answers = this.quiz.getValues({
@@ -170,6 +182,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStage('ultimatum', {
         // Disable the donebutton for this step.
         donebutton: false,
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the init function
+        //
+        // It is a function that is executed before the main callback,
+        // and before loading any frame.
+        // 
+        // Likewise, it is possible to define an `exit` function that
+        // will be executed upon exiting the step.
         init: function() {
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
@@ -190,19 +210,26 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // syncOnLoaded: true
     });
 
-    stager.extendStep('bidder', {
+    stager.extendStep('bidder', { 
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the timeup parameter
+        //
+        // It can be a string (to be emitted as an event), or a
+        // function to be executed when `node.game.timer` expires.
+        // Note that if no `timer` property is set for current step,
+        // then the timeup function will not be automatically called.
+        //
+        // The default timeup is different for player and logic client
+        // types. For players, by default it is a call to `node.done()`.
         timeup: function() {
             if (this.role === 'BIDDER') node.game.bidTimeup();
-            //else node.done();
         },
         cb: cbs.bidder
     });
 
     stager.extendStep('respondent', {
         timeup: function() {
-            // debugger
-            if (this.role !== 'BIDDER') node.game.resTimeup();
-            // else node.done();
+            if (this.role === 'RESPONDENT') node.game.resTimeup();
         },
         cb: cbs.respondent
     });
@@ -214,6 +241,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('endgame', {
         frame: 'ended.html',
         cb: cbs.endgame,
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the donebutton parameter
+        //
+        // It is read by the DoneButton widget, and it can set the
+        // the text on the button, or disable it (false).
         donebutton: false
     });
 
@@ -221,41 +253,38 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         init: function() {
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
         },
-        frame: 'postgame.html',
-        // `done` is a callback function that is executed as soon as a
-        // _DONE_ event is emitted. It can perform clean-up operations (such
-        // as disabling all the forms) and only if it returns true, the
-        // client will enter the _DONE_ stage level, and the step rule
-        // will be evaluated.
-        done: function() {
-            var q1, q2, q2checked, i, isTimeup;
-            q1 = W.getElementById('comment').value;
-            q2 = W.getElementById('disconnect_form');
-            q2checked = -1;
-
-            for (i = 0; i < q2.length; i++) {
-                if (q2[i].checked) {
-                    q2checked = i;
-                    break;
-                }
-            }
-
+        cb: function() {
+            var qt;
+            qt = this.questTexts;
+            this.quest = node.widgets.append('ChoiceTable',
+                                             W.getElementById('container'),
+                                             {
+                                                 id: 'quest',
+                                                 mainText: qt.mainText,
+                                                 choices: qt.choices,
+                                                 freeText: qt.freeText,
+                                                 title: false,
+                                                 shuffleChoices: true,
+                                                 orientation: 'v'
+                                             });
+        },
+        frame: 'questionnaire.html',
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the done callback
+        //
+        // `done` is a callback execute after a call to `node.done()`
+        // If it returns FALSE, the call to `node.done` is canceled.
+        // Other return values are sent to the server, and replace any
+        // parameter previously passed to `node.done`.
+        done: function(args) {
+            var answers, isTimeup;
+            answers = this.quest.getValues();
             isTimeup = node.game.timer.isTimeup();
-
-            // If there is still some time left, let's ask the player
-            // to complete at least the second question.
-            if (q2checked === -1 && !isTimeup) {
-                alert('Please answer Question 2');
+            if (!answers.choice && !isTimeup) {
+                this.quest.highlight();
                 return false;
             }
-
-            node.emit('INPUT_DISABLE');
-
-            return {
-                questionnaire: true,
-                q1: q1 || '',
-                q2: q2checked
-            };
+            return answers;
         }
     });
 

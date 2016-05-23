@@ -11,3 +11,22 @@ div#container {
 .question {
     font-weight: bold;
 }
+
+
+table#quest td {
+    width: 600px;
+    text-align: left;
+    padding: 5px 10px;
+}
+
+div.choicetable span.choicetable-maintext {
+    font-weight: bold;
+    margin-bottom: 20px;
+    font-size:  18px;
+}
+
+div.choicetable textarea {
+    width: 600px;
+    text-align: left;
+    padding: 5px 10px;
+}
