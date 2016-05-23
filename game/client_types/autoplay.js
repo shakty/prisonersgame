@@ -12,13 +12,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     var channel = gameRoom.channel;
     var node = gameRoom.node;
+    var ngc =  require('nodegame-client');
 
-    var game;
+    var game, stager;
 
     game = gameRoom.getClientType('player');
     game.env.auto = true;
     game.nodename = 'autoplay';
 
+    stager = ngc.getStager(game.plot);
 
     stager.extendAllSteps(function(o) {
         o._cb = o.cb;
@@ -28,17 +30,29 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             _cb = stepObj._cb;
             _cb.call(this);
             id = stepObj.id
-            if (id === 'quiz' || id === 'questionnaire') {
-                node.timer.randomExec(function() {
-                    node.game.timer.doTimeUp();
-                });              
+
+            if (id === 'quiz' ||
+                id === 'questionnaire' || 
+                id === 'bidder' ||
+                id === 'respondent') {
+
+                console.log('ppppppppp');
+                node.on('PLAYING', function() {
+                    console.log('AAAAAAAAAAA');
+                    node.timer.randomExec(function() {
+                        console.log('EEEEEEEEE');
+                        node.game.timer.doTimeUp();
+                    });
+                });
             }
             else if (id !== 'matching') {
-                node.timer.randomDone();
+                node.timer.randomDone(2000);
             }
         };
         return o;
     });
+
+    game.plot = stager.getState();
 
     return game;
 };

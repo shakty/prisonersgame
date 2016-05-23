@@ -27,7 +27,7 @@ module.exports = function(stager, settings) {
     });
 
     stager.skip('precache');
-    stager.skip('selectLanguage');
-    stager.skip('quiz');
+    // stager.skip('selectLanguage');
+    // stager.skip('quiz');
     // stager.skip('instructions');
 };

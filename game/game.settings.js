@@ -34,10 +34,24 @@ module.exports = {
     // AUTHORIZATION.
     AUTH: 'NO', // MTURK, LOCAL, NO.
 
+    // TIMER.
+    // If the name of a key of the TIMER object matches the name of one
+    // of the steps or stages, its value is automatically used as the
+    // value of the `timer` property of that step/stage. 
+    //
+    // The timer property is read by `node.game.timer` and by VisualTimer
+    // widgets, if created. It can be:
+    // 
+    //  - a number (in milliseconds),
+    //  - a function returning the number of milliseconds,
+    //  - an object containing properties _milliseconds_, and _timeup_
+    //      the latter being the name of an event to emit or a function
+    //      to execute when the timer expires. If _timeup_ is not set,
+    //      property _timeup_ of the game step will be used.
     TIMER: {
-        selectLanguage: 10000,
-        instructions: 9000,
-        quiz: 6000,
+        selectLanguage: 100000,
+        instructions: 90000,
+        quiz: 60000,
         questionnaire: 90000,
         bidder: 30000,
         response: 30000

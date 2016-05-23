@@ -8,15 +8,25 @@
     <div id="instructions">
       This game is played in rounds by two human players randomly paired.
       <br><br>
-      In each round, one of the them, called <em>BIDDER</em>, makes an offer to the other player,
-      called <em>RESPONDENT</em>, about how to share 100 ECU (Experimental Currency). 100 ECU are equal to 0.05 USD.
+
+      In each round, one of the them, called <em>BIDDER</em>, makes an
+      offer to the other player, called <em>RESPONDENT</em>, about how
+      to share <span class="coins">100</span> ECU (Experimental
+      Currency). <span class="coins">100</span> ECU are equal to
+      <span id="exchange-rate">0.05</span> USD.
+
+      <br><br> The RESPONDENT can either accept or reject the offer of
+      the BIDDER. If he / she accepts, both players
+      split <span class="coins">100</span> ECU accordingly, else both
+      get 0.
       <br><br>
-      The RESPONDENT can either accept or reject the offer of the BIDDER.
-      If he / she accepts, both players split 100 ECU accordingly, else both get 0.
+
+      The game is repeated <span id="rounds">20</span> rounds.
       <br><br>
-      The game is repeated 20 rounds, therefore the maximum bonus available is 1 dollar.
-      <br><br>
+
     </div>
-    If you understood the instructions correctly press the DONE Button to proceed to the game.
+    If you understood the instructions correctly press the DONE Button
+    to proceed to the game.
   </div>
 </body>
+<script src="js/instructions.js" type="text/javascript"></script>

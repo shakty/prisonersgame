@@ -53,9 +53,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // the value set with _setDefaultProperties()_ will be used. If
     // still not found, it will fallback to nodeGame defaults.
     //
+    // The property named `cb` is one of the most important.
     //
-    // The property named `cb` is one of the most important. 
-    // 
     // It defines the callback that will be called during the
     // step. By default, each steps inherits an empty callback,
     // so that it is not necessary to implement one, if the
@@ -66,14 +65,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // A step rule is a function deciding what to do when a player has
     // terminated a step and entered the stage level _DONE_.
     //
-    // Available step rules are:
+    // Some of the available step rules are:
     //
     //  - 'SOLO': advances through the steps freely
-    //  - 'WAIT': wait for a command from server to go to 
+    //  - 'WAIT': wait for a command from server to go to
     //            next step (Default)
-    //  - SYNC_STAGE: wait for
-    //  - SYNC_STEP,
-    //  - OTHERS_SYNC_STEP
     //
     // To add/modify properties use the commands:
     //
@@ -82,11 +78,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // `stager.setDefaultProperty`: modifies all stages and steps
     //
     ////////////////////////////////////////////////////////////
-    
+
     stager.extendStep('selectLanguage', {
         // Option passed to W.loadFrame (only if executed in the browser).
         frame: 'languageSelection.html',
-        cb: cbs.selectLanguage,        
+        cb: cbs.selectLanguage,
         done: function() {
             // The chosen language prefix will be
             // added automatically to every call to W.loadFrame().
@@ -107,18 +103,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('quiz', {
         frame: 'quiz.html',
-        // Disable the donebutton for this step.
+        // Disable the donebutton widget for this step.
         donebutton: false,
-        // syncOnLoaded: true,
-        // `timer` starts automatically the timer managed by the widget
-        // VisualTimer if the widget is loaded. When the time is up it fires
-        // the DONE event.
-        // It accepts as parameter:
-        //  - a number (in milliseconds),
-        //  - an object containing properties _milliseconds_, and _timeup_
-        //     the latter being the name of the event to fire (default DONE)
-        // - or a function returning the number of milliseconds.
-        // timer: timers.quiz,
         done: function() {
             var b, QUIZ, answers, isTimeup;
             QUIZ = W.getFrameWindow().QUIZ;
@@ -136,7 +122,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             // On TimeUp there are no answers.
 
             node.emit('INPUT_DISABLE');
-            
+
             return answers;
         }
     });
@@ -144,13 +130,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStage('ultimatum', {
         // Disable the donebutton for this step.
         donebutton: false,
-        init: function() {         
+        init: function() {
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
 
             // Hack to avoid double offers. Todo: fix.
             node.game.offerDone = false;
-            
+
             node.game.role = null;
             node.game.other = null;
 
@@ -165,20 +151,19 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('bidder', {
-        init: function() {
-            if (this.role === 'BIDDER') {
-                this.plot.updateProperty(this.getCurrentGameStage(), 'timeup',
-                                         node.game.bidTimeup);
-            }
-            else {
-                this.plot.updateProperty(this.getNextStep(), 'timeup',
-                                         node.game.resTimeup);
-            }             
+        timeup: function() {
+            if (this.role === 'BIDDER') node.game.bidTimeup();
+            //else node.done();
         },
         cb: cbs.bidder
     });
 
     stager.extendStep('respondent', {
+        timeup: function() {
+            // debugger
+            if (this.role !== 'BIDDER') node.game.resTimeup();
+            // else node.done();
+        },
         cb: cbs.respondent
     });
 
@@ -193,11 +178,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('questionnaire', {
-        init: function() {            
+        init: function() {
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL']);
         },
         frame: 'postgame.html',
-        // timer: timers.questionnaire,
         // `done` is a callback function that is executed as soon as a
         // _DONE_ event is emitted. It can perform clean-up operations (such
         // as disabling all the forms) and only if it returns true, the
@@ -239,7 +223,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     game.plot = stager.getState();
 
     // Other settings, optional.
-   
+
     game.env = {
         auto: settings.AUTO,
         treatment: treatmentName

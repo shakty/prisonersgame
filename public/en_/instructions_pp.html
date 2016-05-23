@@ -7,20 +7,33 @@
     <h1>Instructions of the Ultimatum Game. Please read them carefully</h1>
     <div id="instructions">
       This game is played in rounds by two human players randomly paired.
+
+      In each round, one of the them, called <em>BIDDER</em>, makes an
+      offer to the other player, called <em>RESPONDENT</em>, about how
+      to share <span class="coins">100</span> ECU (Experimental
+      Currency). <span class="coins">100</span> ECU are equal to
+      <span id="exchange-rate">0.05</span> USD.
+
+      <br><br> The RESPONDENT can either accept or reject the offer of
+      the BIDDER. If he / she accepts, both players
+      split <span class="coins">100</span> ECU accordingly, else both
+      get 0.
       <br><br>
-      In each round, one of the them, called <em>BIDDER</em>, makes an offer to the other player,
-      called <em>RESPONDENT</em>, about how to share 100 ECU (Experimental Currency). 100 ECU are equal to 0.10 USD.
-      <br><br>
-      The RESPONDENT can either accept or reject the offer of the BIDDER.
-      If he / she accepts, both players split 100 ECU accordingly, else both get 0.
-      <br><br>
-      The game is repeated 20 rounds.
+
+      The game is repeated <span id="rounds">20</span> rounds.
+
       <br><br>
       <p id="pp" class="important">
-        Important. If one of the players disconnects for more than 30 seconds the game will be terminated.<br/>
-        In such a case the player who disconnected will not be paid at all, and the remaining ones will be paid only the show up fee.
+        Important. If one of the players disconnects for more
+        than <span id="wait-time">30</span> seconds the game will be
+        terminated.<br/>  In such a case the player who disconnected
+        will not be paid at all, and the remaining ones will be paid
+        only the show up fee.
       </p>
+
     </div>
-    If you understood the instructions correctly press the DONE Button to proceed to the game.
+    If you understood the instructions correctly press the DONE Button
+    to proceed to the game.
   </div>
 </body>
+<script src="js/instructions.js" type="text/javascript"></script>
