@@ -222,19 +222,11 @@ function matching() {
     var that = this;
 
     // Load the BIDDER interface.
-    node.on.data('BIDDER', function(msg) {
-        console.log('RECEIVED BIDDER!');
+    node.on.data('ROLE', function(msg) {
         that.other = msg.data.other;
-        that.role = 'BIDDER';
-        node.done({role: 'BIDDER'});
-    });
-        
-    // Load the respondent interface.
-    node.on.data('RESPONDENT', function(msg) {
-        console.log('RECEIVED RESPONDENT!');
-        that.other = msg.data.other;
-        that.role = 'RESPONDENT';
-        node.done({role: 'RESPONDENT'});
+        that.role = msg.data.role;
+        console.log(that.role);
+        node.done({ role: that.role });
     });
 
     console.log('Matching');
@@ -245,7 +237,7 @@ function bidder() {
     var that = this;
     var b, options;
 
-    if (this.role !== 'BIDDER') {
+    if (this.role === 'RESPONDENT') {
         
         W.loadFrame('resp.html', function() {
 
@@ -273,6 +265,12 @@ function bidder() {
             });
 
         }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+        return;
+    }
+    else if (this.role === 'SOLO') {
+        W.loadFrame('solo.html', function() {
+            node.timer.randomDone();
+        });
         return;
     }
 
@@ -334,7 +332,7 @@ function respondent() {
     that = this;
     root = W.getElementById('container');
 
-    if (this.role !== 'RESPONDENT') {       
+    if (this.role === 'BIDDER') {       
         node.on.data('ACCEPT', function(msg) {
             W.write(' Your offer was accepted.', root);
             node.timer.randomDone(3000);
@@ -343,6 +341,10 @@ function respondent() {
             W.write(' Your offer was rejected.', root);
             node.timer.randomDone(3000);
         });
+        return;
+    }
+    else if (this.role === 'SOLO') {
+        node.timer.randomDone();
         return;
     }
 

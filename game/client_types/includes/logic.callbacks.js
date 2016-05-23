@@ -193,27 +193,25 @@ function gameover() {
 }
 
 function doMatch() {
-    var g, i, bidder, respondent, data_b, data_r;
+    var g, i, len, bidder, respondent, data_b, data_r;
+    var odd;
 
-    if (node.game.pl.size() < 2) {
-        if (!this.countdown) notEnoughPlayers();
-        return;
-    }
-
-    // Method shuffle accepts one parameter to update the db, as well as
-    // returning a shuffled copy.
+    len = node.game.pl.size();
     g = node.game.pl.shuffle();
-
-    for (i = 0 ; i < node.game.pl.size() ; i = i + 2) {
+    if (len % 2 !== 0) {
+        odd = true;
+        len = len -1;
+    }
+    for (i = 0 ; i < len ; i = i + 2) {
         bidder = g.db[i];
         respondent = g.db[i+1];
 
         data_b = {
-            role: 'bidder',
+            role: 'BIDDER',
             other: respondent.id
         };
         data_r = {
-            role: 'respondent',
+            role: 'RESPONDENT',
             other: bidder.id
         };
 
@@ -224,9 +222,15 @@ function doMatch() {
         console.log('BIDDER is', bidder.id, 
                     '; RESPONDENT IS', respondent.id);
 
-        node.say('BIDDER', bidder.id, data_b);
-        node.say('RESPONDENT', respondent.id, data_r);
+        node.say('ROLE', bidder.id, data_b);
+        node.say('ROLE', respondent.id, data_r);
     }
+
+    // Odd number of players.
+    if (odd) {
+        node.say('ROLE', g.db[len].id, { role: 'SOLO' });
+    }
+
     console.log('Matching completed.');
 }
 
