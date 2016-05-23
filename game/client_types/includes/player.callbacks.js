@@ -176,7 +176,11 @@ function precache() {
     console.log('pre-caching...');
     W.preCache([
         'languageSelection.html', // no text here.
-        node.game.settings.instructionsPage,
+
+        // Instructions are not pre-cached, because in case they are loaded
+        // from public/ a js file must modify the content of the DOM.
+        // node.game.settings.instructionsPage,
+
         'quiz.html',
 
         // These two are cached later by loadFrame calls (for demonstration):

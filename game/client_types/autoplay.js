@@ -42,7 +42,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     });
                 });
             }
-            else if (id !== 'matching') {
+            else if (id !== 'matching' && id !== 'precache') {
                 node.timer.randomDone(2000);
             }
         };

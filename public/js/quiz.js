@@ -1,4 +1,5 @@
 window.onload = function() {
+
     function QUIZ(answers) {
         var node =  parent.node,
         J = parent.JSUS,
@@ -85,7 +86,7 @@ window.onload = function() {
     }
 
     var treatment = parent.node.env('treatment');
-    window.QUIZ = QUIZ({
+    QUIZ = QUIZ({
         howMuch: 100,
         reject: 3,
         disconnect: treatment == 'pp' ? 1 : 3

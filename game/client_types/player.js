@@ -107,6 +107,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         donebutton: false,
         done: function() {
             var b, QUIZ, answers, isTimeup;
+
             QUIZ = W.getFrameWindow().QUIZ;
             b = W.getElementById('submitQuiz');
 
