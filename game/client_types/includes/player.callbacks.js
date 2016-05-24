@@ -52,12 +52,7 @@ function init() {
     // Add event listeners valid for the whole game.
 
     node.on('BID_DONE', function(value) {
-        var root, time, offer, submitOffer, timeup;
-        
-        // Avoid double offers.
-        if (node.game.offerDone) return;
-
-        node.game.offerDone = true;
+        var root, time, offer, submitOffer, timeup;        
 
         timeup = node.game.timer.isTimeup();
 
@@ -233,8 +228,8 @@ function precache() {
         'quiz.html',
 
         // These two are cached later by loadFrame calls (for demonstration):
-        // 'langPath + 'bidder.html',
-        // 'langPath + 'resp.html',
+        // 'bidder.html',
+        // 'resp.html',
 
         'postgame.html',
         'ended.html'

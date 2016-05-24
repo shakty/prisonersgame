@@ -8,6 +8,7 @@ var numGames;
 var filePaths = [];
 var dbs = [];
 var gameSettings;
+var baseSessionId;
 
 // TODO: Assuming two players per game.
 if (numPlayers % 2 != 0) {
@@ -20,9 +21,11 @@ var dataDir = path.resolve(__dirname, '../', 'data/') + '/';
 
 console.log(dataDir);
 
+baseSessionId = settings.SESSION_ID;
+
 // Generate memory file pathnames.
 for (var i = 0; i < numGames; ++i) {
-    filePaths.push(dataDir + (100 + i) + '/memory_all.json');
+    filePaths.push(dataDir + (baseSessionId + i) + '/memory_all.json');
 }
 
 describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {

@@ -190,17 +190,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // 
         // Likewise, it is possible to define an `exit` function that
         // will be executed upon exiting the step.
+        //
+        // Notice that if the function is defined at the level of the
+        // stage, it will be executed only once upone entering the
+        // stage. If, you need to have it executed every round the
+        // stage is repeated, add it to the first step of the stage.
         init: function() {
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
-
-            // Hack to avoid double offers. Todo: fix.
-            node.game.offerDone = false;
-
-            node.game.role = null;
-            node.game.other = null;
-
-            node.game.offerReceived = null;
         }
         // `syncOnLoaded` forces the clients to wait for all the others to be
         // fully loaded before releasing the control of the screen to the
@@ -208,6 +205,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // communications and delay in the execution of a stage. It is probably
         // not necessary in local networks, and it is FALSE by default.
         // syncOnLoaded: true
+    });
+
+    stager.extendStep('matching', {
+        init: function() {           
+            node.game.role = null;
+            node.game.other = null;
+            node.game.offerReceived = null;
+        }
     });
 
     stager.extendStep('bidder', { 
@@ -257,7 +262,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             var qt;
             qt = this.questTexts;
             this.quest = node.widgets.append('ChoiceTable',
-                                             W.getElementById('container'),
+                                             W.getElementById('quiz'),
                                              {
                                                  id: 'quest',
                                                  mainText: qt.mainText,
