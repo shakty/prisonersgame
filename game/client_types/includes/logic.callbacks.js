@@ -235,7 +235,6 @@ function doMatch() {
 }
 
 function notEnoughPlayers() {
-    if (this.countdown) return;
     console.log('Warning: not enough players!!');
     // Pause connected players.
     node.remoteCommand('pause', 'ROOM', this.disconnectStr);
