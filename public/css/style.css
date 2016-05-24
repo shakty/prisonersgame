@@ -12,9 +12,13 @@ div#container {
     font-weight: bold;
 }
 
+div#quiz .choicetable {
+    margin: 0 auto;
+    padding: 10px;
+}
 
 table#quest td {
-    width: 600px;
+    width: 550px;
     text-align: left;
     padding: 5px 10px;
 }

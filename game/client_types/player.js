@@ -121,7 +121,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // Pages are loading from the public/ directory inside the
         // game folder. However, they can also be loaded from the 
         // views/ directory (if not found in public/).          
-        frame: 'quiz2.html',
+        frame: 'quiz2.html', // ('quiz.html' to have forms in html)
         cb: function() {
             var w, t, qt;
             qt = this.quizTexts;
@@ -273,7 +273,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                                                  orientation: 'v'
                                              });
         },
-        frame: 'questionnaire.html',
+        frame: 'questionnaire.html', // ('postgame.html' to have forms in html)
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the done callback
         //

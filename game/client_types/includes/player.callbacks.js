@@ -225,13 +225,13 @@ function precache() {
         // from public/ a js file must modify the content of the DOM.
         // node.game.settings.instructionsPage,
 
-        'quiz.html',
+        'quiz2.html', // ('quiz.html' to have version with forms).
 
         // These two are cached later by loadFrame calls (for demonstration):
         // 'bidder.html',
         // 'resp.html',
 
-        'postgame.html',
+        'questionnaire.html', // ('postgame.html' to have version with forms)
         'ended.html'
     ], function() {
         console.log('Precache done.');
