@@ -11,7 +11,7 @@ var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
 var path = require('path');
 var fs = require('fs');
-
+var Matcher = ngc.Matcher;
 var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
 
 module.exports = {
@@ -39,6 +39,12 @@ function init() {
 
     var COINS = settings.COINS;
 
+    
+    node.game.matcher = new Matcher();
+    node.game.matcher.generateMatches('random', settings.REPEAT); 
+    node.game.matcher.setIds(node.game.pl.id.getAllKeys());
+    node.game.matcher.match();
+
     node.game.lastStage = node.game.getCurrentGameStage();
 
     node.game.gameTerminated = false;
@@ -46,7 +52,6 @@ function init() {
     node.game.disconnectStr = 'One or more players disconnected. If they ' +
         'do not reconnect within ' + settings.WAIT_TIME  +
         ' seconds the game will be terminated.';
-
 
     // If players disconnects and then re-connects within the same round
     // we need to take into account only the final bids within that round.
@@ -105,17 +110,39 @@ function init() {
 
     // Register player disconnection, and wait for him...
     node.on.pdisconnect(function(p) {
+        var code;
         console.log('Disconnection in Stage: ' + node.player.stage);
+        code = channel.registry.getClient(p.id);
+        // Setting time left (+1000 due to delay).
+        code.disconnectTimer = node.game.timer.timeLeft + 1000;
     });
 
     // Player reconnecting.
     // Reconnections must be handled by the game developer.
     node.on.preconnect(function(p) {
-        var code;
+        var code, curStage, reconCb, res;
 
         console.log('Oh...somebody reconnected!', p);
         code = channel.registry.getClient(p.id);
-       
+
+        // Only within stage reconnections are allowed.
+        curStage = node.game.getCurrentGameStage();
+        if (GameStage.compare(code.stage, curStage)) {
+            node.warn('player reconnected from another stage. ' +
+                      'Not allowed. Player: ' + p.id);
+            return;
+        }
+
+        reconCb = this.plot.getProperty('reconnect', node.player.stage);
+
+        if (reconCb) {
+            res = reconCb.call(this, code);
+            if (res === false) {
+                node.warn('Reconnect Cb returned false');
+                return;
+            }
+        }
+
         gameRoom.setupClient(p.id);
 
         // Clear any message in the buffer from.
@@ -191,8 +218,29 @@ function gameover() {
     // TODO: fix this.
     // channel.destroyGameRoom(gameRoom.name);
 }
-
 function doMatch() {
+    var matches, data_b, data_r, round;
+    var i, len;
+    round = node.player.stage.round - 1;
+    matches = node.game.matcher.getMatch(round);
+    i = -1, len = matches.length;
+    for ( ; ++i < len ; ) {
+            
+        data_b = {
+            role: 'BIDDER',
+            other: matches[i][1]
+        };
+        data_r = {
+            role: 'RESPONDENT',
+            other: matches[i][0]
+        };
+        
+        node.say('ROLE', matches[i][0], data_b);
+        node.say('ROLE', matches[i][1], data_r);
+    }
+}
+
+function doMatchOld() {
     var g, i, len, bidder, respondent, data_b, data_r;
     var odd;
 
