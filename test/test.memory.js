@@ -4,8 +4,11 @@ var should = require('should');
 var NDDB = require('NDDB').NDDB;
 
 var settings = require('./settings.js');
+var gameSettings = require('../game/game.settings.js');
+
 var numPlayers = settings.numPlayers;
-var baseSessionId = settings.SESSION_ID;
+var baseSessionId = gameSettings.SESSION_ID;
+
 var numGames;
 var filePaths = [];
 var dbs = [];
@@ -20,13 +23,12 @@ numGames = numPlayers / 2;
 
 var dataDir = path.resolve(__dirname, '../', 'data/') + '/';
 
-console.log(dataDir);
-
-
 // Generate memory file pathnames.
 for (var i = 0; i < numGames; ++i) {
     filePaths.push(dataDir + (baseSessionId + i) + '/memory_all.json');
 }
+
+console.log(baseSessionId);
 
 describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
     it('should exist', function() {
