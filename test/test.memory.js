@@ -3,12 +3,13 @@ var path = require('path');
 var should = require('should');
 var NDDB = require('NDDB').NDDB;
 
-var numPlayers = require('./settings.js').numPlayers;
+var settings = require('./settings.js');
+var numPlayers = settings.numPlayers;
+var baseSessionId = settings.SESSION_ID;
 var numGames;
 var filePaths = [];
 var dbs = [];
 var gameSettings;
-var baseSessionId;
 
 // TODO: Assuming two players per game.
 if (numPlayers % 2 != 0) {
@@ -21,7 +22,6 @@ var dataDir = path.resolve(__dirname, '../', 'data/') + '/';
 
 console.log(dataDir);
 
-baseSessionId = settings.SESSION_ID;
 
 // Generate memory file pathnames.
 for (var i = 0; i < numGames; ++i) {
