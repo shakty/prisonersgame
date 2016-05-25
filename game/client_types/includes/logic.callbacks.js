@@ -37,13 +37,10 @@ function init() {
     console.log('********************** ultimatum room ' + counter++ +
                 ' **********************');
 
-    var COINS = settings.COINS;
-
-    
     node.game.matcher = new Matcher();
-    node.game.matcher.generateMatches('random', settings.REPEAT); 
+    node.game.matcher.generateMatches('random', node.game.pl.size());
     node.game.matcher.setIds(node.game.pl.id.getAllKeys());
-    node.game.matcher.match();
+
 
     node.game.lastStage = node.game.getCurrentGameStage();
 
@@ -191,7 +188,7 @@ function init() {
 
         if (response.response === 'ACCEPT') {
             resWin = parseInt(response.value, 10);
-            bidWin = COINS - resWin;
+            bidWin = settings.COINS - resWin;
 
             // Save the results in a temporary variables. If the round
             // finishes without a disconnection we will add them to the
@@ -218,67 +215,37 @@ function gameover() {
     // TODO: fix this.
     // channel.destroyGameRoom(gameRoom.name);
 }
+
 function doMatch() {
-    var matches, data_b, data_r, round;
-    var i, len;
-    round = node.player.stage.round - 1;
-    matches = node.game.matcher.getMatch(round);
-    i = -1, len = matches.length;
-    for ( ; ++i < len ; ) {
-            
-        data_b = {
-            role: 'BIDDER',
-            other: matches[i][1]
-        };
-        data_r = {
-            role: 'RESPONDENT',
-            other: matches[i][0]
-        };
-        
-        node.say('ROLE', matches[i][0], data_b);
-        node.say('ROLE', matches[i][1], data_r);
+    var match, id1, id2, soloId;
+
+    // Generates new random matches for this round.
+    node.game.matcher.match(true)
+    match = node.game.matcher.getMatch();
+
+    // While we have matches, send them to clients.
+    while (match) {
+        id1 = match[1], id2 = match[0];
+        if (id1 !== 'bot' && id2 !== 'bot') {
+            node.say('ROLE', id1, {
+                role: 'BIDDER',
+                other: id2
+            });
+            node.say('ROLE', id2, {
+                role: 'RESPONDENT',
+                other: id1
+            });
+        }
+        else {
+            soloId = id1 === 'bot' ? id2 : id1;
+            node.say('ROLE', soloId, {
+                role: 'SOLO',
+                other: null
+            });
+
+        }
+        match = node.game.matcher.getMatch();
     }
-}
-
-function doMatchOld() {
-    var g, i, len, bidder, respondent, data_b, data_r;
-    var odd;
-
-    len = node.game.pl.size();
-    g = node.game.pl.shuffle();
-    if (len % 2 !== 0) {
-        odd = true;
-        len = len -1;
-    }
-    for (i = 0 ; i < len ; i = i + 2) {
-        bidder = g.db[i];
-        respondent = g.db[i+1];
-
-        data_b = {
-            role: 'BIDDER',
-            other: respondent.id
-        };
-        data_r = {
-            role: 'RESPONDENT',
-            other: bidder.id
-        };
-
-        console.log('Group ' + i + ': ', bidder.id, respondent.id);
-
-        // Send a message to each player with their role
-        // and the id of the other player.
-        console.log('BIDDER is', bidder.id, 
-                    '; RESPONDENT IS', respondent.id);
-
-        node.say('ROLE', bidder.id, data_b);
-        node.say('ROLE', respondent.id, data_r);
-    }
-
-    // Odd number of players.
-    if (odd) {
-        node.say('ROLE', g.db[len].id, { role: 'SOLO' });
-    }
-
     console.log('Matching completed.');
 }
 
