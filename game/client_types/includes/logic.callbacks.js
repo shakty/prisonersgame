@@ -20,7 +20,8 @@ module.exports = {
     doMatch: doMatch,
     endgame: endgame,
     notEnoughPlayers: notEnoughPlayers,
-    enoughPlayersAgain: enoughPlayersAgain
+    enoughPlayersAgain: enoughPlayersAgain,
+    reconnectUltimatum: reconnectUltimatum
 };
 
 var node = module.parent.exports.node;
@@ -37,22 +38,29 @@ function init() {
     console.log('********************** ultimatum room ' + counter++ +
                 ' **********************');
 
-    node.game.matcher = new Matcher();
-    node.game.matcher.generateMatches('random', node.game.pl.size());
-    node.game.matcher.setIds(node.game.pl.id.getAllKeys());
+    this.matcher = new Matcher();
+    this.matcher.generateMatches('random', node.game.pl.size());
+    this.matcher.setIds(node.game.pl.id.getAllKeys());
 
+    this.roles = {
+        RESPONDENT: 0,
+        BIDDER: 1,
+        SOLO: -1
+    };
 
-    node.game.lastStage = node.game.getCurrentGameStage();
+    this.roleMapper = {};
 
-    node.game.gameTerminated = false;
+    this.lastStage = this.getCurrentGameStage();
 
-    node.game.disconnectStr = 'One or more players disconnected. If they ' +
+    this.gameTerminated = false;
+
+    this.disconnectStr = 'One or more players disconnected. If they ' +
         'do not reconnect within ' + settings.WAIT_TIME  +
         ' seconds the game will be terminated.';
 
     // If players disconnects and then re-connects within the same round
     // we need to take into account only the final bids within that round.
-    node.game.lastBids = {};
+    this.lastBids = {};
 
     // "STEPPING" is the last event emitted before the stage is updated.
     node.on('STEPPING', function() {
@@ -101,7 +109,7 @@ function init() {
     });
 
     // Add session name to data in DB.
-    node.game.memory.on('insert', function(o) {
+    this.memory.on('insert', function(o) {
         o.session = node.nodename;
     });
 
@@ -110,8 +118,10 @@ function init() {
         var code;
         console.log('Disconnection in Stage: ' + node.player.stage);
         code = channel.registry.getClient(p.id);
-        // Setting time left (+1000 due to delay).
-        code.disconnectTimer = node.game.timer.timeLeft + 1000;
+        // Time left. Notice that node.game.timer might not be updated
+        // if update = milliseconds, therefore we need to compute time again.
+        code.timerAtDisconnect = node.game.timer.milliseconds -
+            node.timer.getTimeSince('step');
     });
 
     // Player reconnecting.
@@ -130,16 +140,6 @@ function init() {
             return;
         }
 
-        reconCb = this.plot.getProperty('reconnect', node.player.stage);
-
-        if (reconCb) {
-            res = reconCb.call(this, code);
-            if (res === false) {
-                node.warn('Reconnect Cb returned false');
-                return;
-            }
-        }
-
         gameRoom.setupClient(p.id);
 
         // Clear any message in the buffer from.
@@ -151,33 +151,66 @@ function init() {
             console.log('CODE LANG SENT');
             node.remoteSetup('lang', p.id, [code.lang, true]);
         }
-        
+
         // Start the game on the reconnecting client.
         // Need to give step: false, because otherwise pre-caching will
         // call done() on reconnecting stage.
         node.remoteCommand('start', p.id, { step: false } );
 
+        reconCb = this.plot.getProperty(node.player.stage, 'reconnect');
+
+        if (reconCb) {
+            res = reconCb.call(this, code);
+            if (res === false) {
+                node.warn('Reconnect Cb returned false');
+                return;
+            }
+        }
+        
         // It is not added automatically.
         // TODO: add it automatically if we return TRUE? It must be done
         // both in the alias and the real event handler.
         node.game.pl.add(p);
 
-        // Will send all the players to current stage
-        // (also those who were there already).
-        node.game.gotoStep(node.player.stage);
+        // See if we have enough players now.
+        node.game.plChangeHandler();
+
+        // Start the step on reconnecting client.
+        node.remoteCommand('goto_step', p.id, node.player.stage);
 
         setTimeout(function() {
-            // Pause the game on the reconnecting client, will be resumed later.
-            // node.remoteCommand('pause', p.id);
-            // Unpause ALL players
-            // TODO: add it automatically if we return TRUE? It must be done
-            // both in the alias and the real event handler
+            
+            // Do we need delay?
+            node.remoteSetup('timer', p.id, {
+                options: { 
+                    milliseconds: code.timerAtDisconnect,
+                    update: code.timerAtDisconnect
+                },
+                action: 'restart'
+            });
+            // Do we need delay?
+            node.remoteSetup('timer', p.id, {
+                name: 'vt',
+                options: {
+                    milliseconds: code.timerAtDisconnect
+                },
+                action: 'restart'
+            });
+
+
+        }, 1000);
+
+        // TODO: commented out.
+        // Will send all the players to current stage
+        // (also those who were there already).
+        // node.game.gotoStep(node.player.stage);
+
+        setTimeout(function() {          
             node.game.pl.each(function(player) {
                 if (player.id !== p.id) {
                     node.remoteCommand('resume', player.id);
                 }
             });
-            // The logic is also reset to the same game stage.
         }, 100);
     });
 
@@ -218,14 +251,18 @@ function gameover() {
 
 function doMatch() {
     var match, id1, id2, soloId;
-
+    
     // Generates new random matches for this round.
     node.game.matcher.match(true)
     match = node.game.matcher.getMatch();
 
+    // Resets all roles.
+    node.game.roleMapper = {};
+
     // While we have matches, send them to clients.
     while (match) {
-        id1 = match[1], id2 = match[0];
+        id1 = match[node.game.roles.BIDDER];
+        id2 = match[node.game.roles.RESPONDENT];
         if (id1 !== 'bot' && id2 !== 'bot') {
             node.say('ROLE', id1, {
                 role: 'BIDDER',
@@ -235,6 +272,8 @@ function doMatch() {
                 role: 'RESPONDENT',
                 other: id1
             });
+            node.game.roleMapper[id1] = 'BIDDER';
+            node.game.roleMapper[id2] = 'RESPONDENT';
         }
         else {
             soloId = id1 === 'bot' ? id2 : id1;
@@ -242,27 +281,12 @@ function doMatch() {
                 role: 'SOLO',
                 other: null
             });
+            node.game.roleMapper[soloId] = 'SOLO';
 
         }
         match = node.game.matcher.getMatch();
     }
     console.log('Matching completed.');
-}
-
-function notEnoughPlayers() {
-    console.log('Warning: not enough players!!');
-    // Pause connected players.
-    node.remoteCommand('pause', 'ROOM', this.disconnectStr);
-    this.countdown = setTimeout(function() {
-        console.log('Countdown fired. Going to Step: questionnaire.');
-        node.remoteCommand('erase_buffer', 'ROOM');
-        node.remoteCommand('resume', 'ROOM');
-        node.game.gameTerminated = true;
-        // if syncStepping = false
-        // node.remoteCommand('goto_step', 5);
-        // Step must be not-skipped if you give the id (else give a number).
-        node.game.gotoStep('questionnaire');
-    }, settings.WAIT_TIME * 1000);
 }
 
 function endgame() {
@@ -327,7 +351,56 @@ function endgame() {
 }
 
 
+function notEnoughPlayers() {
+    console.log('Warning: not enough players!!');
+    // Pause connected players.
+    node.remoteCommand('pause', 'ROOM', this.disconnectStr);
+    node.game.timer.pause();
+    this.countdown = setTimeout(function() {
+        console.log('Countdown fired. Going to Step: questionnaire.');
+        node.remoteCommand('erase_buffer', 'ROOM');
+        node.remoteCommand('resume', 'ROOM');
+        node.game.gameTerminated = true;
+        // if syncStepping = false
+        // node.remoteCommand('goto_step', 5);
+        // Step must be not-skipped if you give the id (else give a number).
+        node.game.gotoStep('questionnaire');
+    }, settings.WAIT_TIME * 1000);
+}
+
 function enoughPlayersAgain() {
     // Delete countdown to terminate the game.
+    console.log('Enough players again!');
     clearTimeout(this.countdown);
+    node.game.timer.resume();
+}
+
+function reconnectUltimatum(p) {
+    var offer, matches, other, role;
+    // Get all current matches.
+    matches = node.game.matcher.getMatchObject(0);
+    other = matches[p.id];
+    role = node.game.roleMapper[p.id]
+    node.say('ROLE', p.id, {
+        role: role,
+        other: other
+    });
+    // Respondent on respondent stage must get back offer.
+    if (role === 'RESPONDENT' && node.player.stage.step === 3) {
+        offer = node.game.memory.stage[node.game.getPreviousStep()]
+            .select('player', '=', other).first();
+
+        if (!offer) {
+            // Set it to zero for now.
+            offer = 0;
+            node.err('ReconnectUltimatum: could not find offer ' +
+                     'for respondent: ' + p.id);
+        }
+        else {
+            offer = offer.offer;
+        }
+
+        // Send the offer.
+        node.say('OFFER', p.id, offer); 
+    }
 }

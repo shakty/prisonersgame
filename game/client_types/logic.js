@@ -83,19 +83,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('bidder', {
-        reconnect: function(p) {
-            var data, role;
-            
-            data = this.memory.stage[node.player.stage]
-                .select('player', '=', p.id).first();
-            if (!data) {
-                node.warn('Could not find role for reconnecting player: ' +
-                          p.id);
-                return;
-            }
-            // TODO: continue.
-        }
+    stager.extendStage('ultimatum', {
+        reconnect: cbs.reconnectUltimatum
     });
 
     stager.extendStep('endgame', {

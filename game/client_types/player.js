@@ -196,9 +196,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // stage. If, you need to have it executed every round the
         // stage is repeated, add it to the first step of the stage.
         init: function() {
+            var that = this;
+
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
-                                             'COUNT_UP_ROUNDS_TO_TOTAL']);
+                                             'COUNT_UP_ROUNDS_TO_TOTAL']);        
         }
+
         // `syncOnLoaded` forces the clients to wait for all the others to be
         // fully loaded before releasing the control of the screen to the
         // players.  This options introduces a little overhead in
@@ -237,10 +240,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             if (this.role === 'RESPONDENT') node.game.resTimeup();
         },
         cb: cbs.respondent
-    });
-
-    stager.extendStep('matching', {
-        cb: cbs.matching
     });
 
     stager.extendStep('endgame', {
