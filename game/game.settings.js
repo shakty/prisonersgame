@@ -65,7 +65,7 @@ module.exports = {
             fullName: "Standard",
             description:
                 "More time to wait and no peer pressure.",
-            WAIT_TIME: 60,
+            WAIT_TIME: 20,
             instructionsPage: 'instructions.html'
         },
 
@@ -73,7 +73,7 @@ module.exports = {
             fullName: "Peer Pressure",
             description:
                 "Introduces peer pressure to players to not disconnect.",
-            WAIT_TIME: 30,
+            WAIT_TIME: 10,
             instructionsPage: 'instructions_pp.html'
         }
     }

@@ -59,8 +59,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // minPlayers: MIN_PLAYERS,
     stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
-        cbs.notEnoughPlayers,
-        cbs.enoughPlayersAgain
+        cbs.notEnoughPlayers
     ]);
 
     stager.setDefaultProperty('pushClients', true);
