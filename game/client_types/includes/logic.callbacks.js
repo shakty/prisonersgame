@@ -117,18 +117,15 @@ function init() {
     node.on.pdisconnect(function(p) {
         var code;
         console.log('Disconnection in Stage: ' + node.player.stage);
-        code = channel.registry.getClient(p.id);
-        // Time left. Notice that node.game.timer might not be updated
-        // if update = milliseconds, therefore we need to compute time again.
-        code.timerAtDisconnect = node.game.timer.milliseconds -
-            node.timer.getTimeSince('step');
+        code = channel.registry.getClient(p.id);        
     });
 
     // Player reconnecting.
     // Reconnections must be handled by the game developer.
     node.on.preconnect(function(p) {
         var code, curStage, reconCb, res;
-
+        var resetTime;
+        
         console.log('Oh...somebody reconnected!', p);
         code = channel.registry.getClient(p.id);
 
@@ -178,13 +175,18 @@ function init() {
         // Start the step on reconnecting client.
         node.remoteCommand('goto_step', p.id, node.player.stage);
 
+        // Time left to play in stage.
+        resetTime = Math.max(node.game.timer.milliseconds - 
+                             node.timer.getTimeSince('step', true), 0);
+
+
         setTimeout(function() {
             
             // Do we need delay?
             node.remoteSetup('timer', p.id, {
                 options: { 
-                    milliseconds: code.timerAtDisconnect,
-                    update: code.timerAtDisconnect
+                    milliseconds: resetTime,
+                    update: resetTime
                 },
                 action: 'restart'
             });
@@ -192,13 +194,20 @@ function init() {
             node.remoteSetup('timer', p.id, {
                 name: 'vt',
                 options: {
-                    milliseconds: code.timerAtDisconnect
+                    milliseconds: resetTime
                 },
                 action: 'restart'
             });
 
 
-        }, 1000);
+        }, 500);
+
+
+        if (!node.game.checkPlistSize()) {
+            node.remoteCommand('pause', p.id);
+            return;
+        }
+
 
         // TODO: commented out.
         // Will send all the players to current stage
@@ -355,7 +364,7 @@ function notEnoughPlayers() {
     console.log('Warning: not enough players!!');
     // Pause connected players.
     node.remoteCommand('pause', 'ROOM', this.disconnectStr);
-    node.game.timer.pause();
+    node.game.pause();
     this.countdown = setTimeout(function() {
         console.log('Countdown fired. Going to Step: questionnaire.');
         node.remoteCommand('erase_buffer', 'ROOM');
@@ -372,7 +381,7 @@ function enoughPlayersAgain() {
     // Delete countdown to terminate the game.
     console.log('Enough players again!');
     clearTimeout(this.countdown);
-    node.game.timer.resume();
+    node.game.resume();
 }
 
 function reconnectUltimatum(p) {
