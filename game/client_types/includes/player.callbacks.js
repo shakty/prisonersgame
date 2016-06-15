@@ -33,10 +33,7 @@ function init() {
             stageOffset: 1
         });
 
-        node.game.visualTimer = node.widgets.append('VisualTimer', header, {
-            name: 'vt',
-            // gameTimer: node.game.timer
-        });
+        node.game.visualTimer = node.widgets.append('VisualTimer', header);
 
         // Done button to click.
         node.game.donebutton = node.widgets.append('DoneButton', header);

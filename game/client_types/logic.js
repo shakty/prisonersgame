@@ -7,7 +7,6 @@
  *
  * http://www.nodegame.org
  */
-
 var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
 var J = ngc.JSUS;
@@ -84,6 +83,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStage('ultimatum', {
         reconnect: cbs.reconnectUltimatum
+    });
+
+    stager.extendStep('questionnaire', {
+        minPlayers: undefined
     });
 
     stager.extendStep('endgame', {

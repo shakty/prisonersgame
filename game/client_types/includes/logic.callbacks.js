@@ -67,14 +67,6 @@ function init() {
 
         currentStage = node.game.getCurrentGameStage();
 
-        // We do not save stage 0.0.0.
-        // Morever, If the last stage is equal to the current one, we are
-        // re-playing the same stage cause of a reconnection. In this
-        // case we do not update the database, or save files.
-        if (!GameStage.compare(currentStage, new GameStage())) {// ||
-            //!GameStage.compare(currentStage, node.game.lastStage)) {
-            return;
-        }
         // Update last stage reference.
         node.game.lastStage = currentStage;
 
@@ -264,21 +256,29 @@ function reconnectUltimatum(p) {
         other: other
     });
     // Respondent on respondent stage must get back offer.
-    if (role === 'RESPONDENT' && node.player.stage.step === 3) {
-        offer = node.game.memory.stage[node.game.getPreviousStep()]
-            .select('player', '=', other).first();
+    if (role === 'RESPONDENT') {
 
-        if (!offer) {
-            // Set it to zero for now.
-            offer = 0;
-            node.err('ReconnectUltimatum: could not find offer ' +
-                     'for respondent: ' + p.id);
-        }
-        else {
-            offer = offer.offer;
-        }
+        // Reload the right frame.
+        node.remoteSetup('plot', p.id, { frame: 'resp.html' }, 'updateStep');
 
-        // Send the offer.
-        node.say('OFFER', p.id, offer); 
+        if (node.player.stage.step === 3) {
+            offer = node.game.memory.stage[node.game.getPreviousStep()]
+                .select('player', '=', other).first();
+
+            if (!offer) {
+                // Set it to zero for now.
+                offer = 0;
+                node.err('ReconnectUltimatum: could not find offer ' +
+                         'for respondent: ' + p.id);
+            }
+            else {
+                offer = offer.offer;
+            }
+
+            node.remoteSetup('frame', p.id, { load: 'resp.html' });
+
+            // Send the offer.
+            node.say('OFFER', p.id, offer); 
+        }
     }
 }
