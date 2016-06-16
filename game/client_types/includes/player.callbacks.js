@@ -207,14 +207,19 @@ function init() {
     node.on.data('ROLE', function(msg) {
         that.other = msg.data.other;
         that.role = msg.data.role;
-        console.log(that.role);
-        node.done({ role: that.role });
+        // Reconnect.
+        if (node.player.stage.stage !== 0) {
+            node.done({ role: that.role });
+        }
     });
 
     // For respondent.
     node.on.data('OFFER', function(msg) {
         that.offerReceived = msg.data;
-        node.done();
+        // Reconnect.
+        if (node.player.stage.stage !== 0) {
+            node.done();
+        }
     });           
 }
 

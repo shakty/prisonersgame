@@ -250,11 +250,14 @@ function reconnectUltimatum(p, reconOptions) {
     // Get all current matches.
     matches = node.game.matcher.getMatchObject(0);
     other = matches[p.id];
-    role = node.game.roleMapper[p.id]
+    role = node.game.roleMapper[p.id];
+
     node.say('ROLE', p.id, {
         role: role,
         other: other
     });
+
+    if (!reconOptions.plot) reconOptions.plot = {};
 
     // Respondent on respondent stage must get back offer.
     if (role === 'RESPONDENT') {
@@ -277,8 +280,32 @@ function reconnectUltimatum(p, reconOptions) {
             node.say('OFFER', p.id, offer); 
         }
 
-        // Add a reconnect option.
-        if (!reconOptions.plot) reconOptions.plot = {};
+        // Add a reconnect frame option.
         reconOptions.plot.frame = 'resp.html';
     }
+
+    // TODO. Does not work
+//     else if (role === 'BIDDER') {
+//         
+// 
+// 
+//         if (node.player.stage.step === 3) {
+//              offer = node.game.memory.stage[node.game.getPreviousStep()]
+//                 .select('player', '=', p.id).first();
+//         }
+// 
+//         if (!offer) {
+//             // Set it to zero for now.
+//             offer = 0;
+//             node.err('ReconnectUltimatum: could not find offer ' +
+//                      'for bidder: ' + p.id);
+//         }
+//         else {
+//             offer = offer.offer;
+//         }
+// 
+//         // Add a reconnect frame option.
+//         reconOptions.plot.frame = 'bidder.html';
+//     }
+
 }
