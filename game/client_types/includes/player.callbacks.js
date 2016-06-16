@@ -333,6 +333,7 @@ function bidder() {
     W.loadFrame('bidder.html', function() {
 
         b = W.getElementById('submitOffer');
+        if (!b) debugger;
         b.onclick = function() {
             var offer, value;
             offer = W.getElementById('offer');
@@ -391,16 +392,19 @@ function respondent() {
         node.timer.randomDone();
         return;
     }
-
+    var aa = W.getElementById('theoffer');
+    if (!aa) debugger;
     W.setInnerHTML('theoffer', node.game.offerReceived);
     W.show('offered');
 
     accept = W.getElementById('accept');
+    if (!accept) debugger;
     accept.onclick = function() {
         node.emit('RESPONSE_DONE', 'ACCEPT');
     };
 
     reject = W.getElementById('reject');
+    if (!reject) debugger;
     reject.onclick = function() {
         node.emit('RESPONSE_DONE', 'REJECT');
     };

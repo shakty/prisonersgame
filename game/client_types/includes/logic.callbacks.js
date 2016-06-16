@@ -245,7 +245,7 @@ function notEnoughPlayers() {
     node.game.gotoStep('questionnaire');
 }
 
-function reconnectUltimatum(p) {
+function reconnectUltimatum(p, reconOptions) {
     var offer, matches, other, role;
     // Get all current matches.
     matches = node.game.matcher.getMatchObject(0);
@@ -255,11 +255,9 @@ function reconnectUltimatum(p) {
         role: role,
         other: other
     });
+
     // Respondent on respondent stage must get back offer.
     if (role === 'RESPONDENT') {
-
-        // Reload the right frame.
-        node.remoteSetup('plot', p.id, { frame: 'resp.html' }, 'updateStep');
 
         if (node.player.stage.step === 3) {
             offer = node.game.memory.stage[node.game.getPreviousStep()]
@@ -275,10 +273,12 @@ function reconnectUltimatum(p) {
                 offer = offer.offer;
             }
 
-            node.remoteSetup('frame', p.id, { load: 'resp.html' });
-
             // Send the offer.
             node.say('OFFER', p.id, offer); 
         }
+
+        // Add a reconnect option.
+        if (!reconOptions.plot) reconOptions.plot = {};
+        reconOptions.plot.frame = 'resp.html';
     }
 }
