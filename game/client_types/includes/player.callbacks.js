@@ -48,7 +48,7 @@ function init() {
 
     // Add event listeners valid for the whole game.
 
-    node.on('BID_DONE', function(value) {
+    node.on('BID_DONE', function(value, notify) {
         var root, time, offer, submitOffer, timeup;        
 
         timeup = node.game.timer.isTimeup();
@@ -73,11 +73,14 @@ function init() {
         W.writeln(' Your offer: ' +  value +
                   '. Waiting for the respondent... ', root);
 
-        // Notify the other player.
-        node.say('OFFER', node.game.other, node.game.lastOffer);
+        if (notify !== false) {
+            // Notify the other player.
+            node.say('OFFER', node.game.other, node.game.lastOffer);
 
-        // Notify the server.
-        node.done({ offer: value });
+            // Notify the server.
+            node.done({ offer: value });
+        }
+
     });
 
     node.on('RESPONSE_DONE', function(response) {
@@ -207,19 +210,14 @@ function init() {
     node.on.data('ROLE', function(msg) {
         that.other = msg.data.other;
         that.role = msg.data.role;
-        // Reconnect.
-        if (node.player.stage.stage !== 0) {
-            node.done({ role: that.role });
-        }
+        node.done({ role: that.role });
+        
     });
 
     // For respondent.
     node.on.data('OFFER', function(msg) {
-        that.offerReceived = msg.data;
-        // Reconnect.
-        if (node.player.stage.stage !== 0) {
-            node.done();
-        }
+        that.offerReceived = msg.data;     
+        node.done();       
     });           
 }
 
@@ -397,19 +395,16 @@ function respondent() {
         node.timer.randomDone();
         return;
     }
-    var aa = W.getElementById('theoffer');
-    if (!aa) debugger;
+
     W.setInnerHTML('theoffer', node.game.offerReceived);
     W.show('offered');
 
     accept = W.getElementById('accept');
-    if (!accept) debugger;
     accept.onclick = function() {
         node.emit('RESPONSE_DONE', 'ACCEPT');
     };
 
     reject = W.getElementById('reject');
-    if (!reject) debugger;
     reject.onclick = function() {
         node.emit('RESPONSE_DONE', 'REJECT');
     };

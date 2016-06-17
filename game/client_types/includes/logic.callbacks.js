@@ -246,66 +246,61 @@ function notEnoughPlayers() {
 }
 
 function reconnectUltimatum(p, reconOptions) {
-    var offer, matches, other, role;
+    var offer, matches, other, role, bidder;
     // Get all current matches.
     matches = node.game.matcher.getMatchObject(0);
     other = matches[p.id];
     role = node.game.roleMapper[p.id];
 
-    node.say('ROLE', p.id, {
-        role: role,
-        other: other
-    });
-
     if (!reconOptions.plot) reconOptions.plot = {};
+    reconOptions.role = role;
+    reconOptions.other = other;
+
+    if (node.player.stage.step === 3 && role !== 'SOLO') {
+        bidder = role === 'RESPONDENT' ? other : p.id;
+        offer = node.game.memory.stage[node.game.getPreviousStep()]
+            .select('player', '=', bidder).first();
+        if (!offer || 'number' !== typeof offer.offer) {
+            // Set it to zero for now.
+            node.err('ReconnectUltimatum: could not find offer for: ' + p.id);
+            offer = 0;
+        }
+        else {
+            offer = offer.offer;
+        }
+
+        // Store reference to last offer in game.
+        reconOptions.offer = offer;
+    }
 
     // Respondent on respondent stage must get back offer.
     if (role === 'RESPONDENT') {
-
-        if (node.player.stage.step === 3) {
-            offer = node.game.memory.stage[node.game.getPreviousStep()]
-                .select('player', '=', other).first();
-
-            if (!offer) {
-                // Set it to zero for now.
-                offer = 0;
-                node.err('ReconnectUltimatum: could not find offer ' +
-                         'for respondent: ' + p.id);
-            }
-            else {
-                offer = offer.offer;
-            }
-
-            // Send the offer.
-            node.say('OFFER', p.id, offer); 
-        }
-
-        // Add a reconnect frame option.
-        reconOptions.plot.frame = 'resp.html';
+        reconOptions.cb = function(options) {
+            this.plot.tmpCache('frame', 'resp.html');
+            this.role = options.role;
+            this.other = options.other;
+            this.offerReceived = options.offer;
+        };
     }
 
-    // TODO. Does not work
-//     else if (role === 'BIDDER') {
-//         
-// 
-// 
-//         if (node.player.stage.step === 3) {
-//              offer = node.game.memory.stage[node.game.getPreviousStep()]
-//                 .select('player', '=', p.id).first();
-//         }
-// 
-//         if (!offer) {
-//             // Set it to zero for now.
-//             offer = 0;
-//             node.err('ReconnectUltimatum: could not find offer ' +
-//                      'for bidder: ' + p.id);
-//         }
-//         else {
-//             offer = offer.offer;
-//         }
-// 
-//         // Add a reconnect frame option.
-//         reconOptions.plot.frame = 'bidder.html';
-//     }
+    else if (role === 'BIDDER') {
+        reconOptions.cb = function(options) {
+            this.plot.tmpCache('frame', 'bidder.html');
+            this.role = options.role;
+            this.other = options.other;
+            if (this.node.player.stage.step === 3) {
+                this.lastOffer = options.offer;
+                this.node.on('LOADED', function() {
+                    this.node.emit('BID_DONE', this.lastOffer, false);
+                });
+            }
+        };        
+    }
 
+    else if (role === 'SOLO') {
+        reconOptions.cb = function(options) {
+            this.plot.tmpCache('frame', 'solo.html');
+            this.role = options.role;
+        };
+    }
 }
