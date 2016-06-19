@@ -52,9 +52,10 @@ module.exports = {
         selectLanguage: 100000,
         instructions: 90000,
         quiz: 60000,
+        mood: 10000,
         questionnaire: 90000,
-        bidder: 300000,
-        respondent: 300000
+        bidder: 30000,
+        respondent: 30000
     },
 
     // Available treatments:

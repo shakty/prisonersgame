@@ -13,10 +13,13 @@ module.exports = function(stager, settings) {
         .next('selectLanguage')
         .next('instructions')
         .next('quiz')
+        .next('mood')
         .repeat('ultimatum', settings.REPEAT)
         .next('questionnaire')
         .next('endgame')
         .gameover();
+
+    // Divide stage ultimatum in 3 steps.
 
     stager.extendStage('ultimatum', {
         steps: [
@@ -26,9 +29,12 @@ module.exports = function(stager, settings) {
         ]
     });
 
-    stager.skip('precache');
-    stager.skip('selectLanguage');
-    stager.skip('quiz');
-    stager.skip('instructions');
+    // Can skip specific stages or steps here.
+
+    // stager.skip('precache');
+    // stager.skip('selectLanguage');
+    // stager.skip('quiz');
+    // stager.skip('instructions');
+    // stager.skip('mood');
     // stager.skip('ultimatum')
 };

@@ -97,7 +97,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cb: cbs.precache
     });
 
-    stager.extendStep('instructions', {       
+    stager.extendStep('instructions', {
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the settings object
         //
@@ -117,20 +117,19 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // search & replace the DOM, and store a page in the cache.
         // In its simplest form, it is just a string indicating the
         // path to the page to load.
-        // 
+        //
         // Pages are loading from the public/ directory inside the
-        // game folder. However, they can also be loaded from the 
-        // views/ directory (if not found in public/).          
+        // game folder. However, they can also be loaded from the
+        // views/ directory (if not found in public/).
         frame: 'quiz2.html', // ('quiz.html' to have forms in html)
         cb: function() {
-            var w, t, qt;
+            var w, qt;
             qt = this.quizTexts;
-            t = node.game.settings.treatmentName;
 
             /////////////////////////////////////////////////////////////
             // nodeGame hint: the widget collection
             //
-            // Widgets are re-usable components with predefined methods, 
+            // Widgets are re-usable components with predefined methods,
             // such as: hide, highlight, disable, getValues, etc.
             // Here we use the `ChoiceManager` widget to create a quiz page.
             w = node.widgets;
@@ -165,10 +164,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                         mainText: qt.disconnectMainText
                     })
                 ]
-            });   
+            });
         },
         done: function() {
-            var answers, isTimeup;          
+            var answers, isTimeup;
             answers = this.quiz.getValues({
                 markAttempt: true,
                 highlight: true
@@ -179,6 +178,40 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
+    stager.extendStep('mood', {
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: the widget property
+        //
+        // It is a shortcut to create widget-steps.
+        //
+        // In a widget-step, the following operations are performed:
+        //
+        //   1- The widget is loaded, possibly appended. If a frame
+        //      is specified, but none is specified the default page
+        //      '/pages/default.html' will be loaded.
+        //   2- Upon `node.done`, the current values of the widget
+        //      are validated, and if valid, and not timeup will be
+        //      sent to server.
+        //   3- Upon exiting the step, the widget will be destroyed.
+        //
+        // If specified as an object, additional options can be set.
+        // For example:
+        //
+        // ```
+        // widget: {
+        //     name: 'MoodGauge',
+        //     id: 'myid',
+        //     ref: 'myref', // It will be added as node.game[ref]
+        //     options: { ... },
+        //     append: false,
+        //     checkAnswers: false,
+        //     root: ...
+        //     destroyOnExit: false
+        // }
+        // ```
+        widget: 'MoodGauge'
+    });
+
     stager.extendStage('ultimatum', {
         // Disable the donebutton for this step.
         donebutton: false,
@@ -187,7 +220,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //
         // It is a function that is executed before the main callback,
         // and before loading any frame.
-        // 
+        //
         // Likewise, it is possible to define an `exit` function that
         // will be executed upon exiting the step.
         //
@@ -199,7 +232,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             var that = this;
 
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
-                                             'COUNT_UP_ROUNDS_TO_TOTAL']);        
+                                             'COUNT_UP_ROUNDS_TO_TOTAL']);
         }
 
         // `syncOnLoaded` forces the clients to wait for all the others to be
@@ -211,14 +244,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('matching', {
-        init: function() {           
+        init: function() {
             node.game.role = null;
             node.game.other = null;
             node.game.offerReceived = null;
         }
     });
 
-    stager.extendStep('bidder', { 
+    stager.extendStep('bidder', {
         /////////////////////////////////////////////////////////////
         // nodeGame hint: the timeup parameter
         //
