@@ -55,7 +55,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         }
         wRoom = waitRoom.clients.player;
         for (i = 0; i < wRoom.size(); i++) {
-            node.say("PLAYERSCONNECTED", wRoom.db[i].id, wRoom.size());
+            node.say('PLAYERSCONNECTED', wRoom.db[i].id, wRoom.size());
         }
     }
 
@@ -65,6 +65,16 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         var nPlayers;
         var waitTime;
         var widgetConfig;
+
+        node.remoteSetup('page', p.id, {
+            clearBody: true,
+            title: { title: 'Welcome!', addToBody: true }
+        });
+
+        node.remoteSetup('widgets', p.id, {
+            destroyAll: true,
+            append: { 'WaitingRoom': {} }
+        });
         if (waitRoom.isRoomOpen()) {
             console.log('Client connected to waiting room: ', p.id);
 
@@ -74,15 +84,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             pList = waitRoom.clients.player;
             nPlayers = pList.size();
 
-            node.remoteSetup('page', p.id, {
-                clearBody: true,
-                title: { title: 'Welcome!', addToBody: true }
-            });
-
-            node.remoteSetup('widgets', p.id, {
-                destroyAll: true,
-                append: { 'WaitingRoom': {} }
-            });
 
             if (waitRoom.START_DATE) {
                 waitTime = new Date(waitRoom.START_DATE).getTime() -
@@ -103,7 +104,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             console.log('NPL ', nPlayers);
 
             // Notify all players of new connection.
-            node.say("PLAYERSCONNECTED", 'ROOM', nPlayers);
+            node.say('PLAYERSCONNECTED', 'ROOM', nPlayers);
 
             // Start counting a timeout for max stay in waiting room.
             waitRoom.makeTimeOut(p.id, waitTime);
@@ -113,21 +114,12 @@ module.exports = function(settings, waitRoom, runtimeConf) {
 
             if (waitRoom.EXECUTION_MODE === 'WAIT_FOR_N_PLAYERS') {
                 waitRoom.dispatch({
-                    action: "AllPlayersConnected",
+                    action: 'AllPlayersConnected',
                     exit: 0
                 });
             }
         }
         else {
-            node.remoteSetup('page', p.id, {
-                clearBody: true,
-                title: { title: 'Welcome!', addToBody: true }
-            });
-            node.remoteSetup('widgets', p.id, {
-                destroyAll: true,
-                append: { 'WaitingRoom': {} }
-            });
-
             node.say('ROOM_CLOSED', p.id);
         }
     }
