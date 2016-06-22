@@ -10,7 +10,7 @@ module.exports = {
     GROUP_SIZE: 2,
 
     // Number of games to dispatch.
-    N_GAMES: 1,
+    // N_GAMES: 1,
 
     // Maximum waiting time.
 //    MAX_WAIT_TIME: 30000,
@@ -18,7 +18,7 @@ module.exports = {
     // Time and date of game start. Overrides `MAX_WAIT_TIME`
     // `START_DATE` is any valid argument to `Date` constructor.
     //    START_DATE: 'December 13, 2015 13:24:00',
-    START_DATE: new Date().getTime() + 30000,
+    // START_DATE: new Date().getTime() + 30000,
 
     // Treatment assigned to groups.
     // If left undefined, a random treatment will be selected.
@@ -34,6 +34,6 @@ module.exports = {
     // up, it will be checked if there are at least a certain minimum number of
     // players to start the game.
 
-    EXECUTION_MODE: 'TIMEOUT'
+    EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS' // 'TIMEOUT'
 
 };
