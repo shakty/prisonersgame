@@ -21,8 +21,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
-    var timers = settings.TIMER;
-
     // The game object to return at the end of the function.
     game = {};
 
@@ -123,7 +121,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // views/ directory (if not found in public/).
         frame: 'quiz2.html', // ('quiz.html' to have forms in html)
         cb: function() {
-            var w, qt;
+            var w, qt, t;
+            t = this.settings.treatmentName;
             qt = this.quizTexts;
 
             /////////////////////////////////////////////////////////////
@@ -229,8 +228,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // stage. If, you need to have it executed every round the
         // stage is repeated, add it to the first step of the stage.
         init: function() {
-            var that = this;
-
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
         }
