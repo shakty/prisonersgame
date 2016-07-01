@@ -7,7 +7,6 @@
  *
  * http://www.nodegame.org
  */
-
 var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
 var J = ngc.JSUS;
@@ -59,8 +58,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // minPlayers: MIN_PLAYERS,
     stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS,
-        cbs.notEnoughPlayers,
-        cbs.enoughPlayersAgain
+        cbs.notEnoughPlayers
     ]);
 
     stager.setDefaultProperty('pushClients', true);
@@ -81,6 +79,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             this.node.log('Ultimatum');
             cbs.doMatch();
         }
+    });
+
+    stager.extendStage('ultimatum', {
+        reconnect: cbs.reconnectUltimatum
+    });
+
+    stager.extendStep('questionnaire', {
+        minPlayers: undefined
     });
 
     stager.extendStep('endgame', {

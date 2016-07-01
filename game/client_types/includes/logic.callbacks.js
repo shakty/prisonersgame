@@ -11,7 +11,7 @@ var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
 var path = require('path');
 var fs = require('fs');
-
+var Matcher = ngc.Matcher;
 var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
     doMatch: doMatch,
     endgame: endgame,
     notEnoughPlayers: notEnoughPlayers,
-    enoughPlayersAgain: enoughPlayersAgain
+    reconnectUltimatum: reconnectUltimatum
 };
 
 var node = module.parent.exports.node;
@@ -37,20 +37,29 @@ function init() {
     console.log('********************** ultimatum room ' + counter++ +
                 ' **********************');
 
-    var COINS = settings.COINS;
+    this.matcher = new Matcher();
+    this.matcher.generateMatches('random', node.game.pl.size());
+    this.matcher.setIds(node.game.pl.id.getAllKeys());
 
-    node.game.lastStage = node.game.getCurrentGameStage();
+    this.roles = {
+        RESPONDENT: 0,
+        BIDDER: 1,
+        SOLO: -1
+    };
 
-    node.game.gameTerminated = false;
+    this.roleMapper = {};
 
-    node.game.disconnectStr = 'One or more players disconnected. If they ' +
+    this.lastStage = this.getCurrentGameStage();
+
+    this.gameTerminated = false;
+
+    this.disconnectStr = 'One or more players disconnected. If they ' +
         'do not reconnect within ' + settings.WAIT_TIME  +
         ' seconds the game will be terminated.';
 
-
     // If players disconnects and then re-connects within the same round
     // we need to take into account only the final bids within that round.
-    node.game.lastBids = {};
+    this.lastBids = {};
 
     // "STEPPING" is the last event emitted before the stage is updated.
     node.on('STEPPING', function() {
@@ -58,14 +67,6 @@ function init() {
 
         currentStage = node.game.getCurrentGameStage();
 
-        // We do not save stage 0.0.0.
-        // Morever, If the last stage is equal to the current one, we are
-        // re-playing the same stage cause of a reconnection. In this
-        // case we do not update the database, or save files.
-        if (!GameStage.compare(currentStage, new GameStage())) {// ||
-            //!GameStage.compare(currentStage, node.game.lastStage)) {
-            return;
-        }
         // Update last stage reference.
         node.game.lastStage = currentStage;
 
@@ -99,62 +100,8 @@ function init() {
     });
 
     // Add session name to data in DB.
-    node.game.memory.on('insert', function(o) {
+    this.memory.on('insert', function(o) {
         o.session = node.nodename;
-    });
-
-    // Register player disconnection, and wait for him...
-    node.on.pdisconnect(function(p) {
-        console.log('Disconnection in Stage: ' + node.player.stage);
-    });
-
-    // Player reconnecting.
-    // Reconnections must be handled by the game developer.
-    node.on.preconnect(function(p) {
-        var code;
-
-        console.log('Oh...somebody reconnected!', p);
-        code = channel.registry.getClient(p.id);
-       
-        gameRoom.setupClient(p.id);
-
-        // Clear any message in the buffer from.
-        node.remoteCommand('erase_buffer', 'ROOM');
-
-        if (code.lang.name !== 'English') {
-            // If lang is different from Eng, remote setup it.
-            // TRUE: sets also the URI prefix.
-            console.log('CODE LANG SENT');
-            node.remoteSetup('lang', p.id, [code.lang, true]);
-        }
-        
-        // Start the game on the reconnecting client.
-        // Need to give step: false, because otherwise pre-caching will
-        // call done() on reconnecting stage.
-        node.remoteCommand('start', p.id, { step: false } );
-
-        // It is not added automatically.
-        // TODO: add it automatically if we return TRUE? It must be done
-        // both in the alias and the real event handler.
-        node.game.pl.add(p);
-
-        // Will send all the players to current stage
-        // (also those who were there already).
-        node.game.gotoStep(node.player.stage);
-
-        setTimeout(function() {
-            // Pause the game on the reconnecting client, will be resumed later.
-            // node.remoteCommand('pause', p.id);
-            // Unpause ALL players
-            // TODO: add it automatically if we return TRUE? It must be done
-            // both in the alias and the real event handler
-            node.game.pl.each(function(player) {
-                if (player.id !== p.id) {
-                    node.remoteCommand('resume', player.id);
-                }
-            });
-            // The logic is also reset to the same game stage.
-        }, 100);
     });
 
     // Update the Payoffs
@@ -164,7 +111,7 @@ function init() {
 
         if (response.response === 'ACCEPT') {
             resWin = parseInt(response.value, 10);
-            bidWin = COINS - resWin;
+            bidWin = settings.COINS - resWin;
 
             // Save the results in a temporary variables. If the round
             // finishes without a disconnection we will add them to the
@@ -193,61 +140,43 @@ function gameover() {
 }
 
 function doMatch() {
-    var g, i, len, bidder, respondent, data_b, data_r;
-    var odd;
+    var match, id1, id2, soloId;
+    
+    // Generates new random matches for this round.
+    node.game.matcher.match(true)
+    match = node.game.matcher.getMatch();
 
-    len = node.game.pl.size();
-    g = node.game.pl.shuffle();
-    if (len % 2 !== 0) {
-        odd = true;
-        len = len -1;
+    // Resets all roles.
+    node.game.roleMapper = {};
+
+    // While we have matches, send them to clients.
+    while (match) {
+        id1 = match[node.game.roles.BIDDER];
+        id2 = match[node.game.roles.RESPONDENT];
+        if (id1 !== 'bot' && id2 !== 'bot') {
+            node.say('ROLE', id1, {
+                role: 'BIDDER',
+                other: id2
+            });
+            node.say('ROLE', id2, {
+                role: 'RESPONDENT',
+                other: id1
+            });
+            node.game.roleMapper[id1] = 'BIDDER';
+            node.game.roleMapper[id2] = 'RESPONDENT';
+        }
+        else {
+            soloId = id1 === 'bot' ? id2 : id1;
+            node.say('ROLE', soloId, {
+                role: 'SOLO',
+                other: null
+            });
+            node.game.roleMapper[soloId] = 'SOLO';
+
+        }
+        match = node.game.matcher.getMatch();
     }
-    for (i = 0 ; i < len ; i = i + 2) {
-        bidder = g.db[i];
-        respondent = g.db[i+1];
-
-        data_b = {
-            role: 'BIDDER',
-            other: respondent.id
-        };
-        data_r = {
-            role: 'RESPONDENT',
-            other: bidder.id
-        };
-
-        console.log('Group ' + i + ': ', bidder.id, respondent.id);
-
-        // Send a message to each player with their role
-        // and the id of the other player.
-        console.log('BIDDER is', bidder.id, 
-                    '; RESPONDENT IS', respondent.id);
-
-        node.say('ROLE', bidder.id, data_b);
-        node.say('ROLE', respondent.id, data_r);
-    }
-
-    // Odd number of players.
-    if (odd) {
-        node.say('ROLE', g.db[len].id, { role: 'SOLO' });
-    }
-
     console.log('Matching completed.');
-}
-
-function notEnoughPlayers() {
-    console.log('Warning: not enough players!!');
-    // Pause connected players.
-    node.remoteCommand('pause', 'ROOM', this.disconnectStr);
-    this.countdown = setTimeout(function() {
-        console.log('Countdown fired. Going to Step: questionnaire.');
-        node.remoteCommand('erase_buffer', 'ROOM');
-        node.remoteCommand('resume', 'ROOM');
-        node.game.gameTerminated = true;
-        // if syncStepping = false
-        // node.remoteCommand('goto_step', 5);
-        // Step must be not-skipped if you give the id (else give a number).
-        node.game.gotoStep('questionnaire');
-    }, settings.WAIT_TIME * 1000);
 }
 
 function endgame() {
@@ -312,7 +241,66 @@ function endgame() {
 }
 
 
-function enoughPlayersAgain() {
-    // Delete countdown to terminate the game.
-    clearTimeout(this.countdown);
+function notEnoughPlayers() {
+    node.game.gotoStep('questionnaire');
+}
+
+function reconnectUltimatum(p, reconOptions) {
+    var offer, matches, other, role, bidder;
+    // Get all current matches.
+    matches = node.game.matcher.getMatchObject(0);
+    other = matches[p.id];
+    role = node.game.roleMapper[p.id];
+
+    if (!reconOptions.plot) reconOptions.plot = {};
+    reconOptions.role = role;
+    reconOptions.other = other;
+
+    if (node.player.stage.step === 3 && role !== 'SOLO') {
+        bidder = role === 'RESPONDENT' ? other : p.id;
+        offer = node.game.memory.stage[node.game.getPreviousStep()]
+            .select('player', '=', bidder).first();
+        if (!offer || 'number' !== typeof offer.offer) {
+            // Set it to zero for now.
+            node.err('ReconnectUltimatum: could not find offer for: ' + p.id);
+            offer = 0;
+        }
+        else {
+            offer = offer.offer;
+        }
+
+        // Store reference to last offer in game.
+        reconOptions.offer = offer;
+    }
+
+    // Respondent on respondent stage must get back offer.
+    if (role === 'RESPONDENT') {
+        reconOptions.cb = function(options) {
+            this.plot.tmpCache('frame', 'resp.html');
+            this.role = options.role;
+            this.other = options.other;
+            this.offerReceived = options.offer;
+        };
+    }
+
+    else if (role === 'BIDDER') {
+        reconOptions.cb = function(options) {
+            this.plot.tmpCache('frame', 'bidder.html');
+            this.role = options.role;
+            this.other = options.other;
+            if (this.node.player.stage.step === 3) {
+                this.lastOffer = options.offer;
+                this.node.on('LOADED', function() {
+                    this.node.emit('BID_DONE', this.lastOffer, false);
+                });
+            }
+        };        
+    }
+
+    else if (role === 'SOLO') {
+        reconOptions.cb = function(options) {
+            this.plot.tmpCache('frame', 'solo.html');
+            this.role = options.role;
+        };
+    }
 }

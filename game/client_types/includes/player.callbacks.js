@@ -10,7 +10,6 @@ module.exports = {
     init: init,
     precache: precache,
     selectLanguage: selectLanguage,
-    matching: matching,
     bidder: bidder,
     respondent: respondent,
     endgame: endgame
@@ -34,9 +33,7 @@ function init() {
             stageOffset: 1
         });
 
-        node.game.visualTimer = node.widgets.append('VisualTimer', header, {
-            // gameTimer: node.game.timer
-        });
+        node.game.visualTimer = node.widgets.append('VisualTimer', header);
 
         // Done button to click.
         node.game.donebutton = node.widgets.append('DoneButton', header);
@@ -51,7 +48,7 @@ function init() {
 
     // Add event listeners valid for the whole game.
 
-    node.on('BID_DONE', function(value) {
+    node.on('BID_DONE', function(value, notify) {
         var root, time, offer, submitOffer, timeup;        
 
         timeup = node.game.timer.isTimeup();
@@ -76,11 +73,14 @@ function init() {
         W.writeln(' Your offer: ' +  value +
                   '. Waiting for the respondent... ', root);
 
-        // Notify the other player.
-        node.say('OFFER', node.game.other, node.game.lastOffer);
+        if (notify !== false) {
+            // Notify the other player.
+            node.say('OFFER', node.game.other, node.game.lastOffer);
 
-        // Notify the server.
-        node.done({ offer: value });
+            // Notify the server.
+            node.done({ offer: value });
+        }
+
     });
 
     node.on('RESPONSE_DONE', function(response) {
@@ -198,6 +198,27 @@ function init() {
 
     // Set default language prefix.
     W.setUriPrefix(node.player.lang.path);
+
+    // Listeners for first two stages are put here, so that
+    // if there is a reconnection they can be executed by any
+    // step.
+
+    node.game.role = null;
+    node.game.other = null;
+    node.game.offerReceived = null;
+
+    node.on.data('ROLE', function(msg) {
+        that.other = msg.data.other;
+        that.role = msg.data.role;
+        node.done({ role: that.role });
+        
+    });
+
+    // For respondent.
+    node.on.data('OFFER', function(msg) {
+        that.offerReceived = msg.data;     
+        node.done();       
+    });           
 }
 
 //////////////////////////////////////////////
@@ -245,8 +266,7 @@ function selectLanguage() {
                                          W.getFrameDocument().body);
 }
 
-function matching() {
-
+function bidder() {
     //////////////////////////////////////////////
     // nodeGame hint:
     //
@@ -262,56 +282,23 @@ function matching() {
     /////////////////////////////////////////////
     var that = this;
 
-    // Load the BIDDER interface.
-    node.on.data('ROLE', function(msg) {
-        that.other = msg.data.other;
-        that.role = msg.data.role;
-        console.log(that.role);
-        node.done({ role: that.role });
-    });
+    var b, options, loadFrameOptions;
 
-    console.log('Matching');
-}
+    loadFrameOptions = { 
+        cache: { loadMode: 'cache', storeMode: 'onLoad' }
+    };
 
-function bidder() {
-
-    var that = this;
-    var b, options;
-
-    if (this.role === 'RESPONDENT') {
-        
+    if (this.role === 'RESPONDENT') {        
         W.loadFrame('resp.html', function() {
-
-            //////////////////////////////////////////////
-            // nodeGame hint:
-            //
-            // nodeGame offers several types of event
-            // listeners. They are all resemble the syntax
-            //
-            // node.on.<target>
-            //
-            // For example: node.on.data(), node.on.plist().
-            //
-            // The low level event listener is simply
-            //
-            // node.on
-            //
-            // For example, node.on('in.say.DATA', cb) can
-            // listen to all incoming DATA messages.
-            //
-            /////////////////////////////////////////////
-            node.on.data('OFFER', function(msg) {
-                that.offerReceived = msg.data;
-                node.done();
-            });
-
-        }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+            // It was a reconnection.
+            if (that.offerReceived !== null) node.done();
+        }, loadFrameOptions);
         return;
     }
     else if (this.role === 'SOLO') {
         W.loadFrame('solo.html', function() {
             node.timer.randomDone();
-        });
+        }, loadFrameOptions);
         return;
     }
 
@@ -349,6 +336,7 @@ function bidder() {
     W.loadFrame('bidder.html', function() {
 
         b = W.getElementById('submitOffer');
+        if (!b) debugger;
         b.onclick = function() {
             var offer, value;
             offer = W.getElementById('offer');
@@ -361,7 +349,7 @@ function bidder() {
             node.emit('BID_DONE', value);
         };
 
-    }, { cache: { loadMode: 'cache', storeMode: 'onLoad' } });
+    }, loadFrameOptions);
 }
 
 function respondent() {
@@ -373,7 +361,26 @@ function respondent() {
     that = this;
     root = W.getElementById('container');
 
-    if (this.role === 'BIDDER') {       
+    if (this.role === 'BIDDER') {
+
+        //////////////////////////////////////////////
+        // nodeGame hint:
+        //
+        // nodeGame offers several types of event
+        // listeners. They are all resemble the syntax
+        //
+        // node.on.<target>
+        //
+        // For example: node.on.data(), node.on.plist().
+        //
+        // The low level event listener is simply
+        //
+        // node.on
+        //
+        // For example, node.on('in.say.DATA', cb) can
+        // listen to all incoming DATA messages.
+        //
+        /////////////////////////////////////////////
         node.on.data('ACCEPT', function(msg) {
             W.write(' Your offer was accepted.', root);
             node.timer.randomDone(3000);
@@ -404,10 +411,9 @@ function respondent() {
 }
 
 function endgame() {
-
-    node.game.visualTimer.switchActiveBoxTo(node.game.visualTimer.mainBox);
-    node.game.visualTimer.waitBox.hideBox();
-    node.game.visualTimer.setToZero();
+    this.visualTimer.switchActiveBoxTo(this.visualTimer.mainBox);
+    this.visualTimer.waitBox.hideBox();
+    this.visualTimer.setToZero();
     node.on.data('WIN', function(msg) {
         var win, exitcode, codeErr;
         var root;
