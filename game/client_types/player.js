@@ -185,8 +185,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //
         // In a widget-step, the following operations are performed:
         //
-        //   1- The widget is loaded, possibly appended. If a frame
-        //      is specified, but none is specified the default page
+        //   1- The widget is loaded, possibly appended. If no frame
+        //      is specified, the default page
         //      '/pages/default.html' will be loaded.
         //   2- Upon `node.done`, the current values of the widget
         //      are validated, and if valid, and not timeup will be
