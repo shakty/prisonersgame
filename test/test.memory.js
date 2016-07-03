@@ -9,7 +9,7 @@ var gameSettings = require('../game/game.settings.js');
 var numPlayers = settings.numPlayers;
 var baseSessionId = gameSettings.SESSION_ID;
 
-var numGames;
+var numGames, nRounds;
 var filePaths = [];
 var dbs = [];
 var gameSettings;
@@ -20,6 +20,7 @@ if (numPlayers % 2 != 0) {
     process.exit(1);
 }
 numGames = numPlayers / 2;
+nRounds = gameSettings.REPEAT;
 
 var dataDir = path.resolve(__dirname, '../', 'data/') + '/';
 
@@ -30,10 +31,9 @@ for (var i = 0; i < numGames; ++i) {
 
 console.log(baseSessionId);
 
-describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
+describe(numGames + ' memory files "data/*/memory_all.json"', function() {
     it('should exist', function() {
         var gameNo;
-
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
             fs.existsSync(filePaths[gameNo]).should.be.true;
         }
@@ -41,7 +41,6 @@ describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
 
     it('should be loadable with NDDB', function() {
         var gameNo, db;
-
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
             db = new NDDB();
             db.loadSync(filePaths[gameNo]);
@@ -53,16 +52,13 @@ describe('The '+numGames+' memory files "data/*/memory_all.json"', function() {
 });
 
 describe('File contents', function() {
-    before(function() {
-        gameSettings = require('../game/game.settings.js');
-    });
 
     it('should have the right number of entries', function() {
         var gameNo, nSets;
 
-        // 2 precache, 2 languageSel, 2 instr, 2 quiz, 2 quest = 10
+        // 2 precache, 2 languageSel, 2 instr, 2 quiz, 2 quest, 2 mood = 12
         // REPEAT * ultimatum (2 + 2 + 2 = 6)
-        nSets = 10 + (6 * gameSettings.REPEAT);
+        nSets = 12 + (6 * gameSettings.REPEAT);
 
         // TODO: Assuming two players.
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
@@ -94,7 +90,7 @@ describe('Bidding rounds', function() {
 
     before(function() {
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
-            bidDbs.push(dbs[gameNo].select('stage.stage', '=', 5).breed());
+            bidDbs.push(dbs[gameNo].select('stage.stage', '=', 6).breed());
         }
     });
 
@@ -103,7 +99,7 @@ describe('Bidding rounds', function() {
             // Maximum round should equal the repetition number in the settings.
             Math.max.apply(null,
                 bidDbs[gameNo].fetchValues('stage.round')['stage.round']
-            ).should.equal(gameSettings.REPEAT,
+            ).should.equal(nRounds,
                 'Wrong number of rounds in game ' + 
                            (gameNo+1) + '/'+numGames + '!');
         }
