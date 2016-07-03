@@ -52,7 +52,7 @@ module.exports = {
         selectLanguage: 100000,
         instructions: 90000,
         quiz: 60000,
-        mood: 10000,
+        mood: 60000,
         questionnaire: 90000,
         bidder: 30000,
         respondent: 30000
