@@ -1,10 +1,12 @@
 /**
  * # Standard Waiting Room for a nodeGame Channel
- * Copyright(c) 2015 Stefano Balietti
+ * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
- * Handles incoming connections, matches them, setups the Ultimatum game
- * in each client, move them in a separate gaming room, and start the game.
+ * Handles incoming connections, setups each client, 
+ * moves them in a separate game room, and starts the game.
+ *
+ * @see GameRoom (nodegame-server)
  */
 module.exports = function(settings, waitRoom, runtimeConf) {
 
@@ -14,30 +16,13 @@ module.exports = function(settings, waitRoom, runtimeConf) {
     var node = waitRoom.node;
     var channel = waitRoom.channel;
 
-
     var stager = new node.Stager();
 
-
+    // Parses the settings.
     waitRoom.parseSettings(settings);
 
     function clientReconnects(p) {
         channel.sysLogger.log('Reconnection in the waiting room.', p);
-
-        node.game.pl.each(function(player) {
-            node.socket.send(node.msg.create({
-                target: 'PCONNECT',
-                data: p,
-                to: player.id
-            }));
-        });
-
-        // Send currently connected players to reconnecting one.
-        node.socket.send(node.msg.create({
-            target: 'PLIST',
-            // TODO: this sends a bit too much.
-            data: node.game.pl.db,
-            to: p.id
-        }));
         node.game.pl.add(p);
         clientConnects(p);
     }

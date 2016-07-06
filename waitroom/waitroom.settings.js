@@ -13,7 +13,7 @@ module.exports = {
     // N_GAMES: 1,
 
     // Maximum waiting time.
-    MAX_WAIT_TIME: 30000,
+    MAX_WAIT_TIME: 900000,
 
     // Time and date of game start. Overrides `MAX_WAIT_TIME`
     // `START_DATE` is any valid argument to `Date` constructor.
