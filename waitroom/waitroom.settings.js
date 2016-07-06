@@ -3,37 +3,92 @@
  */
 module.exports = {
 
-    // How many clients must connect before groups are formed.
+    
+    /**
+     * ## POOL_SIZE
+     *
+     * How many clients must connect before groups are formed
+     */ 
     POOL_SIZE: 2,
 
-    // The size of each group.
+    /**
+     * ## GROUP_SIZE
+     *
+     * The size of each group
+     */
     GROUP_SIZE: 2,
 
-    // Number of games to dispatch.
+    /**
+     * ## N_GAMES
+     *
+     * Number of games to dispatch 
+     *
+     * If set, it will close the waiting room after N_GAMES
+     * have been dispatched
+     */
     // N_GAMES: 1,
 
-    // Maximum waiting time.
+    /**
+     * ## MAX_WAIT_TIME
+     *
+     * Maximum waiting time in the waiting room
+     */ 
     MAX_WAIT_TIME: 900000,
 
-    // Time and date of game start. Overrides `MAX_WAIT_TIME`
-    // `START_DATE` is any valid argument to `Date` constructor.
-    //    START_DATE: 'December 13, 2015 13:24:00',
+    /**
+     * ## START_DATE
+     *
+     * Time and date of game start.
+     *
+     * Overrides `MAX_WAIT_TIME`. Accepted values: any valid
+     * argument to `Date` constructor.
+     */
+    // START_DATE: 'December 13, 2015 13:24:00', 
     // START_DATE: new Date().getTime() + 30000,
 
-    // Treatment assigned to groups.
-    // If left undefined, a random treatment will be selected.
-    // Use "treatment_rotate" for rotating the treatments.
-    CHOSEN_TREATMENT: 'treatment_rotate',
+    /**
+     * ## CHOSEN_TREATMENT
+     *
+     * The treatment assigned to every new group
+     *
+     * Accepted values:
+     *
+     *   - "treatment_rotate": rotates the treatments.
+     *   - undefined: a random treatment will be selected.
+     *   - function: a callback returning the name of the treatment. E.g:
+     *
+     *       function(treatments, roomCounter) {
+     *           return treatments[num % treatments.length];
+     *       }
+     *
+     */
+    CHOSEN_TREATMENT: function(treatments, roomCounter) {
+        return treatments[roomCounter % treatments.length];
+    },
 
+    /**
+     * ## DISCONNECT_IF_NOT_SELECTED (experimental)
+     *
+     * Disconnect clients if not selected for a game when dispatching
+     */
     DISCONNECT_IF_NOT_SELECTED: false,
 
-    // In the execution mode ´'TIMEOUT'´, one waits until the time is up, then
-    // it will be checked whether enough players are there to start the game.
-    // In the execution mode ´'WAIT_FOR_N_PLAYERS'´, the game starts right away
-    // if there are the desired number of players. Otherwise, when the time is
-    // up, it will be checked if there are at least a certain minimum number of
-    // players to start the game.
-
-    EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS' // 'TIMEOUT'
+    /**
+     * ## EXECUTION_MODE
+     *
+     * Sets the execution mode of the waiting room
+     *
+     * Different modes might have different default values, and need
+     * different settintgs.
+     *
+     * Available modes:
+     *
+     *   - ´TIMEOUT´, waits until the time is up, then it checks
+     *        whether enough players are connected to start the game.
+     *   - ´WAIT_FOR_N_PLAYERS´, the game starts right away as soon as
+     *        the desired number of connected players is reached.     
+     */
+    // EXECUTION_MODE: 'TIMEOUT'
+    EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS'
 
 };
