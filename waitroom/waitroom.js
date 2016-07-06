@@ -60,6 +60,7 @@ module.exports = function(settings, waitRoom, runtimeConf) {
             destroyAll: true,
             append: { 'WaitingRoom': {} }
         });
+
         if (waitRoom.isRoomOpen()) {
             console.log('Client connected to waiting room: ', p.id);
 

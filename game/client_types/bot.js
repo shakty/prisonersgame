@@ -33,7 +33,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.setOnInit(cbs.init);
 
     // Set the default step rule for all the stages.
-    stager.setDefaultStepRule(stepRules.WAIT);
+    stager.setDefaultProperty('stepRule', stepRules.WAIT);
 
     stager.extendStep('ultimatum', {
         cb: cbs.ultimatum
