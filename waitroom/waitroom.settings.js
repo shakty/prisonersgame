@@ -2,8 +2,25 @@
  * Standard Waiting Room settings.
  */
 module.exports = {
-
     
+    /**
+     * ## EXECUTION_MODE
+     *
+     * Sets the execution mode of the waiting room
+     *
+     * Different modes might have different default values, and need
+     * different settintgs.
+     *
+     * Available modes:
+     *
+     *   - ´TIMEOUT´, waits until the time is up, then it checks
+     *        whether enough players are connected to start the game.
+     *   - ´WAIT_FOR_N_PLAYERS´, the game starts right away as soon as
+     *        the desired number of connected players is reached.     
+     */
+    // EXECUTION_MODE: 'TIMEOUT',
+    EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS',
+
     /**
      * ## POOL_SIZE
      *
@@ -33,7 +50,7 @@ module.exports = {
      *
      * Maximum waiting time in the waiting room
      */ 
-    MAX_WAIT_TIME: 900000,
+    MAX_WAIT_TIME: 90000,
 
     /**
      * ## START_DATE
@@ -74,21 +91,22 @@ module.exports = {
     DISCONNECT_IF_NOT_SELECTED: false,
 
     /**
-     * ## EXECUTION_MODE
+     * ## ON_TIMEOUT
      *
-     * Sets the execution mode of the waiting room
-     *
-     * Different modes might have different default values, and need
-     * different settintgs.
-     *
-     * Available modes:
-     *
-     *   - ´TIMEOUT´, waits until the time is up, then it checks
-     *        whether enough players are connected to start the game.
-     *   - ´WAIT_FOR_N_PLAYERS´, the game starts right away as soon as
-     *        the desired number of connected players is reached.     
+     * A callback function to be executed when wait time expires
      */
-    // EXECUTION_MODE: 'TIMEOUT'
-    EXECUTION_MODE: 'WAIT_FOR_N_PLAYERS'
+    // ON_TIMEOUT: function() {
+    //    console.log('I am timed out!');
+    // },
 
+    /**
+     * ## ON_TIMEOUT_SERVER
+     *
+     * A callback function to be executed on the server when wait time expires
+     *
+     * The context of execution is WaitingRoom.
+     */
+    // ON_TIMEOUT_SERVER: function(code) {
+    //    console.log('*** I am timed out! ', code.id);
+    // }
 };
