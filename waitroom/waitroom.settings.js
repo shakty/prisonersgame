@@ -109,4 +109,18 @@ module.exports = {
     // ON_TIMEOUT_SERVER: function(code) {
     //    console.log('*** I am timed out! ', code.id);
     // }
+
+    /**
+     * ## DISPATCH_TO_SAME_ROOM
+     *
+     * If TRUE, every new group will be added to the same game room
+     *
+     * A new game room will be created for the first dispatch, and
+     * reused for all successive groups. Default, FALSE.
+     *
+     * !Notice the game must support adding players while it is running.
+     *
+     * @see WaitingRoom.lastGameRoom
+     */
+    // DISPATCH_TO_SAME_ROOM: true
 };
