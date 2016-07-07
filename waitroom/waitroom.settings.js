@@ -123,4 +123,13 @@ module.exports = {
      * @see WaitingRoom.lastGameRoom
      */
     // DISPATCH_TO_SAME_ROOM: true
+
+    /**
+     * ## logicPath
+     *
+     * If set, a custom implementation of the wait room will be used
+     *
+     * @see wait.room.js (nodegame-server)
+     */
+    // logicPath: 'path/to/a/wait.room.js'
 };

@@ -1,6 +1,6 @@
 /**
  * # Requirements functions
- * Copyright(c) 2015 Stefano Balietti
+ * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
  * Sets requiremetns for accessing the channel.
@@ -11,15 +11,23 @@ module.exports = function(requirements, settings) {
     var ngr = require('nodegame-requirements');
 
     requirements.add(ngr.nodegameBasic);
-    requirements.add(ngr.speedTest, settings.speedTest);
-    requirements.add(ngr.browserDetect, settings.excludeBrowsers);
     requirements.add(ngr.loadFrameTest);
     requirements.add(ngr.cookieSupport);
 
+    if ('object' !== typeof settings.speedTest) {
+        requirements.add(ngr.speedTest, settings.speedTest);
+    }
+
+    if ('undefined' !== typeof settings.excludeBrowsers) {
+        requirements.add(ngr.browserDetect, settings.excludeBrowsers);
+    }
+
+    if ('undefined' !== typeof settings.maxExecTime) {
+        requirements.setMaxExecutionTime(settings.maxExecTime);
+    }
+
     // requirements.add(ngr.testFail);
     // requirements.add(ngr.testSuccess);
-
-    requirements.setMaxExecutionTime(settings.maxExecTime);
 
     requirements.onFailure(function() {
         var str, args;

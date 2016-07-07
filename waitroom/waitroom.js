@@ -110,7 +110,6 @@ module.exports = function(settings, waitRoom, runtimeConf) {
         }
     }
 
-
     function monitorReconnects(p) {
         node.game.ml.add(p);
     }
