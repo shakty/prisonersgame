@@ -12,7 +12,10 @@ module.exports = function(requirements, settings) {
 
     requirements.add(ngr.nodegameBasic);
     requirements.add(ngr.loadFrameTest);
-    requirements.add(ngr.cookieSupport);
+
+    if (settings.cookieSupport) {
+        requirements.add(ngr.cookieSupport, settings.cookieSupport);
+    }
 
     if ('object' !== typeof settings.speedTest) {
         requirements.add(ngr.speedTest, settings.speedTest);

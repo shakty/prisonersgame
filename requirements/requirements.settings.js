@@ -3,6 +3,10 @@
  * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
+ * Requirements settings file.
+ *
+ * Write custom test in requirements.js
+ *
  * http://www.nodegame.org
  * ---
  */
@@ -15,13 +19,6 @@ module.exports = {
      * If TRUE, it creates a requirements room. Default, TRUE
      */
     enabled: true,
-
-    /**
-     * ## doChecking
-     *
-     * If TRUE, start testing the requirements immediately. Default, TRUE
-     */
-    doChecking: true,
 
     /**
      * ## maxExecTime
@@ -38,7 +35,26 @@ module.exports = {
     speedTest: {
         messages: 10,
         time: 1000
-    }
+    },
+
+    /**
+     * ## cookieSupport
+     *
+     * If set, client must support setting cookies.
+     *
+     * Accepted values:
+     *
+     *   - 'persistent': cookies must persist across session
+     *   - 'session': cookies must be set within same session
+     */
+    cookieSupport: 'persistent'
+
+    /**
+     * ## doChecking
+     *
+     * If TRUE, start testing the requirements immediately. Default, TRUE
+     */
+    // doChecking: true,
 
     /**
      * ## logicPath
