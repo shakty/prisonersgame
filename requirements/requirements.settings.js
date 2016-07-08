@@ -50,6 +50,15 @@ module.exports = {
     cookieSupport: 'persistent'
 
     /**
+     * ## nextRoom
+     *
+     * If set, clients that pass the requirements are moved to this room.
+     *
+     * Default: the waiting room
+     */
+    // nextRoom: 'mynextroom',
+
+    /**
      * ## doChecking
      *
      * If TRUE, start testing the requirements immediately. Default, TRUE

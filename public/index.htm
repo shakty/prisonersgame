@@ -44,10 +44,10 @@
     // Connecting to waiting room.
     if (location.search) {
       // Pass query arguments on.
-      node.connect("/ultimatum", { query: location.search.substr(1) });
+      node.connect({ query: location.search.substr(1) });
     }
     else {
-      node.connect("/ultimatum");
+      node.connect();
     }
   }
 </script>

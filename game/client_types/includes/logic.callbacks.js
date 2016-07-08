@@ -37,6 +37,7 @@ function init() {
     console.log('********************** ultimatum room ' + counter++ +
                 ' **********************');
 
+    // Create matcher and matches.
     this.matcher = new Matcher();
     this.matcher.generateMatches('random', node.game.pl.size());
     this.matcher.setIds(node.game.pl.id.getAllKeys());
