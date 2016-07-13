@@ -54,10 +54,6 @@ function init() {
 
     this.gameTerminated = false;
 
-    this.disconnectStr = 'One or more players disconnected. If they ' +
-        'do not reconnect within ' + settings.WAIT_TIME  +
-        ' seconds the game will be terminated.';
-
     // If players disconnects and then re-connects within the same round
     // we need to take into account only the final bids within that round.
     this.lastBids = {};
