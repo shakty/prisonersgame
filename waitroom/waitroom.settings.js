@@ -9,7 +9,7 @@ module.exports = {
      * Sets the execution mode of the waiting room
      *
      * Different modes might have different default values, and need
-     * different settintgs.
+     * different settings.
      *
      * Available modes:
      *

@@ -10,7 +10,7 @@ var ngc = require('nodegame-client');
 var GameStage = ngc.GameStage;
 var J = ngc.JSUS;
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 var Matcher = ngc.Matcher;
 var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
 
@@ -32,7 +32,7 @@ var counter = module.parent.exports.counter;
 function init() {
     DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
     
-    J.mkdirSyncRecursive(DUMP_DIR, 0777);
+    fs.mkdirsSync(DUMP_DIR);
 
     console.log('********************** ultimatum room ' + counter++ +
                 ' **********************');
