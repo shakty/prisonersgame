@@ -29,7 +29,7 @@ for (var i = 0; i < numGames; ++i) {
     filePaths.push(dataDir + (baseSessionId + i) + '/memory_all.json');
 }
 
-console.log(baseSessionId);
+// console.log(baseSessionId);
 
 describe(numGames + ' memory files "data/*/memory_all.json"', function() {
     it('should exist', function() {
