@@ -82,7 +82,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 //     });
 
     stager.extendStep('bidder', {
-        roleMapper: 'random_pairs'
+        roleMapper: {
+            roles: [ 'BIDDER', 'RESPONDENT', 'SOLO' ],
+            map: 'random_pairs'
+        }
     });
 
     stager.extendStage('ultimatum', {
