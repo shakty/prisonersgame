@@ -230,8 +230,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         init: function() {
             node.game.rounds.setDisplayMode(['COUNT_UP_STAGES_TO_TOTAL',
                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
-        }
-
+        },
         // `syncOnLoaded` forces the clients to wait for all the others to be
         // fully loaded before releasing the control of the screen to the
         // players.  This options introduces a little overhead in
@@ -240,20 +239,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // syncOnLoaded: true
     });
 
-//     stager.extendStep('matching', {
-//         init: function() {
-//             node.game.role = null;
-//             node.game.other = null;
-//             node.game.offerReceived = null;
-//         }
-//     });
-
     stager.extendStep('bidder', {
-        init: function() {
-            // node.game.partner = null;
-            node.game.offerReceived = null;
-        },
-        // cb: cbs.bidder,
         roles: {
             BIDDER: {
                 /////////////////////////////////////////////////////////////
@@ -271,6 +257,20 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 cb: function() {
                     var that, b;
                     b = W.getElementById('submitOffer');
+
+                    //////////////////////////////////////////////
+                    // nodeGame hint:
+                    //
+                    // var that = this;
+                    //
+                    // /this/ is usually a reference to node.game
+                    //
+                    // However, unlike in many progamming languages,
+                    // in javascript the object /this/ assumes
+                    // different values depending on the scope
+                    // of the function where it is called.
+                    //
+                    /////////////////////////////////////////////
                     that = this;
                     b.onclick = function() {
                         var offer, value;
@@ -286,6 +286,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 }
             },
             RESPONDENT: {
+                init: function() {                    
+                    node.game.offerReceived = null;
+                },
                 frame: 'resp.html',
                 cb: function() {
                     // It was a reconnection.
@@ -319,6 +322,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
                     node = this.node;
                     accept = W.getElementById('accept');
+
+
+
                     accept.onclick = function() {
                         node.emit('RESPONSE_DONE', 'ACCEPT');
                     };

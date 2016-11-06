@@ -10,8 +10,6 @@ module.exports = {
     init: init,
     precache: precache,
     selectLanguage: selectLanguage,
-    bidder: bidder,
-    respondent: respondent,
     endgame: endgame
 };
 
@@ -203,17 +201,8 @@ function init() {
     // if there is a reconnection they can be executed by any
     // step.
 
-    node.game.role = null;
     node.game.partner = null;
-    node.game.offerReceived = null;
-
-//     node.on.data('ROLE', function(msg) {
-//         that.other = msg.data.other;
-//         that.role = msg.data.role;
-//         node.done({ role: that.role });
-//         
-//     });
-          
+    node.game.offerReceived = null;          
 }
 
 //////////////////////////////////////////////
@@ -243,7 +232,7 @@ function precache() {
 
         'quiz2.html', // ('quiz.html' to have version with forms).
 
-        // These two are cached later by loadFrame calls (for demonstration):
+        // Not cached (for demonstration).
         // 'bidder.html',
         // 'resp.html',
 
@@ -259,138 +248,6 @@ function precache() {
 function selectLanguage() {
     node.game.lang = node.widgets.append('LanguageSelector',
                                          W.getFrameDocument().body);
-}
-
-function bidder() {
-    //////////////////////////////////////////////
-    // nodeGame hint:
-    //
-    // var that = this;
-    //
-    // /this/ is usually a reference to node.game
-    //
-    // However, unlike in many progamming languages,
-    // in javascript the object /this/ assumes
-    // different values depending on the scope
-    // of the function where it is called.
-    //
-    /////////////////////////////////////////////
-    var that = this;
-
-    var b, options, loadFrameOptions;
-
-    loadFrameOptions = { 
-        cache: { loadMode: 'cache', storeMode: 'onLoad' }
-    };
-
-    if (this.role === 'RESPONDENT') {        
-        W.loadFrame('resp.html', function() {
-            // It was a reconnection.
-            if (that.offerReceived !== null) node.done();
-        }, loadFrameOptions);
-        return;
-    }
-    else if (this.role === 'SOLO') {
-        W.loadFrame('solo.html', function() {
-            node.timer.randomDone();
-        }, loadFrameOptions);
-        return;
-    }
-
-    //////////////////////////////////////////////
-    // nodeGame hint:
-    //
-    // The W object takes care of all
-    // visual operation of the game. E.g.,
-    //
-    // W.loadFrame()
-    //
-    // loads an HTML file into the game screen, and the executes
-    // the callback function passed as second parameter.
-    //
-    // W.loadFrame takes an optional third 'options' argument which
-    // can be used to request caching of the displayed frames (see
-    // the end of the following function call). The caching mode
-    // can be set with two fields: 'loadMode' and 'storeMode'.
-    //
-    // 'loadMode' specifies whether the frame should be reloaded
-    // regardless of caching (loadMode = 'reload') or whether the
-    // frame should be looked up in the cache (loadMode = 'cache',
-    // default).  If the frame is not in the cache, it is always
-    // loaded from the server.
-    //
-    // 'storeMode' says when, if at all, to store the loaded frame.
-    // By default the cache isn't updated (storeMode = 'off'). The
-    // other options are to cache the frame right after it has been
-    // loaded (storeMode = 'onLoad') and to cache it when it is
-    // closed, that is, when the frame is replaced by other
-    // contents (storeMode = 'onClose'). This last mode preserves
-    // all the changes done while the frame was open.
-    //
-    /////////////////////////////////////////////
-    W.loadFrame('bidder.html', function() {
-
-     
-
-    }, loadFrameOptions);
-}
-
-function respondent() {
-    
-    var that;
-    var root, b;
-    var theofferSpan, offered, accept, reject;
-
-    that = this;
-    root = W.getElementById('container');
-
-    if (this.role === 'BIDDER') {
-
-        //////////////////////////////////////////////
-        // nodeGame hint:
-        //
-        // nodeGame offers several types of event
-        // listeners. They are all resemble the syntax
-        //
-        // node.on.<target>
-        //
-        // For example: node.on.data(), node.on.plist().
-        //
-        // The low level event listener is simply
-        //
-        // node.on
-        //
-        // For example, node.on('in.say.DATA', cb) can
-        // listen to all incoming DATA messages.
-        //
-        /////////////////////////////////////////////
-        node.on.data('ACCEPT', function(msg) {
-            W.write(' Your offer was accepted.', root);
-            node.timer.randomDone(3000);
-        });
-        node.on.data('REJECT', function(msg) {
-            W.write(' Your offer was rejected.', root);
-            node.timer.randomDone(3000);
-        });
-        return;
-    }
-    else if (this.role === 'SOLO') {
-        node.timer.randomDone();
-        return;
-    }
-
-    W.setInnerHTML('theoffer', node.game.offerReceived);
-    W.show('offered');
-
-    accept = W.getElementById('accept');
-    accept.onclick = function() {
-        node.emit('RESPONSE_DONE', 'ACCEPT');
-    };
-
-    reject = W.getElementById('reject');
-    reject.onclick = function() {
-        node.emit('RESPONSE_DONE', 'REJECT');
-    };
 }
 
 function endgame() {
