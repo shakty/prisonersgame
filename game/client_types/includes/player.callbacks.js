@@ -75,7 +75,7 @@ function init() {
 
         if (notify !== false) {
             // Notify the other player.
-            node.say('OFFER', node.game.other, node.game.lastOffer);
+            node.say('OFFER', node.game.partner, node.game.lastOffer);
 
             // Notify the server.
             node.done({ offer: value });
@@ -86,7 +86,7 @@ function init() {
     node.on('RESPONSE_DONE', function(response) {
 
         // Tell the other player own response.
-        node.say(response, node.game.other, response);
+        node.say(response, node.game.partner, response);
 
         //////////////////////////////////////////////
         // nodeGame hint:
@@ -109,14 +109,14 @@ function init() {
         /////////////////////////////////////////////
         node.done({
             value: node.game.offerReceived,
-            responseTo: node.game.other,
+            responseTo: node.game.partner,
             response: response
         });
     });
 
     // Add other functions are variables used during the game.
 
-    this.other = null;
+    this.partner = null;
 
     this.bidTimeup = function() {
         node.emit('BID_DONE', Math.floor(Math.random() * 101), true);
@@ -204,21 +204,16 @@ function init() {
     // step.
 
     node.game.role = null;
-    node.game.other = null;
+    node.game.partner = null;
     node.game.offerReceived = null;
 
-    node.on.data('ROLE', function(msg) {
-        that.other = msg.data.other;
-        that.role = msg.data.role;
-        node.done({ role: that.role });
-        
-    });
-
-    // For respondent.
-    node.on.data('OFFER', function(msg) {
-        that.offerReceived = msg.data;     
-        node.done();       
-    });           
+//     node.on.data('ROLE', function(msg) {
+//         that.other = msg.data.other;
+//         that.role = msg.data.role;
+//         node.done({ role: that.role });
+//         
+//     });
+          
 }
 
 //////////////////////////////////////////////
@@ -335,19 +330,7 @@ function bidder() {
     /////////////////////////////////////////////
     W.loadFrame('bidder.html', function() {
 
-        b = W.getElementById('submitOffer');
-        if (!b) debugger;
-        b.onclick = function() {
-            var offer, value;
-            offer = W.getElementById('offer');
-            value = that.isValidBid(offer.value);
-            if (value === false) {
-                W.writeln('Please enter a number between 0 and 100',
-                          W.getElementById('container'));
-                return;
-            }
-            node.emit('BID_DONE', value);
-        };
+     
 
     }, loadFrameOptions);
 }

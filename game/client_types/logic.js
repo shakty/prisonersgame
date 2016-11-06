@@ -74,11 +74,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-    stager.extendStep('matching', {
-        cb: function() {
-            this.node.log('Ultimatum');
-            cbs.doMatch();
-        }
+//     stager.extendStep('matching', {
+//         cb: function() {
+//             this.node.log('Ultimatum');
+//             cbs.doMatch();
+//         }
+//     });
+
+    stager.extendStep('bidder', {
+        roleMapper: 'random_pairs'
     });
 
     stager.extendStage('ultimatum', {

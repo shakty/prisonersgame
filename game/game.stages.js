@@ -23,18 +23,20 @@ module.exports = function(stager, settings) {
 
     stager.extendStage('ultimatum', {
         steps: [
-            'matching',
+            // 'matching',
             'bidder',
             'respondent'
         ]
+        // TODO: this needs to be valid (empty roles).
+        // roles: [ 'BIDDER', 'RESPONDENT', 'SOLO' ]
     });
 
     // Can skip specific stages or steps here.
 
     // stager.skip('precache');
-    // stager.skip('selectLanguage');
-    // stager.skip('quiz');
-    // stager.skip('instructions');
-    // stager.skip('mood');
+    stager.skip('selectLanguage');
+    stager.skip('quiz');
+    stager.skip('instructions');
+    stager.skip('mood');
     // stager.skip('ultimatum')
 };

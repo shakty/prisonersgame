@@ -240,36 +240,134 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         // syncOnLoaded: true
     });
 
-    stager.extendStep('matching', {
+//     stager.extendStep('matching', {
+//         init: function() {
+//             node.game.role = null;
+//             node.game.other = null;
+//             node.game.offerReceived = null;
+//         }
+//     });
+
+    stager.extendStep('bidder', {
         init: function() {
-            node.game.role = null;
-            node.game.other = null;
+            // node.game.partner = null;
             node.game.offerReceived = null;
+        },
+        // cb: cbs.bidder,
+        roles: {
+            BIDDER: {
+                /////////////////////////////////////////////////////////////
+                // nodeGame hint: the timeup parameter
+                //
+                // It can be a string (to be emitted as an event), or a
+                // function to be executed when `node.game.timer` expires.
+                // Note that if no `timer` property is set for current step,
+                // then the timeup function will not be automatically called.
+                //
+                // The default timeup is different for player and logic client
+                // types. For players, by default it is a call to `node.done()`.
+                timeup: function() { node.game.bidTimeup(); },
+                frame: 'bidder.html',
+                cb: function() {
+                    var that, b;
+                    b = W.getElementById('submitOffer');
+                    that = this;
+                    b.onclick = function() {
+                        var offer, value;
+                        offer = W.getElementById('offer');
+                        value = that.isValidBid(offer.value);
+                        if (value === false) {
+                            W.writeln('Please enter a number between 0 and 100',
+                                      W.getElementById('container'));
+                            return;
+                        }
+                        that.node.emit('BID_DONE', value);
+                    };
+                }
+            },
+            RESPONDENT: {
+                frame: 'resp.html',
+                cb: function() {
+                    // It was a reconnection.
+                    if (this.offerReceived !== null) node.done();
+                    node.on.data('OFFER', function(msg) {
+                        node.game.offerReceived = msg.data;     
+                        node.done();       
+                    }); 
+                }
+            },
+            SOLO: {
+                frame: 'solo.html',
+                cb: function() {
+                    this.node.timer.randomDone();
+                }
+            }
         }
     });
 
-    stager.extendStep('bidder', {
-        /////////////////////////////////////////////////////////////
-        // nodeGame hint: the timeup parameter
-        //
-        // It can be a string (to be emitted as an event), or a
-        // function to be executed when `node.game.timer` expires.
-        // Note that if no `timer` property is set for current step,
-        // then the timeup function will not be automatically called.
-        //
-        // The default timeup is different for player and logic client
-        // types. For players, by default it is a call to `node.done()`.
-        timeup: function() {
-            if (this.role === 'BIDDER') node.game.bidTimeup();
-        },
-        cb: cbs.bidder
-    });
-
     stager.extendStep('respondent', {
-        timeup: function() {
-            if (this.role === 'RESPONDENT') node.game.resTimeup();
-        },
-        cb: cbs.respondent
+        role: 'keep',
+        roles: {
+            RESPONDENT: {
+                timeup: function() {
+                    node.game.resTimeup();
+                },
+                cb: function() {
+                    var accept, reject, node;
+                    W.setInnerHTML('theoffer', this.offerReceived);
+                    W.show('offered');
+
+                    node = this.node;
+                    accept = W.getElementById('accept');
+                    accept.onclick = function() {
+                        node.emit('RESPONSE_DONE', 'ACCEPT');
+                    };
+
+                    reject = W.getElementById('reject');
+                    reject.onclick = function() {
+                        node.emit('RESPONSE_DONE', 'REJECT');
+                    };
+                }
+            },
+            BIDDER: {
+                cb: function() {
+                    var node, root;
+                    node = this.node;
+                    root = W.getElementById('container');
+                    //////////////////////////////////////////////
+                    // nodeGame hint:
+                    //
+                    // nodeGame offers several types of event
+                    // listeners. They are all resemble the syntax
+                    //
+                    // node.on.<target>
+                    //
+                    // For example: node.on.data(), node.on.plist().
+                    //
+                    // The low level event listener is simply
+                    //
+                    // node.on
+                    //
+                    // For example, node.on('in.say.DATA', cb) can
+                    // listen to all incoming DATA messages.
+                    //
+                    /////////////////////////////////////////////
+                    node.on.data('ACCEPT', function(msg) {
+                        W.write(' Your offer was accepted.', root);
+                        node.timer.randomDone(3000);
+                    });
+                    node.on.data('REJECT', function(msg) {
+                        W.write(' Your offer was rejected.', root);
+                        node.timer.randomDone(3000);
+                    });
+                }
+            },
+            SOLO: {
+                cb: function() {
+                    this.node.timer.randomDone();
+                }
+            }
+        }
     });
 
     stager.extendStep('endgame', {
