@@ -309,7 +309,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('respondent', {
-        role: 'keep',
+        role: 'keep', // true, // true->keep, false/null->delete (default), string->as is.
+        partner: true, // true->keep, false/null->delete (dflt), string->as is.
         roles: {
             RESPONDENT: {
                 timeup: function() {
