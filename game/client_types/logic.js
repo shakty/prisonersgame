@@ -74,17 +74,14 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         }
     });
 
-//     stager.extendStep('matching', {
-//         cb: function() {
-//             this.node.log('Ultimatum');
-//             cbs.doMatch();
-//         }
-//     });
-
     stager.extendStep('bidder', {
-        roleMapper: {
+        matcher: {
             roles: [ 'BIDDER', 'RESPONDENT', 'SOLO' ],
-            map: 'random_pairs'
+            match: 'random_pairs',
+            // match: 'roundrobin',
+            // n: pl.size(),
+            // skipBye: false
+            // setPartner: true // default
         }
     });
 

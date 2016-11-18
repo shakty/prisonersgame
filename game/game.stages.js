@@ -23,7 +23,6 @@ module.exports = function(stager, settings) {
 
     stager.extendStage('ultimatum', {
         steps: [
-            // 'matching',
             'bidder',
             'respondent'
         ]
