@@ -309,8 +309,20 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     stager.extendStep('respondent', {
-        role: 'keep', // true, // true->keep, false/null->delete (default), string->as is.
-        partner: true, // true->keep, false/null->delete (dflt), string->as is.
+        /////////////////////////////////////////////////////////////
+        // nodeGame hint: role and partner
+        //
+        // By default `role` and a `partner` are valid only within a step.
+        // It is possible to carry over the values 
+        //
+        // Role and partner meaning:
+        //   - falsy      -> delete (default),
+        //   - true       -> keep current value,
+        //   - string     -> as is (must exist),
+        //   - function   -> must return null or a valid role name
+        ///////////////////////////////////////////////////////////////////////
+        role: function() { return this.role },
+        partner: function() { return this.partner },
         roles: {
             RESPONDENT: {
                 timeup: function() {
@@ -323,8 +335,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
                     node = this.node;
                     accept = W.getElementById('accept');
-
-
 
                     accept.onclick = function() {
                         node.emit('RESPONSE_DONE', 'ACCEPT');
