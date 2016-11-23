@@ -77,9 +77,9 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendStep('bidder', {
         matcher: {
             roles: [ 'BIDDER', 'RESPONDENT', 'SOLO' ],
-            match: 'random_pairs',
-            // match: 'roundrobin',
-            // n: pl.size(),
+            // match: 'random_pairs',
+            match: 'roundrobin',
+            cycle: 'repeat_invert',
             // skipBye: false
             // setPartner: true // default
         }
