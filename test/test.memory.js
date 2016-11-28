@@ -138,7 +138,7 @@ describe('Bidding rounds', function() {
     });
 
     it('should have players in the correct roles', function() {
-        var i, roundDb;
+        var i, roundDb, tmp;
         var bidderId, respondentId, responseObj;
 
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
@@ -146,12 +146,11 @@ describe('Bidding rounds', function() {
                 roundDb = bidDbs[gameNo].select('stage.round', '=', i).breed();
 
                 // Check role IDs.
-                bidderId = roundDb
-                    .select('role', '=', 'BIDDER')
-                    .fetch()[0].player;
-                respondentId = roundDb
-                    .select('role', '=', 'RESPONDENT')
-                    .fetch()[0].player;
+                tmp = roundDb
+                    .select('responseTo')
+                    .fetch()[0];
+                bidderId = tmp.responseTo;
+                respondentId = tmp.player;
 
                 bidderId.should.not.equal(respondentId,
                     'Bidder same as respondent in game '+
