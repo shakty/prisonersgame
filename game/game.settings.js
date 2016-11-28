@@ -51,7 +51,7 @@ module.exports = {
     TIMER: {
         selectLanguage: 100000,
         instructions: 90000,
-        quiz: 60000,
+        quiz: 60000000,
         mood: 60000,
         questionnaire: 90000,
         bidder: 30000,

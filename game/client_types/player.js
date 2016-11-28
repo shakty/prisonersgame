@@ -59,11 +59,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // so that it is not necessary to implement one, if the
     // player has, for example, just to read a text.
     //
-    // Another important property is `stepRule`
-    //
-    // A step rule is a function deciding what to do when a player has
-    // terminated a step and entered the stage level _DONE_.
-    //
     // Some of the available step rules are:
     //
     //  - 'SOLO': advances through the steps freely
@@ -320,7 +315,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //   - true       -> keep current value,
         //   - string     -> as is (must exist),
         //   - function   -> must return null or a valid role name
-        ///////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////
         role: function() { return this.role },
         partner: function() { return this.partner },
         roles: {

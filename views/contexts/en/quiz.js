@@ -16,7 +16,7 @@ module.exports = function(settings, headers) {
         "Q": "Q",
         "howManyCoins": "How many coins will you divide with your partner?",
         "vals": J.shuffle(values),
-        "ifYouAreTheBidder": "If you are a bidder what happens if your partner reject your offer?",
+        "ifYouAreTheBidder": "If you are a bidder, what happens if your partner reject your offer?",
         "howMuchYouGet": [
             "He does not get anything, I keep my share.",
             "I get everything.",

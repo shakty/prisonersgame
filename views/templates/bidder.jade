@@ -4,7 +4,8 @@ block mainContent
     div(id='container', style='font-size: 20px')
         h2=youAre
         h3=makeAnOffer
-        input(type='number', min='0', max='100', name='offer',id='offer')
-        |\n
+        div.col-xs-2
+            input(type='number', min='0', max='100', name='offer',id='offer', class='form-control')
+            |\n
         input(type='button', value=submit, name='submitOffer', id='submitOffer', class='btn')
         br

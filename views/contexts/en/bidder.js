@@ -3,7 +3,7 @@ module.exports = function(settings, headers) {
 
     return {
         "title": "Bidder",
-        "youAre": "You are the Bidder",
+        "youAre": "You are the BIDDER",
         "makeAnOffer": "Make an offer from 0 to " + coins + " to another player.",
         "submit": "Submit"
     };

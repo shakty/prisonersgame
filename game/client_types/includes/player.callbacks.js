@@ -261,6 +261,8 @@ function endgame() {
         codeErr = 'ERROR (code not found)';
         win = msg.data && msg.data.win || 0;
         exitcode = msg.data && msg.data.exitcode || codeErr;
+        W.writeln('', root);
+        W.writeln('', root);
         W.writeln('Your bonus in this game is: ' + win, root);
         W.writeln('Your exitcode is: ' + exitcode, root);
     });

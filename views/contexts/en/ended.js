@@ -1,7 +1,7 @@
 module.exports = function(settings, headers) {
     return {
         "title": "ENDED",
-        "thankYou": "THANK YOU FOR PLAYING",
+        "thankYou": "Thank You for Playing",
         "pleaseGo": "Please go back to the Amazon Mechanical Turk web site and submit the hit.",
         "weUsually": "We usually pay within 24 hours. For any problem, please look for a HIT called <strong>Ultimatum Trouble Ticket</strong> and file a new trouble ticket reporting the following information:",
         "yourTurker": "your turker id",

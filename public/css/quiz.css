@@ -1,6 +1,5 @@
 ul, ol {
     margin: 30px 0 30px 10px;
-
 }
 
 li {
@@ -9,9 +8,9 @@ li {
 
 div#container_quiz {
     margin: 0 auto;
-    width: 800px;
     border: 0;
     background: #fff;
+    text-align: center;
 }
 
 div#quiz {
@@ -38,4 +37,8 @@ table#reject td, table#disconnect td {
     text-align: left;
     width: 599px;
     padding: 5px 10px;
+}
+
+table.choicetable td {
+    font-weight: normal;
 }

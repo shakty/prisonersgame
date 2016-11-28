@@ -1,6 +1,19 @@
+body {
+    font-size: 1.8em;
+}
+
 div#container {
     max-width: 650px;
-    margin: 0 auto;
+    margin: 0px auto;
+}
+
+.margin-bottom {
+    margin-bottom: 40px;
+}
+
+.subtitle {
+    font-size: 20px;
+    font-style: italic;
 }
 
 .important {
@@ -10,6 +23,10 @@ div#container {
 
 .question {
     font-weight: bold;
+}
+
+input#offer, input#submitOffer {
+    margin-bottom: 15px;
 }
 
 div#quiz .choicetable {
