@@ -257,7 +257,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 cb: function() {
                     var that, b;
                     b = W.getElementById('submitOffer');
-debugger
+
                     //////////////////////////////////////////////
                     // nodeGame hint:
                     //
