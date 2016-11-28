@@ -23,30 +23,61 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager = ngc.getStager(game.plot);
 
     stager.extendAllSteps(function(o) {
-        o._cb = o.cb;
-        o.cb = function() {
-            var _cb, stepObj, id;
-            stepObj = this.getCurrentStepObj();
-            _cb = stepObj._cb;
-            _cb.call(this);
-            id = stepObj.id
+        var role;
+        if (o.roles) {
+            o._roles = {};
+            for (role in o.roles) {
+                if (o.roles.hasOwnProperty(role)) {
+                    // Copy only cb property.
+                    o._roles[role] = o.roles[role].cb;
+                    // Make a new one.
+                    o.roles[role].cb = function() {
+                        var _cb, stepObj, id;
+                        stepObj = this.getCurrentStepObj();
+                        id = stepObj.id
 
-            if (id === 'quiz' ||
-                id === 'questionnaire' || 
-                id === 'bidder' ||
-                id === 'respondent' ||
-                id === 'mood') {
+                        _cb = stepObj._roles[this.role];
+                        _cb.call(this);
 
-                node.on('PLAYING', function() {
-                    node.timer.randomExec(function() {
-                        node.game.timer.doTimeUp();
+                        if ((this.role === 'BIDDER' && id === 'bidder') ||
+                            (this.role === 'RESPONDENT' &&
+                             id === 'respondent')) {
+
+                            node.on('PLAYING', function() {
+                                node.timer.randomExec(function() {
+                                    node.game.timer.doTimeUp();
+                                });
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            o._cb = o.cb;
+            o.cb = function() {
+                var _cb, stepObj, id;
+                stepObj = this.getCurrentStepObj();
+                id = stepObj.id
+
+                _cb = stepObj._cb;
+                _cb.call(this);
+                
+                if (id === 'quiz' ||
+                    id === 'questionnaire' || 
+                    id === 'mood') {
+                    
+                    node.on('PLAYING', function() {
+                        node.timer.randomExec(function() {
+                            node.game.timer.doTimeUp();
+                        });
                     });
-                });
-            }
-            else if (id !== 'matching' && id !== 'precache') {
-                node.timer.randomDone(2000);
-            }
-        };
+                }
+                else if (id !== 'precache') {
+                    node.timer.randomDone(2000);
+                }
+            };
+        }
         return o;
     });
 
