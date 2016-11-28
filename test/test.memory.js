@@ -139,7 +139,7 @@ describe('Bidding rounds', function() {
 
     it('should have players in the correct roles', function() {
         var i, roundDb, tmp;
-        var bidderId, respondentId, responseObj;
+        var bidderId, confirmBidderId, respondentId, responseObj;
 
         for (gameNo = 0; gameNo < numGames; ++gameNo) {
             for (i = 1; i <= gameSettings.REPEAT; ++i) {
@@ -151,6 +151,15 @@ describe('Bidding rounds', function() {
                     .fetch()[0];
                 bidderId = tmp.responseTo;
                 respondentId = tmp.player;
+
+                confirmBidderId = roundDb
+                    .select('offer')
+                    .fetch()[0].player;
+
+
+                bidderId.should.equal(confirmBidderId),
+                    'Bidder is not saved correctly in repondent obj. '+
+                    (gameNo+1)+'/'+numGames+'!');
 
                 bidderId.should.not.equal(respondentId,
                     'Bidder same as respondent in game '+
