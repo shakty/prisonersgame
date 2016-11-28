@@ -157,8 +157,8 @@ describe('Bidding rounds', function() {
                     .fetch()[0].player;
 
 
-                bidderId.should.equal(confirmBidderId),
-                    'Bidder is not saved correctly in repondent obj. '+
+                bidderId.should.equal(confirmBidderId,
+                    'Bidder is not saved correctly in repondent obj in game ' +
                     (gameNo+1)+'/'+numGames+'!');
 
                 bidderId.should.not.equal(respondentId,
