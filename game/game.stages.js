@@ -26,8 +26,6 @@ module.exports = function(stager, settings) {
             'bidder',
             'respondent'
         ]
-        // TODO: this needs to be valid (empty roles).
-        // roles: [ 'BIDDER', 'RESPONDENT', 'SOLO' ]
     });
 
     // Can skip specific stages or steps here.
