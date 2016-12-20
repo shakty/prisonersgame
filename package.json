@@ -2,7 +2,7 @@
   "name": "ultimatum-game",
   "channelName": "ultimatum",
   "description": "Plays an ultimatum game with nodegame",
-  "version": "2.1.1",
+  "version": "3.5.0",
   "author": {
     "name": "Stefano Balietti",
     "email": "sbalietti@ethz.ch",
@@ -26,7 +26,7 @@
   },
   "engines": {
     "node": "*",
-    "nodegame": ">= 1.0.0"
+    "nodegame": ">= 3.5.0"
   },
   "scripts": {
     "test": "./node_modules/.bin/mocha ./test/test.*.js"
