@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.5.1
+- Updated auth.settings.js file.
+
 ## 3.5.0
 - Using the Matcher/Roles API from version 3.5.
 
