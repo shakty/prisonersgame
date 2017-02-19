@@ -56,11 +56,6 @@ function init() {
         node.game.lastTimup = timeup;
         node.game.lastTime = time;
 
-        node.game.visualTimer.clear();
-        node.game.visualTimer.startWaiting({
-            milliseconds: node.game.settings.TIMER.respondent
-        });
-
         offer = W.getElementById('offer');
         if (offer) offer.disabled = 'disabled';
         submitOffer = W.getElementById('submitOffer');

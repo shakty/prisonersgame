@@ -1,6 +1,6 @@
 /**
  * # Player code for Ultimatum Game
- * Copyright(c) 2016 Stefano Balietti
+ * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
@@ -370,10 +370,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     //
                     /////////////////////////////////////////////
                     node.on.data('ACCEPT', function(msg) {
+                        node.game.visualTimer.stop();
                         W.write(' Your offer was accepted.', root);
                         node.timer.randomDone(3000);
                     });
                     node.on.data('REJECT', function(msg) {
+                        node.game.visualTimer.stop();
                         W.write(' Your offer was rejected.', root);
                         node.timer.randomDone(3000);
                     });
