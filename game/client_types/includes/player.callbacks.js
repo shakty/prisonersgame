@@ -58,7 +58,7 @@ function init() {
 
         node.game.visualTimer.clear();
         node.game.visualTimer.startWaiting({
-            milliseconds: node.game.settings.TIMER.response
+            milliseconds: node.game.settings.TIMER.respondent
         });
 
         offer = W.getElementById('offer');
