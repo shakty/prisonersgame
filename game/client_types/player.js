@@ -321,8 +321,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         //   - string     -> as is (must exist),
         //   - function   -> must return null or a valid role name
         //////////////////////////////////////////////////////////////////
-        role: function() { return this.role },
-        partner: function() { return this.partner },
+        role: function() { return this.role; },
+        partner: function() { return this.partner; },
         roles: {
             RESPONDENT: {
                 timeup: function() {

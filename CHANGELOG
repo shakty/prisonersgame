@@ -1,5 +1,8 @@
 # Changelog
 
+## 3.5.2
+- Fixed startTiming typo.
+
 ## 3.5.1
 - Updated auth.settings.js file.
 
