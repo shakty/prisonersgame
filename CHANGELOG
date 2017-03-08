@@ -1,5 +1,8 @@
 # Changelog
 
+## Current
+- Fixed bug shuffleChoices.
+
 ## 3.5.4
 - Fixed bug in German context.
 
