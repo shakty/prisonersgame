@@ -3,7 +3,7 @@
  * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
- * Handles bidding, and responds between two players.
+ * Handles biddings, and responses between two players.
  * Extensively documented tutorial.
  *
  * http://www.nodegame.org
@@ -138,7 +138,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 forms: [
                     w.get('ChoiceTable', {
                         id: 'howMuch',
-                        shuffleItems: true,
+                        shuffleChoices: true,
                         title: false,
                         choices: qt.howMuchChoices,
                         correctChoice: 1,
@@ -146,7 +146,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     }),
                     w.get('ChoiceTable', {
                         id: 'reject',
-                        shuffleItems: true,
+                        shuffleChoices: true,
                         title: false,
                         orientation: 'v',
                         choices: qt.rejectChoices,
@@ -155,7 +155,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     }),
                     w.get('ChoiceTable', {
                         id: 'disconnect',
-                        shuffleItems: true,
+                        shuffleChoices: true,
                         title: false,
                         orientation: 'v',
                         choices: qt.disconnectChoices,

@@ -35,7 +35,7 @@ module.exports = {
      *               as parameters.
      *
      */
-    mode: 'local',
+    mode: 'dummy',
 
     /**
      * ## nCodes
@@ -45,7 +45,7 @@ module.exports = {
      * Modes: 'dummy', 'auto'
      * Default: 100
      */
-    // nCodes: 20,
+    nCodes: 3,
 
     /**
      * ## addPwd
