@@ -1,5 +1,10 @@
 module.exports = function(settings, headers) {
-    var coins = settings.pp.COINS;
+    var s, coins;
+
+    // Retro-compatibility with nodeGame < 4.0.
+    s = settings.pp || s;
+    coins = s.COINS;
+
     return {
         "title": "Anbieter",
         "youAre": "Sie sind der ANBIETER",

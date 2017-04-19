@@ -1,8 +1,12 @@
 module.exports = function(settings, headers) {
+    var s, C, R, E;
 
-    var C = settings.pp.COINS;
-    var R = settings.pp.REPEAT;
-    var E = settings.pp.EXCHANGE_RATE_INSTRUCTIONS;
+    // Retro-compatibility with nodeGame < 4.0.
+    s = settings.pp || s;
+
+    C = settings.COINS;
+    R = settings.REPEAT;
+    E = settings.EXCHANGE_RATE_INSTRUCTIONS;
 
     return {
         title: "INSTRUCTIONS",
