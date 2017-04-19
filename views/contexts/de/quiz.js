@@ -5,7 +5,7 @@ module.exports = function(settings, headers) {
     var s, coins, values;
 
     // Retro-compatibility with nodeGame < 4.0.
-    s = settings.pp || s;
+    s = settings.pp || settings;
 
     coins = s.COINS;
     values = [
