@@ -5,8 +5,8 @@
   "version": "3.5.5",
   "author": {
     "name": "Stefano Balietti",
-    "email": "sbalietti@ethz.ch",
-    "url": "http://www.nodegame.org"
+    "email": "ste@nodegame.org",
+    "url": "http://stefanobalietti.com"
   },
   "main": "./index.html",
   "keywords": [
@@ -28,6 +28,7 @@
     "node": "*",
     "nodegame": ">= 3.5.0"
   },
+  "homepage": "http://nodegame.org",
   "scripts": {
     "test": "./node_modules/.bin/mocha ./test/test.*.js"
   }
