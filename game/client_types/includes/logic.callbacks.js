@@ -1,5 +1,5 @@
 /**
- * # Functions used by the client of Ultimatum Game
+ * # Functions used by the client of prisoner Game
  * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
@@ -19,7 +19,7 @@ module.exports = {
     gameover: gameover,
     endgame: endgame,
     notEnoughPlayers: notEnoughPlayers,
-    reconnectUltimatum: reconnectUltimatum
+    reconnectprisoner: reconnectprisoner
 };
 
 var node = module.parent.exports.node;
@@ -33,7 +33,7 @@ function init() {
     
     fs.mkdirsSync(DUMP_DIR);
 
-    console.log('********************** ultimatum room ' + counter++ +
+    console.log('********************** prisoner room ' + counter++ +
                 ' **********************');
 
 //     // Create matcher and matches.
@@ -131,49 +131,10 @@ function init() {
 function gameover() {
     console.log('************** GAMEOVER ' + gameRoom.name + ' **************');
 
-    // TODO: fix this.
-    // channel.destroyGameRoom(gameRoom.name);
+
 }
 
-// function doMatch() {
-//     var match, id1, id2, soloId;
-//     
-//     // Generates new random matches for this round.
-//     node.game.matcher.match(true)
-//     match = node.game.matcher.getMatch();
-// 
-//     // Resets all roles.
-//     node.game.roleMapper = {};
-// 
-//     // While we have matches, send them to clients.
-//     while (match) {
-//         id1 = match[node.game.roles.BIDDER];
-//         id2 = match[node.game.roles.RESPONDENT];
-//         if (id1 !== 'bot' && id2 !== 'bot') {
-//             node.say('ROLE', id1, {
-//                 role: 'BIDDER',
-//                 other: id2
-//             });
-//             node.say('ROLE', id2, {
-//                 role: 'RESPONDENT',
-//                 other: id1
-//             });
-//             node.game.roleMapper[id1] = 'BIDDER';
-//             node.game.roleMapper[id2] = 'RESPONDENT';
-//         }
-//         else {
-//             soloId = id1 === 'bot' ? id2 : id1;
-//             node.say('ROLE', soloId, {
-//                 role: 'SOLO',
-//                 other: null
-//             });
-//             node.game.roleMapper[soloId] = 'SOLO';
-// 
-//         }
-//         match = node.game.matcher.getMatch();
-//     }
-//     console.log('Matching completed.');
-// }
+
 
 function endgame() {
     var code, exitcode, accesscode;
@@ -238,10 +199,10 @@ function endgame() {
 
 
 function notEnoughPlayers() {
-    node.game.gotoStep('questionnaire');
+    node.game.gotoStep('');
 }
 
-function reconnectUltimatum(p, reconOptions) {
+function reconnectprisoner(p, reconOptions) {
     var offer, matches, other, role, bidder;
     // Get all current matches.
     matches = node.game.matcher.getMatchObject(0);
@@ -258,7 +219,7 @@ function reconnectUltimatum(p, reconOptions) {
             .select('player', '=', bidder).first();
         if (!offer || 'number' !== typeof offer.offer) {
             // Set it to zero for now.
-            node.err('ReconnectUltimatum: could not find offer for: ' + p.id);
+            node.err('Reconnectprisoner: could not find offer for: ' + p.id);
             offer = 0;
         }
         else {

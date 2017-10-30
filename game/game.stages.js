@@ -1,5 +1,5 @@
 /**
- * # Stages of the Ultimatum Game
+ * # Stages of the Prisoner Game
  * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
@@ -9,24 +9,20 @@
 module.exports = function(stager, settings) {
 
     stager
-        .next('precache')
-        .next('selectLanguage')
         .next('instructions')
-        .next('quiz')
-        .next('mood')
-        .repeat('ultimatum', settings.REPEAT)
-        .next('questionnaire')
+        //.next('quiz')
+        .repeat('prisoner', settings.REPEAT)
         .next('endgame')
         .gameover();
 
-    // Divide stage ultimatum in 3 steps.
+    // Divide stage prisoner in 3 steps.
 
-    stager.extendStage('ultimatum', {
+   stager.extendStage('prisoner', {
         steps: [
-            'bidder',
-            'respondent'
+            'respond',
+            'results'
         ]
-    });
+    }); 
 
     // Can skip specific stages or steps here.
 
@@ -35,5 +31,5 @@ module.exports = function(stager, settings) {
     // stager.skip('quiz');
     // stager.skip('instructions');
     // stager.skip('mood');
-    // stager.skip('ultimatum')
+    // stager.skip('prisoner')
 };

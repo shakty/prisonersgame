@@ -1,5 +1,5 @@
 /**
- * # Antechamber for Ultimatum Game
+ * # Antechamber for prisoner Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
@@ -53,7 +53,7 @@ function waiting2start() {
     // acquired.
     //
     /////////////////////////////////////////////
-    node.getJSON(['/ultimatum/data_example.json'], function(data) {
+    node.getJSON(['/prisoner/data_example.json'], function(data) {
         var root;
 
         root = W.getElementById('waitingForPlayers');

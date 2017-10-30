@@ -1,5 +1,5 @@
 /**
- * # Functions used by the client of Ultimatum Game
+ * # Functions used by the client of prisoner Game
  * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
@@ -8,8 +8,6 @@
 
 module.exports = {
     init: init,
-    precache: precache,
-    selectLanguage: selectLanguage,
     endgame: endgame
 };
 
@@ -134,60 +132,11 @@ function init() {
         return node.JSUS.isInt(n, -1, 101);
     };
 
-    // Quiz widget (to be created later).
-    this.quiz = null;
-
-    this.quizTexts = {
-
-        howMuchMainText: 'How many coins will you divide with your partner?',
-        howMuchChoices: [
-            '50',
-            '100',
-            '0'
-        ],
-
-        rejectMainText: 'If you are a bidder what happens if your partner ' +
-            'reject your offer?',
-        rejectChoices: [
-            'He does not get anything, I keep my share.',
-            'I get everything.',
-            'He gets what I offered, I get nothing.',
-            'Both get nothing.'
-        ],
-
-        disconnectMainText: 'Consider the following scenario. Four players ' +
-            '(A,B,C,D) are playing. B disconnects for more than 30 seconds, ' +
-            'and the game is terminated. What happens then?',
-        disconnectChoices: [
-            'A,C,D are paid only the show up fee. B is not paid at all.',
-            'A,C,D are paid the show up fee plus the bonus collected so far. ' +
-                'B is paid only the show up fee.',
-            'A,C,D are paid the show up fee plus the bonus collected so far. ' +
-                'B is not paid at all.',
-            'All players are paid only the show up fee.',
-            'All players are paid the show up fee and the bonus ' +
-                'collected so far.'
-        ]
-
-    };
+  
 
     // Questionnaire widget (to be created later).
     this.quest = null;
 
-    this.questTexts = {
-        mainText: 'If the game was terminated because of a ' +
-            'player disconnection, in your opinion, why did the other player ' +
-            'disconnect?',
-        choices: [
-            'He or she was losing.',
-            'Technical failure.',
-            'The player found a more rewarding task.',
-            'The game was boring, not clear, too long, etc.',
-            'Not applicable.'
-        ],
-        freeText: 'Please report any additional comment to the ' +
-            'experimenters.'
-    };
 
     // Set default language prefix.
     W.setUriPrefix(node.player.lang.path);
@@ -200,50 +149,6 @@ function init() {
     node.game.offerReceived = null;          
 }
 
-//////////////////////////////////////////////
-// nodeGame hint:
-//
-// Pages can be preloaded with this method:
-//
-// W.preCache()
-//
-// It loads the content from the URIs given in an array parameter, and the
-// next time W.loadFrame() is used with those pages, they can be loaded
-// from memory.
-//
-// W.preCache calls the function given as the second parameter when it's
-// done.
-//
-/////////////////////////////////////////////
-function precache() {
-    W.lockScreen('Loading...');
-    console.log('pre-caching...');
-    W.preCache([
-        'languageSelection.html', // no text here.
-
-        // Instructions are not pre-cached, because in case they are loaded
-        // from public/ a js file must modify the content of the DOM.
-        // node.game.settings.instructionsPage,
-
-        'quiz2.html', // ('quiz.html' to have version with forms).
-
-        // Not cached (for demonstration).
-        // 'bidder.html',
-        // 'resp.html',
-
-        'questionnaire.html', // ('postgame.html' to have version with forms)
-        'ended.html'
-    ], function() {
-        console.log('Precache done.');
-        // Pre-Caching done; proceed to the next stage.
-        node.done();
-    });
-}
-
-function selectLanguage() {
-    node.game.lang = node.widgets.append('LanguageSelector',
-                                         W.getFrameDocument().body);
-}
 
 function endgame() {
     this.visualTimer.switchActiveBoxTo(this.visualTimer.mainBox);

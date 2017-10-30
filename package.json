@@ -1,7 +1,7 @@
 {
-  "name": "ultimatum-game",
-  "channelName": "ultimatum",
-  "description": "Plays an ultimatum game with nodegame",
+  "name": "prisoner-game",
+  "channelName": "prisoner",
+  "description": "Plays an prisoner game with nodegame",
   "version": "3.5.5",
   "author": {
     "name": "Stefano Balietti",
@@ -12,12 +12,12 @@
   "keywords": [
     "nodegame",
     "behavioral",
-    "ultimatum",
+    "prisoner",
     "game theory"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/nodegame/ultimatum.git"
+    "url": "git://github.com/nodegame/prisoner.git"
   },
   "license": "MIT",
   "devDependencies": {

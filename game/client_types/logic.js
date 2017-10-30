@@ -1,6 +1,6 @@
 /**
- * # Logic code for Ultimatum Game
- * Copyright(c) 2016 Stefano Balietti
+ * # Logic code for prisoner Game
+ * Copyright(c) 2017 Stefano Balietti
  * MIT Licensed
  *
  * Handles bidding, and responds between two players.
@@ -29,75 +29,123 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     var timers = settings.TIMER;
 
+    /* representation of game history
+     {
+         player1Id: 
+         {
+             coins: 0,
+             choices: ["DEFECT",
+                        "COOPERATE" ...]
+         },
+         player2Id: {
+             coins: 0,
+             choices: ["COOPERATE",
+                        "COOPERATE" ...]
+         }
+     }*/
+    node.game.history = {};
+
     // Increment counter.
     counter = counter ? ++counter : settings.SESSION_ID;
 
-    // Import other functions used in the game.
-    // Some objects are shared.
-    var cbs = channel.require(__dirname + '/includes/logic.callbacks.js', {
-        node: node,
-        gameRoom: gameRoom,
-        settings: settings,
-        counter: counter
-        // Reference to channel added by default.
-    }, nocache);
-
-    // Event handler registered in the init function are always valid.
-    stager.setOnInit(cbs.init);
-
-    // Event handler registered in the init function are always valid.
-    stager.setOnGameOver(cbs.gameover);
-    
-    // `minPlayers` triggers the execution of a callback in the case
-    // the number of players (including this client) falls the below
-    // the chosen threshold. Related: `maxPlayers`, and `exactPlayers`.
-    // However, the server must be configured to send this information
-    // to the clients, otherwise the count will be always 0 and
-    // trigger the callback immediately. Notice that minPlayers is
-    // configured on logic.js as well.
-    // minPlayers: MIN_PLAYERS,
     stager.setDefaultProperty('minPlayers', [
-        settings.MIN_PLAYERS,
-        cbs.notEnoughPlayers
+        settings.MIN_PLAYERS
     ]);
 
     stager.setDefaultProperty('pushClients', true);
-    
-    stager.extendStep('selectLanguage', {     
+
+    stager.extendStep('respond', {
         cb: function() {
-            // Storing the language setting.
-            node.on.data('mylang', function(msg) {
-                if (msg.data && msg.data.name !== 'English') {
-                    channel.registry.updateClient(msg.from, { lang: msg.data });
-                }
+            ++ node.game.round;
+            node.on.data('done', function (msg) {
+                var id;
+                
+                id = msg.from;
+                addToHistory(id, msg.data.choice, node.game.history);
             });
         }
     });
 
-    stager.extendStep('bidder', {
-        matcher: {
-            roles: [ 'BIDDER', 'RESPONDENT', 'SOLO' ],
-            // match: 'random_pairs',
-            match: 'roundrobin',
-            cycle: 'repeat_invert',
-            // skipBye: false
-            // setPartner: true // default
+    stager.extendStep('results', {
+        cb: function() {
+            var playerIds = [];
+            var p1Id, P2Id;
+            var p1Choice, p2Choice;
+            var p1Payoff, p2Payoff;
+
+            playerIds = Object.keys(node.game.history); 
+            p1Id = playerIds[0];
+            p2Id = playerIds[1];
+            p1Choice = getRecentChoice(p1Id, node.game.history);
+            p2Choice = getRecentChoice(p2Id, node.game.history);
+            /*
+                Payoff Table     Settings Constants
+                P1     P2    |   P1                 P2 
+                DEFECT COOP      BETRAY             COOPERATE_BETRAYED
+                COOP   DEFECT    COOPERATE_BETRAYED BETRAY
+                DEFECT DEFECT    DEFECT             DEFECT
+                COOPER COOPERATE COOPERATE          COOPERATE
+            */
+            if ('DEFECT' === p1Choice && 'COOPERATE' === p2Choice) {
+                p1Payoff = settings.BETRAY;
+                p2Payoff = settings.COOPERATE_BETRAYED;
+            }
+            else if ('COOPERATE' === p1Choice && 'DEFECT' === p2Choice) {
+                p2Payoff = settings.BETRAY;
+                p1Payoff = settings.COOPERATE_BETRAYED;
+            }
+            else if ('DEFECT' === p1Choice && 'DEFECT' === p2Choice) {
+                p1Payoff = settings.DEFECT;
+                p2Payoff = settings.DEFECT;
+            }
+            else {
+                p1Payoff = settings.COOPERATE;
+                p2Payoff = settings.COOPERATE;
+            }
+            addCoins(p1Id, p1Payoff, node.game.history);
+            addCoins(p2Id, p2Payoff, node.game.history);
+            sendToClient(p1Id, p1Payoff, p2Payoff);
+            sendToClient(p2Id, p2Payoff, p1Payoff);
         }
     });
 
-    stager.extendStage('ultimatum', {
-        reconnect: cbs.reconnectUltimatum
-    });
-
-    stager.extendStep('questionnaire', {
-        minPlayers: undefined
-    });
-
     stager.extendStep('endgame', {
-        cb: cbs.endgame,
         minPlayers: undefined,
         steprule: stepRules.SOLO
     });
+
+    // sends game data to player clients
+    function sendToClient(id, myPayoff, otherPayoff) {
+        node.say("myEarning", id, myPayoff);
+        node.say("otherEarning", id, otherPayoff);
+        node.say("myBank", id, getBankTotal(id, node.game.history));
+    }
+
+    // retrieves the player's total number of coins
+    function getBankTotal(id, history) {
+        return history[id].coins;
+    }
+    
+    // appends the player's choice to history data
+    function addToHistory(id, choice, history) {
+        if (!history[id]) {
+            history[id] = {};
+            history[id].coins = 0;
+            history[id].choices = [];
+        }
+        history[id].choices.push(choice);
+        console.log(id + choice);
+    }
+
+    // retrieves the player's most recent choice
+    function getRecentChoice(id, history) {
+        return history[id].choices[history[id].choices.length - 1];
+    }
+    
+    // increases player's coins by received Payoff
+    function addCoins(id, payOff, history) {
+        history[id].coins += payOff;
+    }
 
     // Here we group together the definition of the game logic.
     return {

@@ -1,5 +1,5 @@
 /**
- * # Views modifier file for Ultimatum Game
+ * # Views modifier file for prisoner Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *

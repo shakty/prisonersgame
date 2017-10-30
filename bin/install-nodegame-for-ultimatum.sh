@@ -3,10 +3,10 @@
 # Copyright(c) 2015 Stefano Balietti
 # MIT Licensed
 #
-# To be used in ultimatum testing
+# To be used in prisoner testing
 #
-# Run this from inside the ultimatum directory:
-#  $ bin/install-nodegame-for-ultimatum.sh
+# Run this from inside the prisoner directory:
+#  $ bin/install-nodegame-for-prisoner.sh
 
 # Check node.js version, must be higher than 0.8.
 node_version=$(node --version)  # e.g. "v0.10.20"
@@ -19,14 +19,14 @@ then
     exit 1
 fi
 
-# Make dependencies available for Ultimatum.
+# Make dependencies available for prisoner.
 ln -s nodegame/node_modules .
 
 # Clone the main repo.
 git clone https://github.com/nodeGame/nodegame.git
 cd nodegame
-# Register this Ultimatum game in nodegame.
-ln -s ../.. games/ultimatum
+# Register this prisoner game in nodegame.
+ln -s ../.. games/prisoner
 
 # Install the dependencies.
 mkdir node_modules; cd node_modules

@@ -1,9 +1,9 @@
 /**
- * # Authorization functions for Ultimatum Game
+ * # Authorization functions for prisoner Game
  * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
- * Sets authorizations for accessing the Ultimatum channels.
+ * Sets authorizations for accessing the prisoner channels.
  * ---
  */
 module.exports = function(auth, settings) {

@@ -1,5 +1,5 @@
 /**
- * # Antechamber for Ultimatum Game
+ * # Antechamber for prisoner Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *

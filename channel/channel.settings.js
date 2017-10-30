@@ -1,5 +1,5 @@
 /**
- * # Channels definition file for Ultimatum Game
+ * # Channels definition file for prisoner Game
  * Copyright(c) 2015 Stefano Balietti
  * MIT Licensed
  *
@@ -12,9 +12,9 @@ module.exports = {
 
     // alias: 'u1',
 
-    playerServer: 'ultimatum',
+    playerServer: 'prisoner',
 
-    adminServer: 'ultimatum/admin',
+    adminServer: 'prisoner/admin',
 
     verbosity: 100,
 
@@ -23,7 +23,7 @@ module.exports = {
 
     // Unauthorized clients will be redirected here.
     // (defaults: "/pages/accessdenied.htm")
-    accessDeniedUrl: '/ultimatum/unauth.htm',
+    accessDeniedUrl: '/prisoner/unauth.htm',
 
     enableReconnections: true
 };

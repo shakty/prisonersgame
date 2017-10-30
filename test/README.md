@@ -1,3 +1,3 @@
-This directory contains tests for the Ultimatum game.
+This directory contains tests for the prisoner game.
 
 TODO: Document test infrastructure here.

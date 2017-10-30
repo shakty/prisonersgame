@@ -1,5 +1,5 @@
 /**
- * # Functions used by the bot of Ultimatum Game
+ * # Functions used by the bot of prisoner Game
  * Copyright(c) 2014 Stefano Balietti
  * MIT Licensed
  *
@@ -9,7 +9,7 @@
 module.exports = {
 
     init: init,
-    ultimatum: ultimatum,
+    prisoner: prisoner,
 
 };
 
@@ -52,12 +52,14 @@ function init() {
     };
 }
 
-function ultimatum() {
+function prisoner() {
     var that, node, other;
 
     that = this;
     node = this.node;
 
+    
+    /*
     // Load the BIDDER interface.
     node.on.data('BIDDER', function(msg) {
         node.info('RECEIVED BIDDER!');
@@ -91,6 +93,7 @@ function ultimatum() {
             that.randomAccept(msg.data, other);
         });
     });
+    */
 
-    node.info('Ultimatum');
+    node.info('prisoner');
 }

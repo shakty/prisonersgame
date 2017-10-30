@@ -1,5 +1,5 @@
 /**
- * # Autoplay code for Ultimatum Game
+ * # Autoplay code for prisoner Game
  * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
@@ -63,9 +63,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                 _cb = stepObj._cb;
                 _cb.call(this);
                 
-                if (id === 'quiz' ||
-                    id === 'questionnaire' || 
-                    id === 'mood') {
+                if (id === 'quiz') {
                     
                     node.on('PLAYING', function() {
                         node.timer.randomExec(function() {

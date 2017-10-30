@@ -1,9 +1,9 @@
 #!/bin/bash
-# Ultimatum automatic test run
+# prisoner automatic test run
 # Copyright(c) 2015 Stefano Balietti
 # MIT Licensed
 #
-# Run this from inside the ultimatum directory inside nodegame/games/:
+# Run this from inside the prisoner directory inside nodegame/games/:
 #  $ bin/run-standalone-test.sh
 #
 # Used for testing this package under other packages.
@@ -17,7 +17,7 @@ npm install
 
 # Go to the nodegame directory and run the automatic game.
 cd ../..
-node test/launcher-autoplay.js ultimatum
-cd games/ultimatum
+node test/launcher-autoplay.js prisoner
+cd games/prisoner
 
 npm test

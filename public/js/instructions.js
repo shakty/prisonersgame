@@ -1,6 +1,6 @@
 window.onload = function() {
 
-    var node = parent.node;
+    /* var node = parent.node;
     var W    = parent.W;
     var s    = node.game.settings;
 
@@ -10,5 +10,5 @@ window.onload = function() {
 
     if (s.treatmentName === 'pp') {
         W.setInnerHTML('wait-time', s.WAIT_TIME);
-    }
+    }*/
 };

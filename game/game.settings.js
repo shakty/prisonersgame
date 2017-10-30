@@ -1,5 +1,5 @@
 /**
- * # Game settings: Ultimatum Game
+ * # Game settings: prisoner Game
  * Copyright(c) 2016 Stefano Balietti
  * MIT Licensed
  *
@@ -14,16 +14,20 @@ module.exports = {
     // Minimum number of players that must be always connected.
     MIN_PLAYERS: 2,
 
-    // Number or rounds to repeat the bidding. *
-    REPEAT: 2,
+    // Number or rounds to repeat the game. *
+    REPEAT: 5,
+    
+    // Rewards for both players cooperating
+    COOPERATE: 3,
 
-    // Number of coins to split. *
-    COINS: 100,
+    // Reward for both players defecting
+    DEFECT: 1,
 
-    // Divider ECU / DOLLARS *
-    EXCHANGE_RATE: 2000,
+    // Reward for player who cooperates given the other defects
+    COOPERATE_BETRAYED: 0,
 
-    EXCHANGE_RATE_INSTRUCTIONS: 0.01,
+    // Reward for player who defects given the other cooperates
+    BETRAY: 5,
 
     // DEBUG.
     DEBUG: true,
@@ -49,13 +53,9 @@ module.exports = {
     //      to execute when the timer expires. If _timeup_ is not set,
     //      property _timeup_ of the game step will be used.
     TIMER: {
-        selectLanguage: 30000,
+        //selectLanguage: 30000,
         instructions: 90000,
-        quiz: 60000,
-        mood: 60000,
-        questionnaire: 90000,
-        bidder: 30000,
-        respondent: 30000
+        prisoner: 30000
     },
 
     // Available treatments:
@@ -75,7 +75,7 @@ module.exports = {
             description:
                 "Introduces peer pressure to players to not disconnect.",
             WAIT_TIME: 10,
-            instructionsPage: 'instructions_pp.html'
+            instructionsPage: 'instructions.html'
         }
     }
 
