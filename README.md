@@ -1,6 +1,6 @@
 # prisoner Game for nodeGame
 
-Rules of the prisoner game available [here](https://en.wikibooks.org/wiki/Bestiary_of_Behavioral_Economics/prisoner_Game).
+Rules of the prisoner game available [here](https://en.wikipedia.org/wiki/Prisoner%27s_dilemma).
 
 ## Installation
 
