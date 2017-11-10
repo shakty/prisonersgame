@@ -29,13 +29,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     // Specify init function, and extend steps.
 
-
     // Init callback.
     stager.setOnInit(cbs.init);
-
-    stager.setOnGameOver(function() {
-        // Do something if you like!
-    });
 
     ////////////////////////////////////////////////////////////
     // nodeGame hint: step propreties.
@@ -89,6 +84,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         frame: 'instructions.html'
     });
 
+    stager.extendStage('prisoner', {
+        timer: 30000
+    });
+
 
     stager.extendStep('respond', {
         donebutton: false,
@@ -137,32 +136,19 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         frame: "results.html"
     });
 
-
     stager.extendStep('endgame', {
-        frame: 'ended.html',
-        cb: cbs.endgame,
-        /////////////////////////////////////////////////////////////
-        // nodeGame hint: the donebutton parameter
-        //
-        // It is read by the DoneButton widget, and it can set the
-        // the text on the button, or disable it (false).
+        // Another widget-step (see the mood step above).
+        widget: {
+            name: 'EndScreen',
+            root: 'container',
+            options: {
+                panel: false,
+                title: false,
+                showEmailForm: true,
+                email: { errString: 'Please enter a valid email and retry' },
+                feedback: { minLength: 50 }
+            }
+        },
         donebutton: false
     });
-
-   
-    // We serialize the game sequence before sending it.
-    game.plot = stager.getState();
-
-    // Other settings, optional.
-
-    game.env = {
-        auto: settings.AUTO,
-        treatment: treatmentName
-    };
-    game.verbosity = 1000;
-
-    game.debug = settings.DEBUG;
-    game.nodename = 'player';
-
-    return game;
 };
