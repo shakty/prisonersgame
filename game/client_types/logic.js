@@ -96,6 +96,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             addCoins(p2Id, p2Payoff, node.game.history);
             sendToClient(p1Id, p1Payoff, p2Payoff);
             sendToClient(p2Id, p2Payoff, p1Payoff);
+            updateWin(p1Id, p1Payoff);
+            updateWin(p2Id, p2Payoff);
         }
     });
 
@@ -103,7 +105,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         minPlayers: undefined,
         steprule: stepRules.SOLO,
         cb: function() {
-            debugger;
             gameRoom.computeBonus({
                 say: true,
                 dump: true,
@@ -117,11 +118,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         node.say("myEarning", id, myPayoff);
         node.say("otherEarning", id, otherPayoff);
         node.say("myBank", id, getBankTotal(id, node.game.history));
-        node.game.memory.add({
-            win: myPayoff,
-            player: id,
-            stage: node.player.stage
-        });
+    }
+
+    function updateWin(id, win) {
+        var client;
+        client = channel.registry.getClient(id);
+        client.win = client.win ? client.win + win : win;
     }
 
     // retrieves the player's total number of coins
