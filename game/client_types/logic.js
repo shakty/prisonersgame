@@ -11,13 +11,6 @@ var ngc = require('nodegame-client');
 var stepRules = ngc.stepRules;
 var J = ngc.JSUS;
 
-// Variable registered outside of the export function
-// are shared among all instances of game logics.
-var counter = 0;
-
-// Flag to not cache required files.
-var nocache = true;
-
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
 // - channel: the ServerChannel object in which this logic will be running.
@@ -44,9 +37,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
          }
      }*/
     node.game.history = {};
-
-    // Increment counter.
-    counter = counter ? ++counter : settings.SESSION_ID;
 
     stager.setDefaultProperty('minPlayers', [
         settings.MIN_PLAYERS
@@ -111,7 +101,15 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('endgame', {
         minPlayers: undefined,
-        steprule: stepRules.SOLO
+        steprule: stepRules.SOLO,
+        cb: function() {
+            debugger;
+            gameRoom.computeBonus({
+                say: true,
+                dump: true,
+                print: true
+            });
+        }
     });
 
     // sends game data to player clients
@@ -119,6 +117,11 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         node.say("myEarning", id, myPayoff);
         node.say("otherEarning", id, otherPayoff);
         node.say("myBank", id, getBankTotal(id, node.game.history));
+        node.game.memory.add({
+            win: myPayoff,
+            player: id,
+            stage: node.player.stage
+        });
     }
 
     // retrieves the player's total number of coins
@@ -146,17 +149,5 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     function addCoins(id, payOff, history) {
         history[id].coins += payOff;
     }
-
-    // Here we group together the definition of the game logic.
-    return {
-        nodename: 'lgc' + counter,
-        // Extracts, and compacts the game plot that we defined above.
-        plot: stager.getState(),
-        // If debug is false (default false), exception will be caught and
-        // and printed to screen, and the game will continue.
-        debug: settings.DEBUG,
-        // Controls the amount of information printed to screen.
-        verbosity: -100
-    };
 
 };

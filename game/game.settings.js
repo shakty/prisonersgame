@@ -15,7 +15,7 @@ module.exports = {
     MIN_PLAYERS: 2,
 
     // Number or rounds to repeat the game. *
-    REPEAT: 5,
+    REPEAT: 1,
     
     // Rewards for both players cooperating
     COOPERATE: 3,
@@ -28,15 +28,6 @@ module.exports = {
 
     // Reward for player who defects given the other cooperates
     BETRAY: 5,
-
-    // DEBUG.
-    DEBUG: true,
-
-    // AUTO-PLAY.
-    AUTO: false,
-
-    // AUTHORIZATION.
-    AUTH: 'NO', // MTURK, LOCAL, NO.
 
     // TIMER.
     // If the name of a key of the TIMER object matches the name of one
@@ -54,8 +45,7 @@ module.exports = {
     //      property _timeup_ of the game step will be used.
     TIMER: {
         //selectLanguage: 30000,
-        instructions: 90000,
-        prisoner: 30000
+        instructions: 90000
     },
 
     // Available treatments:
@@ -78,8 +68,4 @@ module.exports = {
             instructionsPage: 'instructions.html'
         }
     }
-
-    
-    // * =  If you change this, you need to update 
-    // the instructions and quiz static files in public/
 };
