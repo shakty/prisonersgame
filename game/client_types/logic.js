@@ -94,8 +94,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             }
             addCoins(p1Id, p1Payoff, node.game.history);
             addCoins(p2Id, p2Payoff, node.game.history);
-            sendToClient(p1Id, p1Payoff, p2Payoff);
-            sendToClient(p2Id, p2Payoff, p1Payoff);
+            sendToClient(p1Id, p1Payoff, p2Payoff, p2Choice);
+            sendToClient(p2Id, p2Payoff, p1Payoff, p1Choice);
             updateWin(p1Id, p1Payoff);
             updateWin(p2Id, p2Payoff);
         }
@@ -114,10 +114,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     });
 
     // sends game data to player clients
-    function sendToClient(id, myPayoff, otherPayoff) {
-        node.say("myEarning", id, myPayoff);
-        node.say("otherEarning", id, otherPayoff);
-        node.say("myBank", id, getBankTotal(id, node.game.history));
+    function sendToClient(id, myPayoff, otherPayoff, choice) {
+        node.say("results", id, {
+            myEarning: myPayoff,
+            otherEarning: otherPayoff,
+            myBank: getBankTotal(id, node.game.history),
+            otherChoice: choice
+        });
+        //node.say("myEarning", id, myPayoff);
+        //node.say("otherEarning", id, otherPayoff);
+        //node.say("myBank", id, getBankTotal(id, node.game.history));
     }
 
     function updateWin(id, win) {

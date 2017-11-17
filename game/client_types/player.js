@@ -78,18 +78,18 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                                              'COUNT_UP_ROUNDS_TO_TOTAL']);
         },
         cb: function() {
-            var myEarning, otherEarning, myBank;
-            node.on.data('myEarning', function(msg) {
-                myEarning = msg.data;
+            var myEarning, otherEarning, myBank, otherChoice;
+            node.on.data('results', function(msg) {
+                myEarning = msg.data.myEarning;
                 W.setInnerHTML('myearning', myEarning);
-            });
-            node.on.data('otherEarning', function(msg) {
-                otherEarning = msg.data;
+                otherEarning = msg.data.otherEarning;
                 W.setInnerHTML('otherearning', otherEarning);
-            });
-            node.on.data('myBank', function(msg) {
-                myBank = msg.data;
+                myBank = msg.data.myBank;
                 W.setInnerHTML('mybank', myBank);
+                otherChoice = msg.data.otherChoice;
+                if (otherChoice) {
+                    W.setInnerHTML('otherchoice', otherChoice);
+                }
             });
         },
         frame: "results.html"

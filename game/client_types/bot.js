@@ -21,7 +21,6 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     var channel = gameRoom.channel;
     var node = gameRoom.node;
 
-
     // Import other functions used in the game.
     ///////////////////////////////////////////
 
@@ -35,8 +34,59 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     // Set the default step rule for all the stages.
     stager.setDefaultStepRule(stepRules.WAIT);
 
-    stager.extendStep('prisoner', {
-        cb: cbs.prisoner
+    stager.extendAllSteps(function(o) {
+    
+        // Store a reference to previous step callback.
+        o._cb = o.cb;
+        // Create a new step callback.
+        o.cb = function() {
+            var _cb, stepObj, id;
+            var decision = {choice: ""};
+            // the player's most recent decision;
+            
+            // Get the previous step callback and execute it.
+            stepObj = this.getCurrentStepObj();
+            _cb = stepObj._cb;
+            _cb.call(this);
+            
+            // Performs automatic play depending on the step.
+            id = stepObj.id;
+            
+            node.on.data('results', function (msg) {
+                this.lastDecision = msg.data.otherChoice;
+            });
+
+            if (id === 'respond') {
+                if (this.settings.BOTTYPE === 'titfortat') {
+                    // LAST OPPONENT DECISION  |   NEW DECISION
+                    // COOPERATE               |   COOPERATE
+                    // DEFECT                  |   DEFECT
+                    decision.choice = this.lastDecision;
+                }
+                if (this.settings.BOTTYPE === 'invertlast') {
+                    // LAST OPPONENT DECISION  |   NEW DECISION
+                    // COOPERATE               |   DEFECT
+                    // DEFECT                  |   COOPERATE
+                    this.strategy = {
+                        'COOPERATE': 'DEFECT',
+                        'DEFECT' : 'COOPERATE'
+                    };
+                    decision.choice = this.strategy[this.lastDecision];
+                }
+                if (this.settings.BOTTYPE === 'random' || !this.lastDecision) {
+                    decision.choice = Math.random() > 0.5 ? 
+                                      'COOPERATE' : 'DEFECT';                   
+                }
+                // node.done({choice: decision.choice});
+                node.done({choice: decision.choice});
+            }
+            else {
+                node.timer.randomDone(2000);
+            } 
+        };
+        
+        // Return the extended step.
+        return o;
     });
 
     // Prepare the game object to return.
@@ -51,21 +101,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     game.metadata = {
         name: 'prisoner_bot',
         version: '0.4.0',
-        description: 'Bot randomly playing the prisoner game'
+        description: 'Bot playing the prisoner game by repeating the ' +
+                     'actions of the player.'
     };
 
-    // Other settings, optional.
-    game.settings = {
-        publishLevel: 2
-    };
-
-    game.env = {
-        auto: settings.AUTO,
-        treatment: treatmentName
-    };
-
-    game.verbosity = 0;
-    game.debug = settings.DEBUG;
     game.nodename = 'bot';
 
     return game;

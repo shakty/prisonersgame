@@ -15,7 +15,7 @@ module.exports = {
     MIN_PLAYERS: 2,
 
     // Number or rounds to repeat the game. *
-    REPEAT: 1,
+    REPEAT: 3,
     
     // Rewards for both players cooperating
     COOPERATE: 3,
@@ -28,6 +28,9 @@ module.exports = {
 
     // Reward for player who defects given the other cooperates
     BETRAY: 5,
+
+    // "titfortat", "invertlast", "random"
+    BOTTYPE: "titfortat",
 
     // TIMER.
     // If the name of a key of the TIMER object matches the name of one
