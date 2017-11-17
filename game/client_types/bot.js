@@ -51,8 +51,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             
             // Performs automatic play depending on the step.
             id = stepObj.id;
-            
-            node.on.data('results', function (msg) {
+            console.log('BOT step: ' + id);
+            this.node.on.data('results', function (msg) {
                 this.lastDecision = msg.data.otherChoice;
             });
 
@@ -77,11 +77,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     decision.choice = Math.random() > 0.5 ? 
                                       'COOPERATE' : 'DEFECT';                   
                 }
-                // node.done({choice: decision.choice});
-                node.done({choice: decision.choice});
+                this.node.done({choice: decision.choice});
             }
             else {
-                node.timer.randomDone(2000);
+                this.node.timer.randomDone(2000);
             } 
         };
         

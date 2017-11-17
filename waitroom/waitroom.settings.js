@@ -90,6 +90,24 @@ module.exports = {
      */
     DISCONNECT_IF_NOT_SELECTED: false,
 
+    ON_CONNECT: function(waitingRoom, player) {
+        var channel;
+        console.log("connecting bot");
+        if (player.clientType !== 'bot') {
+            channel = waitingRoom.channel;
+            channel.connectBot({
+                 // room: waitingRoom,
+                 setup: {
+                     settings: {
+                         BOTTYPE: 'titfortat'
+                     }
+                 }
+             });
+        }
+
+        // if (node.game.pl.size() <)
+    }
+
     /**
      * ## ON_TIMEOUT
      *
