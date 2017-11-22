@@ -90,7 +90,7 @@ module.exports = {
      */
     DISCONNECT_IF_NOT_SELECTED: false,
 
-    ON_CONNECT: function(waitingRoom, player) {
+    /*ON_CONNECT: function(waitingRoom, player) {
         var channel;
         console.log("connecting bot");
         if (player.clientType !== 'bot') {
@@ -106,7 +106,7 @@ module.exports = {
         }
 
         // if (node.game.pl.size() <)
-    }
+    },*/
 
     /**
      * ## ON_TIMEOUT
@@ -150,4 +150,5 @@ module.exports = {
      * @see wait.room.js (nodegame-server)
      */
     // logicPath: 'path/to/a/wait.room.js'
+    PLAY_WITH_BOT_OPTION: true
 };
