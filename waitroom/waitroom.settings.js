@@ -150,5 +150,5 @@ module.exports = {
      * @see wait.room.js (nodegame-server)
      */
     // logicPath: 'path/to/a/wait.room.js'
-    PLAY_WITH_BOT_OPTION: true
+    ALLOW_PLAY_WITH_BOTS: true
 };
