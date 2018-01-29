@@ -4,6 +4,7 @@
   "description": "Plays an prisoner game with nodegame",
   "version": "4",
   "url": "https://github.com/ewenw/prisonersgame",
+  "wiki": "https://en.wikipedia.org/wiki/Prisoner%27s_dilemma",
   "author": {
     "name": "Ewen Wang",
     "email": "wang.yuxu@northeastern.edu",
