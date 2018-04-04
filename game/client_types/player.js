@@ -79,7 +79,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         },
         cb: function() {
             var myEarning, otherEarning, myBank, otherChoice;
+            var progressBar;
             node.on.data('results', function(msg) {
+                progressBar = W.getElementById('progressBar');
+                var barValue = 100 * node.game.rounds.curRound / node.game.rounds.totRound;
+                progressBar.setAttribute("aria-valuenow", barValue);
+                progressBar.style.width = barValue + "%";
                 myEarning = msg.data.myEarning;
                 W.setInnerHTML('myearning', myEarning);
                 otherEarning = msg.data.otherEarning;

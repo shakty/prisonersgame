@@ -5,28 +5,27 @@
 <body>
   <br />
   <br />
-  <div id="container">
-    <div class="panel panel-info">
-      <div class="panel-heading">
-          <h1>The Prisoner's Dilemma Instructions</h1>
-        </div>
-    <div class="panel-body">
+  <div class="container">
+    <div class="jumbotron">
+          <h2 class="display-3">Welcome to the Prisoner's Dilemma (Demo)</h1>
+          <p class="leader">Powered by <a href="https://nodegame.org/">nodeGame</a>.</p>
+    <hr class="my-4">
     <div id="instructions">
  <p>
   In each round, both players must make the choice to cooperate or defect.
+
+	If both players choose to collaborate, they each receive $1.
 	
-	If both players choose to collaborate, they each receive 3 coins.
+	If both players defect, they each receive $0.30.
 	
-	If both players defect, they each receive 1 coins.
+	If one choose to cooperate and the other doesn't, the cooperator receives $0 while the defector receives $1.6.
 	
-	If one choose to cooperate and the other doesn't, the cooperator receives 0 coins while the defector receives 5 coins.
-	
-  The game is repeated 5 rounds.
+  The game is repeated 3 rounds.
 </p>
 </div>
+    </hr>
     </div>
     </div>
-  </div>
 
 </body>
 <script src="../js/instructions.js" type="text/javascript"></script>

@@ -1,12 +1,15 @@
 {
   "name": "prisoner-game",
   "channelName": "prisoner",
-  "description": "Plays an prisoner game with nodegame",
-  "version": "3.5.5",
+  "description": "The iterated prisoner's dilemma game in which players can cooperate or defect.",
+  "version": "4",
+  "url": "https://github.com/ewenw/prisonersgame",
+  "wiki": "https://en.wikipedia.org/wiki/Prisoner%27s_dilemma",
+  "icon": "grid_on",
   "author": {
-    "name": "Stefano Balietti",
-    "email": "ste@nodegame.org",
-    "url": "http://stefanobalietti.com"
+    "name": "Ewen Wang",
+    "email": "wang.yuxu@northeastern.edu",
+    "url": "https://github.com/ewenw/"
   },
   "main": "./index.html",
   "keywords": [
@@ -17,7 +20,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/nodegame/prisoner.git"
+    "url": "git://github.com/ewenw/prisonersgame.git"
   },
   "license": "MIT",
   "devDependencies": {

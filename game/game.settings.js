@@ -18,7 +18,7 @@ module.exports = {
     REPEAT: 3,
     
     // Rewards for both players cooperating
-    COOPERATE: 3,
+    COOPERATE: 2,
 
     // Reward for both players defecting
     DEFECT: 1,
@@ -27,7 +27,7 @@ module.exports = {
     COOPERATE_BETRAYED: 0,
 
     // Reward for player who defects given the other cooperates
-    BETRAY: 5,
+    BETRAY: 4,
 
     // "titfortat", "invertlast", "random"
     BOTTYPE: "titfortat",

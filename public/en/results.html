@@ -3,14 +3,30 @@
 <link rel="stylesheet" href="../css/bootstrap.min.css" />
 <link rel="stylesheet" type="text/css" href="../css/style.css">
 <body>
-  <div id="container" style="font-size: 20px">
-    <h2>Your partner chose to <b id="otherchoice"></b></h2><br/>
-    <h2>Total Earnings: <b id="mybank"></b>
-    <br/>
-    <br/>
-    You earned <b id="myearning"></b> coins</h2>
-    <h3>Your partner earned <b id="otherearning"></b> coins</h3>
-    
-    <br/>
+  <div class="progress">
+    <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" id="progressBar" 
+    aria-valuemax="100" aria-valuenow="0" aria-valuemin="0" style="width:0%;">
+    </div>
+  </div>  
+  <br/>
+  <center>
+  <h3>My total: $<b id="mybank"></b></h3>
+  <br/>
+  <br/>
+  <div class="card border-light mb-3" style="max-width: 50rem;">
+    <div class="card-body">
+      <div class="card-title">Your partner chose to <b id="otherchoice"></b>
+      </div>
+    <div class="card-text">
+    <div class="row">
+          <div class="col">
+            <h3>You earned $<b id="myearning"></b></h3> 
+          </div>
+          <div class="col">
+            <h3>Your partner earned $<b id="otherearning"></b></h3>
+          </div>
+    </div>
+    </div>
   </div>
+  </center>
 </body>
