@@ -102,14 +102,19 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('endgame', {
         // Another widget-step (see the mood step above).
+        frame: 'ended.html',
         widget: {
             name: 'EndScreen',
-            root: 'container',
+            root: 'root',
             options: {
                 panel: false,
                 title: false,
                 showEmailForm: true,
-                email: { errString: 'Please enter a valid email and retry' },
+                email: {
+                    texts: {
+                        label: 'Enter your email (optional):'
+                    }
+                },
                 feedback: { minLength: 50 }
             }
         },

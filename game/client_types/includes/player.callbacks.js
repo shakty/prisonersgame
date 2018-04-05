@@ -26,7 +26,8 @@ function init() {
 
         node.game.rounds = node.widgets.append('VisualRound', header, {
             displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
-            stageOffset: 1
+            stageOffset: 1,
+            title: false
         });
 
         node.game.visualTimer = node.widgets.append('VisualTimer', header);
