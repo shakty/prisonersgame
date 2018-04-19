@@ -3,9 +3,12 @@
   "channelName": "prisoner",
   "description": "The iterated prisoner's dilemma game in which players can cooperate or defect.",
   "version": "4",
-  "url": "https://github.com/ewenw/prisonersgame",
-  "wiki": "https://en.wikipedia.org/wiki/Prisoner%27s_dilemma",
-  "icon": "grid_on",
+  "card": {
+    "description": "The iterated prisoner's dilemma game in which players can cooperate or defect.",
+    "url": "https://github.com/ewenw/prisonersgame",
+    "wiki": "https://en.wikipedia.org/wiki/Prisoner%27s_dilemma",
+    "icon": "grid_on"
+  },
   "author": {
     "name": "Ewen Wang",
     "email": "wang.yuxu@northeastern.edu",
