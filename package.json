@@ -2,7 +2,7 @@
   "name": "prisoner-game",
   "channelName": "prisoner",
   "description": "The iterated prisoner's dilemma game in which players can cooperate or defect.",
-  "version": "4",
+  "version": "1.0.0",
   "card": {
     "description": "The iterated prisoner's dilemma game in which players can cooperate or defect.",
     "url": "https://github.com/ewenw/prisonersgame",
@@ -32,7 +32,7 @@
   },
   "engines": {
     "node": "*",
-    "nodegame": ">= 3.5.0"
+    "nodegame": ">= 4.0.0"
   },
   "homepage": "http://nodegame.org",
   "scripts": {
