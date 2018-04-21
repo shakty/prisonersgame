@@ -1,25 +1,6 @@
 # Changelog
 
-## 3.5.5
-- Fixed bug shuffleChoices.
+## 1.0.0
 
-## 3.5.4
-- Fixed bug in German context.
+First version forked from Ultimatum
 
-## 3.5.3
-- Minor.
-
-## 3.5.2
-- Fixed startTiming typo.
-
-## 3.5.1
-- Updated auth.settings.js file.
-
-## 3.5.0
-- Using the Matcher/Roles API from version 3.5.
-
-## 2.1.1
-- Removed reference to DeSciL in ended.
-
-## 2.1.0
-- Updated to JSUS 0.14
