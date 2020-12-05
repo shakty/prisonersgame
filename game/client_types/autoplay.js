@@ -33,13 +33,13 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
             if (id === 'respond') {
                 node.on('PLAYING', function() {
-                    node.timer.randomExec(function() {
+                    node.timer.random.exec(function() {
                         node.game.timer.doTimeUp();
                     });
                 });
             }
             else if (id !== 'precache' || id !== 'endgame') {
-                node.timer.randomDone(2000);
+                node.timer.random(2000).done();
             }
         };
 
