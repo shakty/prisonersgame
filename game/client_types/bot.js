@@ -4,7 +4,7 @@
  * MIT Licensed
  *
  * Code for a bot playing the prisoner game randomly.
- * 
+ *
  * http://www.nodegame.org
  */
 
@@ -35,7 +35,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.setDefaultStepRule(stepRules.WAIT);
 
     stager.extendAllSteps(function(o) {
-    
+
         // Store a reference to previous step callback.
         o._cb = o.cb;
         // Create a new step callback.
@@ -43,12 +43,12 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             var _cb, stepObj, id;
             var decision = {choice: ""};
             // the player's most recent decision;
-            
+
             // Get the previous step callback and execute it.
             stepObj = this.getCurrentStepObj();
             _cb = stepObj._cb;
             _cb.call(this);
-            
+
             // Performs automatic play depending on the step.
             id = stepObj.id;
             console.log('BOT step: ' + id);
@@ -74,16 +74,16 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     decision.choice = this.strategy[this.lastDecision];
                 }
                 if (this.settings.BOTTYPE === 'random' || !this.lastDecision) {
-                    decision.choice = Math.random() > 0.5 ? 
-                                      'COOPERATE' : 'DEFECT';                   
+                    decision.choice = Math.random() > 0.5 ?
+                                      'COOPERATE' : 'DEFECT';
                 }
                 this.node.done({choice: decision.choice});
             }
             else {
-                this.node.timer.randomDone(2000);
-            } 
+                this.node.timer.random(2000).done();
+            }
         };
-        
+
         // Return the extended step.
         return o;
     });
