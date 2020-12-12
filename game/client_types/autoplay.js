@@ -10,11 +10,11 @@
 
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var channel = gameRoom.channel;
-    var node = gameRoom.node;
-    var ngc = require('nodegame-client');
+    const channel = gameRoom.channel;
+    const node = gameRoom.node;
+    const ngc = require('nodegame-client');
 
-    var game, stager;
+    let game, stager;
 
     game = gameRoom.getClientType('player');
     game.nodename = 'autoplay';
@@ -24,7 +24,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendAllSteps(function(o) {
         o._cb = o.cb;
         o.cb = function() {
-            var _cb, stepObj, id;
+            let _cb, stepObj, id;
             stepObj = this.getCurrentStepObj();
             id = stepObj.id;
 
