@@ -8,18 +8,18 @@
  * http://www.nodegame.org
  */
 
-var ngc = require('nodegame-client');
-var Stager = ngc.Stager;
-var stepRules = ngc.stepRules;
-var constants = ngc.constants;
+const ngc = require('nodegame-client');
+const Stager = ngc.Stager;
+const stepRules = ngc.stepRules;
+const constants = ngc.constants;
 
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var game;
+    let game;
 
-    var channel = gameRoom.channel;
-    var node = gameRoom.node;
+    let channel = gameRoom.channel;
+    let node = gameRoom.node;
 
     // Import other functions used in the game.
     ///////////////////////////////////////////
@@ -40,8 +40,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         o._cb = o.cb;
         // Create a new step callback.
         o.cb = function() {
-            var _cb, stepObj, id;
-            var decision = {choice: ""};
+            let _cb, stepObj, id;
+            let decision = {choice: ""};
             // the player's most recent decision;
 
             // Get the previous step callback and execute it.
