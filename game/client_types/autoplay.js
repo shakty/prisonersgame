@@ -22,7 +22,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     stager.extendAllSteps(function(o) {
         o._cb = o.cb;
         o.cb = function() {
-            let _cb, stepObj, id;
+            var _cb, stepObj, id;
             stepObj = this.getCurrentStepObj();
             id = stepObj.id;
 
