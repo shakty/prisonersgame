@@ -9,20 +9,20 @@
  * http://www.nodegame.org
  */
 
-var ngc = require('nodegame-client');
-var Stager = ngc.Stager;
-var stepRules = ngc.stepRules;
-var constants = ngc.constants;
+const ngc = require('nodegame-client');
+const Stager = ngc.Stager;
+const stepRules = ngc.stepRules;
+const constants = ngc.constants;
+const path = require('path');
 
 // Export the game-creating function.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var cbs;
-    var channel = gameRoom.channel;
-    var node = gameRoom.node;
+    let channel = gameRoom.channel;
+    let node = gameRoom.node;
 
     // Import other functions used in the game.
-    cbs = require(__dirname + '/includes/player.callbacks.js');
+    let cbs = require(path.join(__dirname,'includes','player.callbacks.js'));
 
     // Specify init function, and extend steps.
 

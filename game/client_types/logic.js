@@ -7,9 +7,9 @@
  *
  * http://www.nodegame.org
  */
-var ngc = require('nodegame-client');
-var stepRules = ngc.stepRules;
-var J = ngc.JSUS;
+const ngc = require('nodegame-client');
+const stepRules = ngc.stepRules;
+const J = ngc.JSUS;
 
 // Here we export the logic function. Receives three parameters:
 // - node: the NodeGameClient object.
@@ -17,14 +17,14 @@ var J = ngc.JSUS;
 // - gameRoom: the GameRoom object in which this logic will be running.
 module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
-    var channel = gameRoom.channel;
-    var node = gameRoom.node;
+    let channel = gameRoom.channel;
+    let node = gameRoom.node;
 
-    var timers = settings.TIMER;
+    let timers = settings.TIMER;
 
     /* representation of game history
      {
-         player1Id: 
+         player1Id:
          {
              coins: 0,
              choices: ["DEFECT",
@@ -48,8 +48,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         cb: function() {
             ++ node.game.round;
             node.on.data('done', function (msg) {
-                var id;
-                
+                let id;
+
                 id = msg.from;
                 addToHistory(id, msg.data.choice, node.game.history);
             });
@@ -58,19 +58,19 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
 
     stager.extendStep('results', {
         cb: function() {
-            var playerIds = [];
-            var p1Id, P2Id;
-            var p1Choice, p2Choice;
-            var p1Payoff, p2Payoff;
+            let playerIds = [];
+            let p1Id, P2Id;
+            let p1Choice, p2Choice;
+            let p1Payoff, p2Payoff;
 
-            playerIds = Object.keys(node.game.history); 
+            playerIds = Object.keys(node.game.history);
             p1Id = playerIds[0];
             p2Id = playerIds[1];
             p1Choice = getRecentChoice(p1Id, node.game.history);
             p2Choice = getRecentChoice(p2Id, node.game.history);
             /*
                 Payoff Table     Settings Constants
-                P1     P2    |   P1                 P2 
+                P1     P2    |   P1                 P2
                 DEFECT COOP      BETRAY             COOPERATE_BETRAYED
                 COOP   DEFECT    COOPERATE_BETRAYED BETRAY
                 DEFECT DEFECT    DEFECT             DEFECT
@@ -127,7 +127,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     }
 
     function updateWin(id, win) {
-        var client;
+        let client;
         client = channel.registry.getClient(id);
         client.win = client.win ? client.win + win : win;
     }
@@ -136,7 +136,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     function getBankTotal(id, history) {
         return history[id].coins;
     }
-    
+
     // appends the player's choice to history data
     function addToHistory(id, choice, history) {
         if (!history[id]) {
@@ -152,7 +152,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     function getRecentChoice(id, history) {
         return history[id].choices[history[id].choices.length - 1];
     }
-    
+
     // increases player's coins by received Payoff
     function addCoins(id, payOff, history) {
         history[id].coins += payOff;
