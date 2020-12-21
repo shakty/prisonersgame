@@ -10,7 +10,7 @@ For further information see [https://nodegame.org](https://nodegame.org).
 
 ## Version
 
-nodeGame >= 4.0.0
+nodeGame >= 6.0.0
 
 ## License
 
