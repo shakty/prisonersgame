@@ -24,7 +24,7 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom, node
     // Import other functions used in the game.
     ///////////////////////////////////////////
 
-    cbs = require(path.join(__dirname, 'includes', 'bot.callbacks.js');
+    cbs = require(path.join(__dirname, 'includes', 'bot.callbacks.js'));
 
     // Specify init function, and extend default stages.
     ////////////////////////////////////////////////////
