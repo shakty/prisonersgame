@@ -6,13 +6,11 @@
  * http://www.nodegame.org
  */
 
-var ngc = require('nodegame-client');
-var GameStage = ngc.GameStage;
-var J = ngc.JSUS;
-var path = require('path');
-var fs = require('fs-extra');
-var Matcher = ngc.Matcher;
-var DUMP_DIR, DUMP_DIR_JSON, DUMP_DIR_CSV;
+const ngc = require('nodegame-client');
+const J = ngc.JSUS;
+
+const path = require('path');
+const fs = require('fs-extra');
 
 module.exports = {
     init: init,
@@ -28,9 +26,11 @@ var gameRoom = module.parent.exports.gameRoom;
 var settings = module.parent.exports.settings;
 var counter = module.parent.exports.counter;
 
+let DUMP_DIR;
+
 function init() {
     DUMP_DIR = path.resolve(channel.getGameDir(), 'data') + '/' + counter + '/';
-    
+
     fs.mkdirsSync(DUMP_DIR);
 
     console.log('********************** prisoner room ' + counter++ +
@@ -40,7 +40,7 @@ function init() {
 //     this.matcher = new Matcher();
 //     this.matcher.generateMatches('random', node.game.pl.size());
 //     this.matcher.setIds(node.game.pl.id.getAllKeys());
-// 
+//
 //     this.roles = {
 //         RESPONDENT: 0,
 //         BIDDER: 1,
@@ -59,7 +59,7 @@ function init() {
 
     // "STEPPING" is the last event emitted before the stage is updated.
     node.on('STEPPING', function() {
-        var currentStage, db, p, gain, prefix;
+        var currentStage, db, p, gain, prefix, code;
 
         currentStage = node.game.getCurrentGameStage();
 
@@ -71,7 +71,7 @@ function init() {
 
                 // Respondent payoff.
                 code = channel.registry.getClient(p);
-                
+
                 gain = node.game.lastBids[p];
                 if (gain) {
                     code.win = !code.win ? gain : code.win + gain;
@@ -85,8 +85,8 @@ function init() {
         if (db && db.size()) {
 
             prefix = DUMP_DIR + 'memory_' + currentStage;
-            db.save(prefix + '.csv', { flags: 'w' }); 
-            db.save(prefix + '.nddb', { flags: 'w' }); 
+            db.save(prefix + '.csv', { flags: 'w' });
+            db.save(prefix + '.nddb', { flags: 'w' });
 
             console.log('Round data saved ', currentStage);
         }
@@ -102,7 +102,7 @@ function init() {
 
     // Update the Payoffs
     node.on.data('response', function(msg) {
-        var resWin, bidWin, code, response;
+        var resWin, bidWin, response;
         response = msg.data;
 
         if (response.response === 'ACCEPT') {
@@ -187,7 +187,7 @@ function endgame() {
     });
     bonusFile.write(["access", "exit", "bonus", "terminated"].join(', ') + '\n');
     bonus.forEach(function(v) {
-        bonusFile.write(v.join(', ') + '\n'); 
+        bonusFile.write(v.join(', ') + '\n');
     });
     bonusFile.end();
 
@@ -251,7 +251,7 @@ function reconnectprisoner(p, reconOptions) {
                     this.node.emit('BID_DONE', this.lastOffer, false);
                 });
             }
-        };        
+        };
     }
 
     else if (role === 'SOLO') {

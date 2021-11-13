@@ -12,41 +12,35 @@ module.exports = {
 };
 
 function init() {
-    var that, header;
+    var header;
 
-    that = this;
     this.node.log('Init.');
 
     // Setup the header (by default on the left side).
-    if (!W.getHeader()) {
-        header = W.generateHeader();
+    header = W.generateHeader();
 
-        // Uncomment to visualize the name of the stages.
-        //node.game.visualStage = node.widgets.append('VisualStage', header);
+    // Uncomment to visualize the name of the stages.
+    //node.game.visualStage = node.widgets.append('VisualStage', header);
 
-        node.game.rounds = node.widgets.append('VisualRound', header, {
-            displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL'],
-            stageOffset: 1,
-            title: false
-        });
+    node.game.rounds = node.widgets.append('VisualRound', header, {
+        displayModeNames: ['COUNT_UP_STAGES_TO_TOTAL']
+    });
 
-        node.game.visualTimer = node.widgets.append('VisualTimer', header);
+    node.game.visualTimer = node.widgets.append('VisualTimer', header);
 
-        // Done button to click.
-        node.game.donebutton = node.widgets.append('DoneButton', header);
+    // Done button to click.
+    node.game.donebutton = node.widgets.append('DoneButton', header);
 
-        // Additional debug information while developing the game.
-        // node.game.debugInfo = node.widgets.append('DebugInfo', header)
-
-    }
+    // Additional debug information while developing the game.
+    // node.game.debugInfo = node.widgets.append('DebugInfo', header)
 
     // Add the main frame where the pages will be loaded.
-    if (!W.getFrame()) W.generateFrame();    
+    W.generateFrame();
 
     // Add event listeners valid for the whole game.
 
     node.on('BID_DONE', function(value, notify) {
-        var root, time, offer, submitOffer, timeup;        
+        var root, time, offer, submitOffer, timeup;
 
         timeup = node.game.timer.isTimeup();
 
@@ -133,7 +127,7 @@ function init() {
         return node.JSUS.isInt(n, -1, 101);
     };
 
-  
+
 
     // Questionnaire widget (to be created later).
     this.quest = null;
@@ -147,7 +141,7 @@ function init() {
     // step.
 
     node.game.partner = null;
-    node.game.offerReceived = null;          
+    node.game.offerReceived = null;
 }
 
 

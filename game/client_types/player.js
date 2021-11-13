@@ -10,9 +10,6 @@
  */
 
 const ngc = require('nodegame-client');
-const Stager = ngc.Stager;
-const stepRules = ngc.stepRules;
-const constants = ngc.constants;
 const path = require('path');
 
 // Export the game-creating function.
@@ -22,19 +19,20 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
     let node = gameRoom.node;
 
     // Import other functions used in the game.
-    let cbs = require(path.join(__dirname,'includes','player.callbacks.js'));
+    let cbs = require(path.join(__dirname, 'includes', 'player.callbacks.js'));
 
     // Specify init function, and extend steps.
 
     // Init callback.
     stager.setOnInit(cbs.init);
 
-    stager.extendStep('instructions', {
-        frame: 'instructions.html'
-    });
-
     stager.extendStage('prisoner', {
         timer: 30000
+    });
+
+
+    stager.extendStep('instructions', {
+        frame: 'instructions.html'
     });
 
     stager.extendStep('respond', {
@@ -47,8 +45,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             // button options
             var cooperateBtn, defectBtn;
 
-            cooperateBtn = W.getElementById('cooperateBtn');
-            defectBtn = W.getElementById('defectBtn');
+            cooperateBtn = W.gid('cooperateBtn');
+            defectBtn = W.gid('defectBtn');
             cooperateBtn.onclick = function() {
                 node.done({ choice: 'COOPERATE' });
             };
@@ -59,15 +57,10 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
         },
         frame: "prisoner.html",
         timeup: function() {
-            var id, button;
-            if (Math.random() > 0.5) {
-                id = "cooperateBtn";
-            }
-            else {
-                id = "defectBtn";
-            }
-            button = W.getElementById(id);
-            button.click();
+            var id;
+            if (Math.random() > 0.5) id = "cooperateBtn";
+            else id = "defectBtn";
+            W.gid(id).click();
         }
     });
 
@@ -81,7 +74,8 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
             var myEarning, otherEarning, myBank, otherChoice;
             var progressBar;
             node.on.data('results', function(msg) {
-                progressBar = W.getElementById('progressBar');
+                // Too early, results's page is not there yet.
+                progressBar = W.gid('progressBar');
                 var barValue = 100 * node.game.rounds.curRound / node.game.rounds.totRound;
                 progressBar.setAttribute("aria-valuenow", barValue);
                 progressBar.style.width = barValue + "%";
@@ -96,27 +90,19 @@ module.exports = function(treatmentName, settings, stager, setup, gameRoom) {
                     W.setInnerHTML('otherchoice', otherChoice);
                 }
             });
-        },
-        frame: "results.html"
+        }
     });
 
     stager.extendStep('endgame', {
-        // Another widget-step (see the mood step above).
-        frame: 'ended.html',
         widget: {
             name: 'EndScreen',
-            root: 'root',
-            options: {
-                panel: false,
-                title: false,
-                showEmailForm: true,
-                email: {
-                    texts: {
-                        label: 'Enter your email (optional):'
-                    }
-                },
-                feedback: { minLength: 50 }
-            }
+            showEmailForm: true,
+            email: {
+                texts: {
+                    label: 'Enter your email (optional):'
+                }
+            },
+            feedback: { minLength: 50 }
         },
         donebutton: false
     });
